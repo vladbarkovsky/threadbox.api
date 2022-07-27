@@ -18,3 +18,14 @@ If you want to learn more about creating good readme files then refer the follow
 - [ASP.NET Core](https://github.com/aspnet/Home)
 - [Visual Studio Code](https://github.com/Microsoft/vscode)
 - [Chakra Core](https://github.com/Microsoft/ChakraCore)
+
+# Migrations
+
+dotnet ef database update 0
+dotnet ef migrations remove
+
+```bash
+dotnet ef migrations add TemplateMigration --project ThreadboxAPI
+dotnet ef database update --project ThreadboxAPI
+dotnet ef migrations remove TemplateMigration --project ThreadboxAPI
+```

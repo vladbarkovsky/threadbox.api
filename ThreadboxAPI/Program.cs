@@ -4,6 +4,7 @@ using System.Reflection;
 using ThreadboxAPI;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -19,6 +20,8 @@ builder.Services.AddDbContext<ThreadboxContext>(opt =>
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
