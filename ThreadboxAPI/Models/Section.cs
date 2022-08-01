@@ -12,10 +12,22 @@ namespace ThreadboxAPI.Models
 
     public class SectionValidator : AbstractValidator<Section>
     {
-        public SectionValidator()
+        private readonly ThreadboxContext _context;
+
+        public SectionValidator(ThreadboxContext context)
         {
-            RuleFor(x => x.Route).NotEmpty().MaximumLength(5).Must(x => x == x.ToLower());
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(30);
+            _context = context;
+
+            RuleFor(x => x.Route)
+                .NotEmpty()
+                .MaximumLength(5)
+                .Must(x => x == x.ToLower());
+
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .MaximumLength(30)
+                .Must(name => !_context.Sections.Where(x => x.Name.Equals(name)).Any())
+                    .WithMessage(nameof(Section.Name) + " must be unique.");
         }
     }
 
