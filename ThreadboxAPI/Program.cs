@@ -19,7 +19,7 @@ services.AddEndpointsApiExplorer();
 
 services.AddSwaggerGen();
 
-services.AddAutoMapper(typeof(Program));
+services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

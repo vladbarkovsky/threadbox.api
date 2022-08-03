@@ -18,11 +18,11 @@ namespace ThreadboxAPI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("[action]")]
-        public async Task<ActionResult<List<SectionDto>>> Get()
+        [HttpPost("[action]")]
+        public async Task<ActionResult<PagedList<SectionDto>>> Get(PagingParams pagingParams)
         {
-            var sections = await _context.Sections.ToListAsync();
-            return _mapper.Map<List<SectionDto>>(sections);
+            var sections = await _context.Sections.ToPagedListAsync(pagingParams);
+            return _mapper.Map<PagedList<SectionDto>>(sections);
         }
 
         [HttpPost("[action]")]

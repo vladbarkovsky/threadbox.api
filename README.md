@@ -27,5 +27,5 @@ dotnet ef migrations remove
 ```bash
 dotnet ef migrations add TemplateMigration --project ThreadboxAPI
 dotnet ef database update --project ThreadboxAPI
-dotnet ef migrations remove TemplateMigration --project ThreadboxAPI
+dotnet ef migrations remove --project ThreadboxAPI
 ```

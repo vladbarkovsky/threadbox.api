@@ -23,15 +23,15 @@ namespace ThreadboxAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sections_Name",
-                table: "Sections",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sections_Route",
                 table: "Sections",
                 column: "Route",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sections_Name",
+                table: "Sections",
+                column: "Name",
                 unique: true);
         }
 

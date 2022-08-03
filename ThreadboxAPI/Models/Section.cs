@@ -37,7 +37,8 @@ namespace ThreadboxAPI.Models
             RuleFor(x => x.Route)
                 .NotEmpty()
                 .MaximumLength(5)
-                .Must(x => x == x.ToLower());
+                .Must(x => x == x.ToLower())
+                    .WithMessage("Must be lowercase.");
 
             RuleFor(x => x.Name)
                 .NotEmpty()
