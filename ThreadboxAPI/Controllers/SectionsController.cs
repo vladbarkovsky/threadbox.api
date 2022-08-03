@@ -16,7 +16,6 @@ namespace ThreadboxAPI.Controllers
         {
             _context = context;
             _mapper = mapper;
-            
         }
 
         [HttpGet("[action]")]

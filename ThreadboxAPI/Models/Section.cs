@@ -1,23 +1,39 @@
 using AutoMapper;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ThreadboxAPI.Models
 {
-    public class Section
+    public class Section : IEntityTypeConfiguration<Section>
     {
         public Guid Id { get; set; }
         public string Route { get; set; } = null!;
         public string Name { get; set; } = null!;
+
+        public void Configure(EntityTypeBuilder<Section> builder)
+        {
+            builder.HasIndex(x => x.Route).IsUnique();
+            builder.HasIndex(x => x.Name).IsUnique();
+        }
     }
 
-    public class SectionValidator : AbstractValidator<Section>
+    public class SectionDto : IMapFrom<Section>
     {
-        private readonly ThreadboxContext _context;
+        public Guid Id { get; set; }
+        public string Route { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
-        public SectionValidator(ThreadboxContext context)
+        public void Mapping(Profile profile)
         {
-            _context = context;
+            profile.CreateMap<Section, SectionDto>().ReverseMap();
+        }
+    }
 
+    public class SectionDtoValidator : AbstractValidator<SectionDto>
+    {
+        public SectionDtoValidator()
+        {
             RuleFor(x => x.Route)
                 .NotEmpty()
                 .MaximumLength(5)
@@ -25,25 +41,7 @@ namespace ThreadboxAPI.Models
 
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .MaximumLength(30)
-                .Must(name => !_context.Sections.Where(x => x.Name.Equals(name)).Any())
-                    .WithMessage(nameof(Section.Name) + " must be unique.");
+                .MaximumLength(30);
         }
-    }
-
-    public class SectionMapping : Profile
-    {
-        public SectionMapping()
-        {
-            CreateMap<Section, SectionDto>().ReverseMap();
-        }
-    }
-
-
-    public class SectionDto
-    {
-        public Guid Id { get; set; }
-        public string Route { get; set; } = null!;
-        public string Name { get; set; } = null!;
     }
 }
