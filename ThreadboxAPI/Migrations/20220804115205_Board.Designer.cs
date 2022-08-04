@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ThreadboxAPI;
@@ -11,9 +12,10 @@ using ThreadboxAPI;
 namespace ThreadboxAPI.Migrations
 {
     [DbContext(typeof(ThreadboxContext))]
-    partial class ThreadboxContextModelSnapshot : ModelSnapshot
+    [Migration("20220804115205_Board")]
+    partial class Board
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

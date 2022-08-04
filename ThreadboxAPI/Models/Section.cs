@@ -10,6 +10,7 @@ namespace ThreadboxAPI.Models
         public Guid Id { get; set; }
         public string Route { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public Board Board { get; set; } = null!;
 
         public void Configure(EntityTypeBuilder<Section> builder)
         {
@@ -23,10 +24,12 @@ namespace ThreadboxAPI.Models
         public Guid Id { get; set; }
         public string Route { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public Guid BoardId { get; set; }
 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Section, SectionDto>().ReverseMap();
+            profile.CreateMap<Page<Section>, Page<SectionDto>>().ReverseMap();
         }
     }
 
