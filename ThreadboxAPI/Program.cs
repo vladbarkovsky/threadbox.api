@@ -5,35 +5,57 @@ using ThreadboxAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
+var assembly = Assembly.GetExecutingAssembly();
 
 services.AddControllers();
 
-services.AddFluentValidation(options =>
-    options.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+// Database context
+services.AddDbContext<ThreadboxContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("Database");
+    options.UseNpgsql(connectionString);
+});
 
-services.AddDbContext<ThreadboxContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
+// Automapper
+services.AddAutoMapper(assembly);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-services.AddEndpointsApiExplorer();
+// FluentValidation
+services.AddFluentValidation(config =>
+{
+    config.RegisterValidatorsFromAssembly(assembly);
+});
 
-services.AddSwaggerGen();
+// NSwag UI
+services.AddSwaggerDocument(settings =>
+{
+    settings.Title = "ThreadboxAPI";
+});
 
-services.AddAutoMapper(Assembly.GetExecutingAssembly());
+// CORS
+services.AddCors(options =>
+{
+    options.AddPolicy("ThreadboxAPI CORS policy", builder =>
+    {
+        builder
+            .WithOrigins("http://localhost:4200")
+            .WithMethods("GET", "POST", "PUT", "DELETE")
+            .Build();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCors("ThreadboxAPI CORS policy");
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // NSwag UI
+    app.UseOpenApi();
+    app.UseSwaggerUi3();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
