@@ -2,11 +2,11 @@
 using ThreadboxAPI.Models;
 using System.Reflection;
 
-namespace ThreadboxAPI
+namespace ThreadboxApi.Configuration
 {
-    public class ThreadboxContext : DbContext
+    public class ThreadboxDbContext : DbContext
     {
-        public ThreadboxContext(DbContextOptions<ThreadboxContext> options)
+        public ThreadboxDbContext(DbContextOptions<ThreadboxDbContext> options)
             : base(options)
         { }
 

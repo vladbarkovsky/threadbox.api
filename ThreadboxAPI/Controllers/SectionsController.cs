@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Configuration;
 using ThreadboxAPI.Models;
 
 namespace ThreadboxAPI.Controllers
@@ -9,10 +10,10 @@ namespace ThreadboxAPI.Controllers
     [Route("[controller]")]
     public class SectionsController : ControllerBase
     {
-        private readonly ThreadboxContext _context;
+        private readonly ThreadboxDbContext _context;
         private readonly IMapper _mapper;
 
-        public SectionsController(ThreadboxContext context, IMapper mapper)
+        public SectionsController(ThreadboxDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ThreadboxAPI;
+using ThreadboxApi.Configuration;
 
 #nullable disable
 
 namespace ThreadboxAPI.Migrations
 {
-    [DbContext(typeof(ThreadboxContext))]
+    [DbContext(typeof(ThreadboxDbContext))]
     [Migration("20220803165314_Section")]
     partial class Section
     {

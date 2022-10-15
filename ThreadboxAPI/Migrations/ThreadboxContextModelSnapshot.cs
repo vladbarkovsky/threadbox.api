@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using ThreadboxAPI;
+using ThreadboxApi.Configuration;
 
 #nullable disable
 
 namespace ThreadboxAPI.Migrations
 {
-    [DbContext(typeof(ThreadboxContext))]
+    [DbContext(typeof(ThreadboxDbContext))]
     partial class ThreadboxContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

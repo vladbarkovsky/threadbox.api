@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "threadbox_api": {
+    "Threadbox API": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
