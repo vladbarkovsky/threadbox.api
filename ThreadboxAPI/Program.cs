@@ -1,9 +1,3 @@
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using ThreadboxAPI;
-
 namespace ThreadboxApi
 {
     public class Program

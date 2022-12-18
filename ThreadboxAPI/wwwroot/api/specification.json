@@ -2,10 +2,48 @@
   "x-generator": "NSwag v13.16.1.0 (NJsonSchema v10.7.2.0 (Newtonsoft.Json v9.0.0.0))",
   "swagger": "2.0",
   "info": {
-    "title": "ThreadboxAPI",
+    "title": "Threadbox API",
     "version": "1.0.0"
   },
   "paths": {
+    "/Boards/Get": {
+      "post": {
+        "tags": [
+          "Boards"
+        ],
+        "operationId": "Boards_Get",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "paginationParamsDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaginationParamsDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PaginatedListDtoOfBoardDto"
+            }
+          }
+        }
+      }
+    },
     "/Connection/Check": {
       "get": {
         "tags": [
@@ -22,146 +60,16 @@
           }
         }
       }
-    },
-    "/Sections/Get": {
-      "post": {
-        "tags": [
-          "Sections"
-        ],
-        "operationId": "Sections_Get",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "pagingParamsDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PagingParamsDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/PageOfSectionDto"
-            }
-          }
-        }
-      }
-    },
-    "/Sections/Create": {
-      "post": {
-        "tags": [
-          "Sections"
-        ],
-        "operationId": "Sections_Create",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "parameters": [
-          {
-            "name": "sectionDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/SectionDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Sections/Update": {
-      "put": {
-        "tags": [
-          "Sections"
-        ],
-        "operationId": "Sections_Update",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "parameters": [
-          {
-            "name": "sectionDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/SectionDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Sections/Delete": {
-      "delete": {
-        "tags": [
-          "Sections"
-        ],
-        "operationId": "Sections_Delete",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
     }
   },
   "definitions": {
-    "PageOfSectionDto": {
+    "PaginatedListDtoOfBoardDto": {
       "type": "object",
       "required": [
         "pageItems",
-        "pagingParamsDto",
+        "pageIndex",
         "totalPages",
-        "totalItems",
+        "totalCount",
         "hasPreviousPage",
         "hasNextPage"
       ],
@@ -169,17 +77,18 @@
         "pageItems": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SectionDto"
+            "$ref": "#/definitions/BoardDto"
           }
         },
-        "pagingParamsDto": {
-          "$ref": "#/definitions/PagingParamsDto"
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32"
         },
         "totalPages": {
           "type": "integer",
           "format": "int32"
         },
-        "totalItems": {
+        "totalCount": {
           "type": "integer",
           "format": "int32"
         },
@@ -191,39 +100,34 @@
         }
       }
     },
-    "SectionDto": {
+    "BoardDto": {
       "type": "object",
       "required": [
         "id",
-        "route",
         "name",
-        "boardId"
+        "description"
       ],
       "properties": {
         "id": {
           "type": "string",
           "format": "guid"
         },
-        "route": {
-          "type": "string"
-        },
         "name": {
           "type": "string"
         },
-        "boardId": {
-          "type": "string",
-          "format": "guid"
+        "description": {
+          "type": "string"
         }
       }
     },
-    "PagingParamsDto": {
+    "PaginationParamsDto": {
       "type": "object",
       "required": [
-        "currentPage",
+        "pageIndex",
         "pageSize"
       ],
       "properties": {
-        "currentPage": {
+        "pageIndex": {
           "type": "integer",
           "format": "int32"
         },

@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <Target Name="NSwag" AfterTargets="Build" Condition="$(Configuration) == 'Debug'">

@@ -2,10 +2,7 @@
 {
     public class AppSettings
     {
-        /// <summary>
-        /// DB connection string
-        /// </summary>
-        public const string Db = "Db";
+        public const string DbConnectionString = "ThreadboxApiDev";
 
         public const string CorsPolicy = "Cors:Policy";
         public const string CorsOrigins = "Cors:Origins";

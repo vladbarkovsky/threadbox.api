@@ -5,7 +5,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
-      "project": "ThreadboxAPI.csproj",
+      "project": "ThreadboxApi.csproj",
       "msBuildProjectExtensionsPath": null,
       "configuration": null,
       "runtime": null,
@@ -36,7 +36,7 @@
       "serviceHost": null,
       "serviceBasePath": null,
       "serviceSchemes": [],
-      "infoTitle": "ThreadboxAPI",
+      "infoTitle": "ThreadboxApi",
       "infoDescription": null,
       "infoVersion": "1.0.0",
       "documentTemplate": null,
@@ -122,7 +122,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../../front/api-client.ts",
+      "output": "../../threadbox.front/api-client.ts",
       "newLineBehavior": "Auto"
     }
   }

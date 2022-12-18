@@ -1,37 +1,13 @@
-﻿using AutoMapper;
-using FluentValidation;
+﻿using ThreadboxApi.Dtos;
+using ThreadboxApi.Tools;
 
-namespace ThreadboxAPI.Models
+namespace ThreadboxApi.Models
 {
-    public class Board
+    public class Board : IEntity, IMapFrom<BoardDto>
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public List<Section> Sections { get; set; } = null!;
-    }
-
-    public class BoardDto : IMapFrom<Board>
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
-
-        public void Mapping(Profile profile)
-        {
-            profile.CreateMap<Board, BoardDto>().ReverseMap();
-        }
-    }
-
-    public class BoardDtoValidator : AbstractValidator<BoardDto>
-    {
-        public BoardDtoValidator()
-        {
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .MaximumLength(30);
-            RuleFor(x => x.Description)
-                .MaximumLength(200);
-        }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; }
+        public List<Thread> Threads { get; set; } = null!;
     }
 }

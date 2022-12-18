@@ -9,8 +9,8 @@
                 options.AddPolicy(configuration[AppSettings.CorsPolicy], builder =>
                 {
                     builder
-                        .WithOrigins(configuration[AppSettings.CorsOrigins].Split(' '))
-                        .WithMethods(configuration[AppSettings.CorsMethods].Split(' '))
+                        .WithOrigins(configuration[AppSettings.CorsOrigins].Split(", "))
+                        .WithMethods(configuration[AppSettings.CorsMethods].Split(", "))
                         .Build();
                 });
             });
