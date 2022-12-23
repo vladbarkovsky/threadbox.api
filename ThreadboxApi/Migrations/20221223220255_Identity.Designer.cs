@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ThreadboxApi.Configuration;
@@ -11,9 +12,11 @@ using ThreadboxApi.Configuration;
 namespace ThreadboxApi.Migrations
 {
     [DbContext(typeof(ThreadboxDbContext))]
-    partial class ThreadboxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221223220255_Identity")]
+    partial class Identity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,7 +236,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Boards", (string)null);
+                    b.ToTable("Boards");
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.Post", b =>
@@ -253,7 +256,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("ThreadId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.PostImage", b =>
@@ -277,7 +280,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostImages", (string)null);
+                    b.ToTable("PostImages");
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.ThreadImage", b =>
@@ -301,7 +304,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("ThreadId");
 
-                    b.ToTable("ThreadImages", (string)null);
+                    b.ToTable("ThreadImages");
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.ThreadModel", b =>
@@ -325,7 +328,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("BoardId");
 
-                    b.ToTable("Threads", (string)null);
+                    b.ToTable("Threads");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

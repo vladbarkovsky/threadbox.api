@@ -8,6 +8,6 @@ namespace ThreadboxApi.Models
         public Guid Id { get; set; }
         public string Title { get; set; } = null!;
         public string Description { get; set; }
-        public List<Thread> Threads { get; set; } = null!;
+        public List<ThreadModel> Threads { get; set; } = null!;
     }
 }
