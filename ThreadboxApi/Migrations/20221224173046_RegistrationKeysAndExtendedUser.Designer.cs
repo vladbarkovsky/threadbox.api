@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ThreadboxApi.Configuration;
@@ -11,9 +12,11 @@ using ThreadboxApi.Configuration;
 namespace ThreadboxApi.Migrations
 {
     [DbContext(typeof(ThreadboxDbContext))]
-    partial class ThreadboxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221224173046_RegistrationKeysAndExtendedUser")]
+    partial class RegistrationKeysAndExtendedUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,9 +223,6 @@ namespace ThreadboxApi.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("Value")
                         .HasColumnType("uuid");

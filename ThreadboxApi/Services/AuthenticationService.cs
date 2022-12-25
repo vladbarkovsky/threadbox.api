@@ -4,39 +4,32 @@ using System.Security.Claims;
 using System.Text;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Models;
 
 namespace ThreadboxApi.Services
 {
 	public class AuthenticationService : IScopedService
 	{
-		private readonly IConfiguration _configuration;
+		private readonly JwtService _jwtService;
 
 		public AuthenticationService(IServiceProvider services)
 		{
-			_configuration = services.GetRequiredService<IConfiguration>();
+			_jwtService = services.GetRequiredService<JwtService>();
 		}
 
-		public string GenerateUserToken(string userId)
+		public string CreateAuthenticationToken(Guid userId)
 		{
-			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[AppSettings.JwtSecurityKey]!));
-			var lifetime = int.Parse(_configuration[AppSettings.JwtExpirationTime]!);
-
-			var tokenDescriptor = new SecurityTokenDescriptor
+			var jwtConfiguration = new JwtConfiguration
 			{
-				Audience = _configuration[AppSettings.JwtValidAudience],
-				Issuer = _configuration[AppSettings.JwtValidIssuer],
-				Subject = new ClaimsIdentity(new List<Claim>
+				SecurityKey = AppSettings.JwtAuthenticationSecurityKey,
+				ExpirationTime = AppSettings.JwtAuthenticationExpirationTime,
+				Claims = new List<Claim>
 				{
-					new Claim(ClaimConstants.UserId, userId)
-				}),
-				Expires = DateTime.UtcNow.AddSeconds(lifetime),
-				NotBefore = DateTime.UtcNow,
-				SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+					new Claim(Configuration.ClaimTypeConstants.UserId, userId.ToString())
+				}
 			};
 
-			var tokenHandler = new JwtSecurityTokenHandler();
-			var token = tokenHandler.CreateToken(tokenDescriptor);
-			return tokenHandler.WriteToken(token);
+			return _jwtService.CreateToken(jwtConfiguration);
 		}
 	}
 }

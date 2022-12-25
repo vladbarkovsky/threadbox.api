@@ -7,7 +7,7 @@ using ThreadboxApi.Models;
 namespace ThreadboxApi.Configuration
 {
 	public class ThreadboxDbContext : IdentityDbContext<
-		IdentityUser<Guid>,
+		User,
 		IdentityRole<Guid>,
 		Guid,
 		IdentityUserClaim<Guid>,
@@ -28,6 +28,7 @@ namespace ThreadboxApi.Configuration
 			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 		}
 
+		public DbSet<RegistrationKey> RegistrationKeys { get; set; }
 		public DbSet<Board> Boards { get; set; } = null!;
 		public DbSet<ThreadModel> Threads { get; set; } = null!;
 		public DbSet<ThreadImage> ThreadImages { get; set; } = null!;

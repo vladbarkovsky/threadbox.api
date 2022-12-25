@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Models;
 using ThreadboxApi.Services;
 
 namespace ThreadboxApi
@@ -20,7 +21,7 @@ namespace ThreadboxApi
 				options.UseNpgsql(configuration.GetConnectionString(AppSettings.DbConnectionString));
 			});
 
-			services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>()
+			services.AddIdentity<User, IdentityRole<Guid>>()
 				.AddEntityFrameworkStores<ThreadboxDbContext>();
 
 			// HTTP

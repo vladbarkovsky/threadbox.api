@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Models;
 
 namespace ThreadboxApi.Services
 {
 	public class DbSeedingService : ITransientService
 	{
-		private readonly UserManager<IdentityUser<Guid>> _userManager;
+		private readonly UserManager<User> _userManager;
 
 		public DbSeedingService(IServiceProvider services)
 		{
-			_userManager = services.GetRequiredService<UserManager<IdentityUser<Guid>>>();
+			_userManager = services.GetRequiredService<UserManager<User>>();
 		}
 
 		public async Task SeedDbAsync()
@@ -24,7 +25,7 @@ namespace ThreadboxApi.Services
 				return;
 			}
 
-			await _userManager.CreateAsync(new IdentityUser<Guid>("admin"), "P@ssw0rd");
+			await _userManager.CreateAsync(new User("admin"), "P@ssw0rd");
 		}
 	}
 }
