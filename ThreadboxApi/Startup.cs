@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Configuraton.Startup;
 using ThreadboxApi.Models;
 using ThreadboxApi.Services;
 
@@ -14,8 +15,6 @@ namespace ThreadboxApi
 	{
 		public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 		{
-			// Database
-
 			services.AddDbContext<ThreadboxDbContext>(options =>
 			{
 				options.UseNpgsql(configuration.GetConnectionString(AppSettings.DbConnectionString));
@@ -24,15 +23,15 @@ namespace ThreadboxApi
 			services.AddIdentity<User, IdentityRole<Guid>>()
 				.AddEntityFrameworkStores<ThreadboxDbContext>();
 
-			// HTTP
+			DependencyInjectionStartup.ConfigureServices(services);
 
 			services.AddControllers();
 			SwaggerStartup.ConfigureServices(services);
 			CorsStartup.ConfigureServices(services, configuration);
 
-			// Features
+			AuthenticationStartup.ConfigureServices(services, configuration);
+			services.AddAuthorization();
 
-			DependencyInjectionStartup.ConfigureServices(services);
 			services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -50,8 +49,11 @@ namespace ThreadboxApi
 			app.MapControllers();
 			app.UseHttpsRedirection();
 
-			CorsStartup.Configure(app);
 			SwaggerStartup.Configure(app);
+			CorsStartup.Configure(app);
+
+			app.UseAuthentication();
+			app.UseAuthorization();
 		}
 	}
 }

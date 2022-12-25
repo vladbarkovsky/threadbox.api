@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using ThreadboxApi.Dtos;
+using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Models
 {
-	public class User : IdentityUser<Guid>
+	public class User : IdentityUser<Guid>, IMapFrom<RegistrationFormDto>
 	{
-		public bool IsLocked { get; set; }
-
 		public User()
 			: base()
 		{ }
@@ -13,5 +14,7 @@ namespace ThreadboxApi.Models
 		public User(string userName)
 			: base(userName)
 		{ }
+
+		public bool IsLocked { get; set; } = true;
 	}
 }

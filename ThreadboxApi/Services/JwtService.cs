@@ -37,13 +37,14 @@ namespace ThreadboxApi.Services
 		}
 
 		/// <exception cref="SecurityTokenValidationException"></exception>
+		/// <exception cref="ArgumentException"></exception>
 		public List<Claim> DecryptToken(JwtToDecrypt jwt)
 		{
-			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[jwt.SecurityKey]!));
+			var securityKey = Encoding.UTF8.GetBytes(_configuration[jwt.SecurityKey]!);
 
 			var validationParams = new TokenValidationParameters
 			{
-				IssuerSigningKey = securityKey,
+				IssuerSigningKey = new SymmetricSecurityKey(securityKey),
 				ValidateIssuerSigningKey = true,
 
 				ValidIssuer = _configuration[AppSettings.JwtValidIssuer],
