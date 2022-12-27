@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Models;
@@ -68,36 +69,21 @@ namespace ThreadboxApi.Services
 
 		public async Task<bool> UseRegistrationTokenAsync(string token)
 		{
-			var jwt = new JwtToDecrypt
-			{
-				Token = token,
-				SecurityKey = AppSettings.JwtRegistrationSecurityKey,
-				RequiredClaimTypes = new List<string>
-				{
-					ClaimTypeConstants.RegistrationKey
-				}
-			};
+			string? tokenRegistrationKey = TryGetRegistrationKey(token);
 
-			List<Claim> claims;
-
-			try
-			{
-				claims = _jwtService.DecryptToken(jwt);
-			}
-			catch (Exception ex) when (ex is SecurityTokenValidationException || ex is ArgumentException)
+			if (tokenRegistrationKey == null)
 			{
 				return false;
 			}
 
-			var registrationKeyClaim = claims.First(x => x.Type == ClaimTypeConstants.RegistrationKey);
-			var registrationKey = await _dbContext.RegistrationKeys.FirstOrDefaultAsync(x => x.Value.ToString() == registrationKeyClaim!.Value);
+			var dbRegistrationKey = await _dbContext.RegistrationKeys.FirstOrDefaultAsync(x => x.Value.ToString() == tokenRegistrationKey);
 
-			if (registrationKey == null)
+			if (dbRegistrationKey == null)
 			{
 				return false;
 			}
 
-			_dbContext.RegistrationKeys.Remove(registrationKey);
+			_dbContext.RegistrationKeys.Remove(dbRegistrationKey);
 			await _dbContext.SaveChangesAsync();
 
 			return true;
@@ -109,6 +95,48 @@ namespace ThreadboxApi.Services
 			var expiredKeys = _dbContext.RegistrationKeys.Where(x => x.CreatedAt - DateTimeOffset.UtcNow < lifetime);
 			_dbContext.RemoveRange(expiredKeys);
 			await _dbContext.SaveChangesAsync();
+		}
+
+		public string? TryGetRegistrationKey(string token)
+		{
+			var securityKey = Encoding.UTF8.GetBytes(_configuration[AppSettings.JwtRegistrationSecurityKey]!);
+
+			var validationParams = new TokenValidationParameters
+			{
+				IssuerSigningKey = new SymmetricSecurityKey(securityKey),
+				ValidateIssuerSigningKey = true,
+
+				ValidIssuer = _configuration[AppSettings.JwtValidIssuer],
+				ValidateIssuer = true,
+
+				ValidAudience = _configuration[AppSettings.JwtValidAudience],
+				ValidateAudience = true,
+
+				RequireExpirationTime = true,
+				ClockSkew = TimeSpan.Zero,
+				ValidateLifetime = true,
+			};
+
+			var handler = new JwtSecurityTokenHandler();
+			IEnumerable<Claim> claims;
+
+			try
+			{
+				claims = handler.ValidateToken(token, validationParams, out _).Claims;
+			}
+			catch (Exception ex) when (ex is SecurityTokenValidationException || ex is ArgumentException)
+			{
+				return null;
+			}
+
+			var registrationKeyClaim = claims.FirstOrDefault(x => x.Type == ClaimTypeConstants.RegistrationKey);
+
+			if (registrationKeyClaim == null)
+			{
+				return null;
+			}
+
+			return registrationKeyClaim.Value;
 		}
 	}
 }

@@ -46,11 +46,17 @@ namespace ThreadboxApi
 				await scope.ServiceProvider.GetRequiredService<DbSeedingService>().SeedDbAsync();
 			}
 
+			SwaggerStartup.Configure(app);
+
+			/// IMPORTANT: CORS must be configured before
+			/// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
+			/// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>
+			/// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>),
+			/// otherwise it will cause HTTP responses with status 0
+			CorsStartup.Configure(app);
+
 			app.MapControllers();
 			app.UseHttpsRedirection();
-
-			SwaggerStartup.Configure(app);
-			CorsStartup.Configure(app);
 
 			app.UseAuthentication();
 			app.UseAuthorization();

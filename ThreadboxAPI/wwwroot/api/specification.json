@@ -250,7 +250,7 @@
       "required": [
         "userName",
         "password",
-        "passwordRepeat",
+        "confirmPassword",
         "registrationToken"
       ],
       "properties": {
@@ -260,7 +260,7 @@
         "password": {
           "type": "string"
         },
-        "passwordRepeat": {
+        "confirmPassword": {
           "type": "string"
         },
         "registrationToken": {

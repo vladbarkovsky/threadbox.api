@@ -8,11 +8,13 @@ namespace ThreadboxApi.Configuration.Startup
 		{
 			services.AddCors(options =>
 			{
-				options.AddPolicy(configuration[AppSettings.CorsPolicy], builder =>
+				options.AddPolicy(configuration[AppSettings.CorsPolicy]!, builder =>
 				{
 					builder
-						.WithOrigins(configuration[AppSettings.CorsOrigins].Split(", "))
-						.WithMethods(configuration[AppSettings.CorsMethods].Split(", "))
+						.WithOrigins(configuration[AppSettings.CorsOrigins]!.Split(", "))
+						// TODO: CORS don't restrict methods that are no t allowed
+						.WithMethods(configuration[AppSettings.CorsMethods]!.Split(", "))
+						.WithHeaders(configuration[AppSettings.CorsHeaders]!.Split(", "))
 						.Build();
 				});
 			});
@@ -20,7 +22,7 @@ namespace ThreadboxApi.Configuration.Startup
 
 		public static void Configure(WebApplication app)
 		{
-			app.UseCors(app.Configuration[AppSettings.CorsPolicy]);
+			app.UseCors(app.Configuration[AppSettings.CorsPolicy]!);
 		}
 	}
 }

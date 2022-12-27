@@ -50,7 +50,7 @@ namespace ThreadboxApi.Controllers
 
 			if (!isTokenAccepted)
 			{
-				return BadRequest("Invalid registration token.");
+				return BadRequest("Registration token was not accepted.");
 			}
 
 			var user = _mapper.Map<User>(registrationFormDto);

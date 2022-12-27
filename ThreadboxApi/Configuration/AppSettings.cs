@@ -7,6 +7,7 @@
 		public const string CorsPolicy = "Cors:Policy";
 		public const string CorsOrigins = "Cors:Origins";
 		public const string CorsMethods = "Cors:Methods";
+		public const string CorsHeaders = "Cors:Headers";
 
 		public const string JwtValidAudience = "Jwt:ValidAudience";
 		public const string JwtValidIssuer = "Jwt:ValidIssuer";

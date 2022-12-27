@@ -35,44 +35,6 @@ namespace ThreadboxApi.Services
 			var token = tokenHandler.CreateToken(tokenDescriptor);
 			return tokenHandler.WriteToken(token);
 		}
-
-		/// <exception cref="SecurityTokenValidationException"></exception>
-		/// <exception cref="ArgumentException"></exception>
-		public List<Claim> DecryptToken(JwtToDecrypt jwt)
-		{
-			var securityKey = Encoding.UTF8.GetBytes(_configuration[jwt.SecurityKey]!);
-
-			var validationParams = new TokenValidationParameters
-			{
-				IssuerSigningKey = new SymmetricSecurityKey(securityKey),
-				ValidateIssuerSigningKey = true,
-
-				ValidIssuer = _configuration[AppSettings.JwtValidIssuer],
-				ValidateIssuer = true,
-
-				ValidAudience = _configuration[AppSettings.JwtValidAudience],
-				ValidateAudience = true,
-
-				RequireExpirationTime = true,
-				ClockSkew = TimeSpan.Zero,
-				ValidateLifetime = true,
-			};
-
-			var handler = new JwtSecurityTokenHandler();
-			var claims = handler.ValidateToken(jwt.Token, validationParams, out _).Claims;
-
-			var hasRequiredClaims = claims
-				.Select(x => x.Type)
-				.Intersect(jwt.RequiredClaimTypes)
-				.SequenceEqual(jwt.RequiredClaimTypes);
-
-			if (!hasRequiredClaims)
-			{
-				throw new SecurityTokenValidationException("Required claims are missing.");
-			}
-
-			return claims.ToList();
-		}
 	}
 
 	public class JwtConfiguration
@@ -80,12 +42,5 @@ namespace ThreadboxApi.Services
 		public string SecurityKey { get; set; } = null!;
 		public string ExpirationTime { get; set; } = null!;
 		public List<Claim> Claims { get; set; } = null!;
-	}
-
-	public class JwtToDecrypt
-	{
-		public string Token { get; set; } = null!;
-		public string SecurityKey { get; set; } = null!;
-		public List<string> RequiredClaimTypes { get; set; } = null!;
 	}
 }
