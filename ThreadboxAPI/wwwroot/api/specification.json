@@ -224,6 +224,58 @@
         }
       }
     },
+    "/Images/GetThreadImages": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "Images_GetThreadImages",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "threadId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Images/GetPostImages": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "Images_GetPostImages",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "postId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
     "/Threads/GetThreadsByBoard": {
       "post": {
         "tags": [
@@ -263,7 +315,7 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/PaginatedListDtoOfThreadVmDto"
+              "$ref": "#/definitions/PaginatedListDtoOfListThreadDto"
             }
           }
         }
@@ -345,7 +397,7 @@
         }
       }
     },
-    "PaginatedListDtoOfThreadVmDto": {
+    "PaginatedListDtoOfListThreadDto": {
       "type": "object",
       "required": [
         "pageItems",
@@ -359,7 +411,7 @@
         "pageItems": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ThreadVmDto"
+            "$ref": "#/definitions/ListThreadDto"
           }
         },
         "pageIndex": {
@@ -382,13 +434,13 @@
         }
       }
     },
-    "ThreadVmDto": {
+    "ListThreadDto": {
       "type": "object",
       "required": [
         "id",
         "title",
         "text",
-        "threadImages"
+        "threadImageUrls"
       ],
       "properties": {
         "id": {
@@ -401,7 +453,7 @@
         "text": {
           "type": "string"
         },
-        "threadImages": {
+        "threadImageUrls": {
           "type": "array",
           "items": {
             "type": "string"

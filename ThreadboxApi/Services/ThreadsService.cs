@@ -18,14 +18,14 @@ namespace ThreadboxApi.Services
 			_mapper = services.GetRequiredService<IMapper>();
 		}
 
-		public async Task<PaginatedListDto<ThreadVmDto>> GetThreadsByBoardAsync(Guid boardId, PaginationParamsDto paginationParamsDto)
+		public async Task<PaginatedListDto<ListThreadDto>> GetThreadsByBoardAsync(Guid boardId, PaginationParamsDto paginationParamsDto)
 		{
 			var threads = await _dbContext.Threads
 				.Where(x => x.BoardId == boardId)
 				.Include(x => x.ThreadImages)
 				.ToListAsync();
 
-			return _mapper.Map<List<ThreadVmDto>>(threads).ToPaginatedListDto(paginationParamsDto);
+			return _mapper.Map<List<ListThreadDto>>(threads).ToPaginatedListDto(paginationParamsDto);
 		}
 	}
 }
