@@ -168,7 +168,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Boards");
+                    b.ToTable("Boards", (string)null);
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.Post", b =>
@@ -188,7 +188,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("ThreadId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.PostImage", b =>
@@ -212,7 +212,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostImages");
+                    b.ToTable("PostImages", (string)null);
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.RegistrationKey", b =>
@@ -229,7 +229,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RegistrationKeys");
+                    b.ToTable("RegistrationKeys", (string)null);
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.ThreadImage", b =>
@@ -253,7 +253,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("ThreadId");
 
-                    b.ToTable("ThreadImages");
+                    b.ToTable("ThreadImages", (string)null);
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.ThreadModel", b =>
@@ -277,7 +277,7 @@ namespace ThreadboxApi.Migrations
 
                     b.HasIndex("BoardId");
 
-                    b.ToTable("Threads");
+                    b.ToTable("Threads", (string)null);
                 });
 
             modelBuilder.Entity("ThreadboxApi.Models.User", b =>

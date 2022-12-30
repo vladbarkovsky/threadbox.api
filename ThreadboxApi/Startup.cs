@@ -40,7 +40,6 @@ namespace ThreadboxApi
 
 		public static async Task ConfigureAsync(WebApplication app)
 		{
-			/// <see cref="DbSeedingService"/> uses <see cref="UserManager{TUser}"/>, that is scoped service, therefore we need scope to seed DB
 			using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 			{
 				await scope.ServiceProvider.GetRequiredService<DbSeedingService>().SeedDbAsync();

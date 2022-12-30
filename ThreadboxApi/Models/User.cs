@@ -5,7 +5,7 @@ using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Models
 {
-	public class User : IdentityUser<Guid>, IMapFrom<RegistrationFormDto>
+	public class User : IdentityUser<Guid>, IMappedFrom<RegistrationFormDto>
 	{
 		public User()
 			: base()

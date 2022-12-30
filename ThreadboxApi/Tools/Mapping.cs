@@ -3,62 +3,62 @@ using System.Reflection;
 
 namespace ThreadboxApi.Tools
 {
-    public interface IMapFrom<T>
-    {
-        void Mapping(Profile profile) => profile.CreateMap(typeof(T), GetType());
-    }
+	public interface IMappedFrom<T>
+	{
+		void Mapping(Profile profile) => profile.CreateMap(typeof(T), GetType());
+	}
 
-    public interface IMapped
-    {
-        void Mapping(Profile profile);
-    }
+	public interface IMapped
+	{
+		void Mapping(Profile profile);
+	}
 
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
+	public class MappingProfile : Profile
+	{
+		public MappingProfile()
+		{
+			var assembly = Assembly.GetExecutingAssembly();
 
-            ApplyMappingsFromAssembly(assembly);
-            ApplyManualMappingsFromAssembly(assembly);
-        }
+			ApplyMappingsFromAssembly(assembly);
+			ApplyManualMappingsFromAssembly(assembly);
+		}
 
-        private void ApplyMappingsFromAssembly(Assembly assembly)
-        {
-            var types = assembly
-                .GetExportedTypes()
-                .Where(x => x
-                    .GetInterfaces()
-                    .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IMapFrom<>)))
-                .ToList();
+		private void ApplyMappingsFromAssembly(Assembly assembly)
+		{
+			var types = assembly
+				.GetExportedTypes()
+				.Where(x => x
+					.GetInterfaces()
+					.Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IMappedFrom<>)))
+				.ToList();
 
-            foreach (var type in types)
-            {
-                var instance = Activator.CreateInstance(type);
+			foreach (var type in types)
+			{
+				var instance = Activator.CreateInstance(type);
 
-                var methodInfo = type.GetMethod("Mapping") ?? type
-                    .GetInterface("IMapFrom`1")!
-                    .GetMethod("Mapping");
+				var methodInfo = type.GetMethod("Mapping") ?? type
+					.GetInterface("IMappedFrom`1")!
+					.GetMethod("Mapping");
 
-                methodInfo!.Invoke(instance, new object[] { this });
-            }
-        }
+				methodInfo!.Invoke(instance, new object[] { this });
+			}
+		}
 
-        private void ApplyManualMappingsFromAssembly(Assembly assembly)
-        {
-            var types = assembly
-                .GetExportedTypes()
-                .Where(x => x
-                    .GetInterfaces()
-                    .Contains(typeof(IMapped)))
-                .ToList();
+		private void ApplyManualMappingsFromAssembly(Assembly assembly)
+		{
+			var types = assembly
+				.GetExportedTypes()
+				.Where(x => x
+					.GetInterfaces()
+					.Contains(typeof(IMapped)))
+				.ToList();
 
-            foreach (var type in types)
-            {
-                var instance = Activator.CreateInstance(type);
-                var methodInfo = type.GetMethod("Mapping");
-                methodInfo!.Invoke(instance, new object[] { this });
-            }
-        }
-    }
+			foreach (var type in types)
+			{
+				var instance = Activator.CreateInstance(type);
+				var methodInfo = type.GetMethod("Mapping");
+				methodInfo!.Invoke(instance, new object[] { this });
+			}
+		}
+	}
 }

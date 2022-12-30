@@ -1,28 +1,31 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Mochieve3.API.Dtos;
-using ThreadboxApi.Configuration;
 using ThreadboxApi.Dtos;
+using ThreadboxApi.Services;
 
-namespace ThreadboxAPI.Controllers
+namespace ThreadboxApi.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class BoardsController : ControllerBase
-    {
-        private readonly ThreadboxDbContext _context;
-        private readonly IMapper _mapper;
+	[ApiController]
+	[Route("[controller]")]
+	public class BoardsController : ControllerBase
+	{
+		private readonly BoardsService _boardsService;
 
-        public BoardsController(IServiceProvider services)
-        {
-            _context = services.GetRequiredService<ThreadboxDbContext>();
-            _mapper = services.GetRequiredService<IMapper>();
-        }
+		public BoardsController(IServiceProvider services)
+		{
+			_boardsService = services.GetRequiredService<BoardsService>();
+		}
 
-        [HttpPost("[action]")]
-        public ActionResult<PaginatedListDto<BoardDto>> Get(PaginationParamsDto paginationParamsDto)
-        {
-            return _mapper.Map<PaginatedListDto<BoardDto>>(_context.Boards);
-        }
-    }
+		[HttpGet("[action]")]
+		public async Task<ActionResult<List<ListBoardDto>>> GetBoardsList()
+		{
+			return await _boardsService.GetBoardsListAsync();
+		}
+
+		[HttpGet("[action]")]
+		public async Task<ActionResult<BoardDto>> GetBoard(Guid boardId)
+		{
+			var boardDto = await _boardsService.TryGetBoardAsync(boardId);
+			return boardDto != null ? boardDto : NotFound();
+		}
+	}
 }

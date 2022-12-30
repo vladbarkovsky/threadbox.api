@@ -1,8 +1,7 @@
 ﻿namespace ThreadboxApi.Models
 {
-	public class Image : IEntity
+	public class Image
 	{
-		public Guid Id { get; set; }
 		public string Extension { get; set; } = null!;
 		public byte[] Data { get; set; } = null!;
 	}

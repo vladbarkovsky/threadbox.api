@@ -6,61 +6,6 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/Boards/Get": {
-      "post": {
-        "tags": [
-          "Boards"
-        ],
-        "operationId": "Boards_Get",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "paginationParamsDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PaginationParamsDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/PaginatedListDtoOfBoardDto"
-            }
-          }
-        }
-      }
-    },
-    "/Connection/Check": {
-      "get": {
-        "tags": [
-          "Connection"
-        ],
-        "operationId": "Connection_Check",
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/Authentication/Login": {
       "post": {
         "tags": [
@@ -153,83 +98,179 @@
           }
         }
       }
+    },
+    "/Boards/GetBoardsList": {
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "operationId": "Boards_GetBoardsList",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ListBoardDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Boards/GetBoard": {
+      "get": {
+        "tags": [
+          "Boards"
+        ],
+        "operationId": "Boards_GetBoard",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "boardId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/BoardDto"
+            }
+          }
+        }
+      }
+    },
+    "/Connection/Check": {
+      "get": {
+        "tags": [
+          "Connection"
+        ],
+        "operationId": "Connection_Check",
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Images/GetThreadImage": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "Images_GetThreadImage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "imageId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Images/GetPostImage": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "Images_GetPostImage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "imageId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Threads/GetThreadsByBoard": {
+      "post": {
+        "tags": [
+          "Threads"
+        ],
+        "operationId": "Threads_GetThreadsByBoard",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "boardId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "paginationParamsDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PaginationParamsDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PaginatedListDtoOfThreadVmDto"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
-    "PaginatedListDtoOfBoardDto": {
-      "type": "object",
-      "required": [
-        "pageItems",
-        "pageIndex",
-        "totalPages",
-        "totalCount",
-        "hasPreviousPage",
-        "hasNextPage"
-      ],
-      "properties": {
-        "pageItems": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/BoardDto"
-          }
-        },
-        "pageIndex": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "totalPages": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "totalCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "hasPreviousPage": {
-          "type": "boolean"
-        },
-        "hasNextPage": {
-          "type": "boolean"
-        }
-      }
-    },
-    "BoardDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "name",
-        "description"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        }
-      }
-    },
-    "PaginationParamsDto": {
-      "type": "object",
-      "required": [
-        "pageIndex",
-        "pageSize"
-      ],
-      "properties": {
-        "pageIndex": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "pageSize": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "LoginFormDto": {
       "type": "object",
       "required": [
@@ -265,6 +306,123 @@
         },
         "registrationToken": {
           "type": "string"
+        }
+      }
+    },
+    "ListBoardDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "BoardDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "PaginatedListDtoOfThreadVmDto": {
+      "type": "object",
+      "required": [
+        "pageItems",
+        "pageIndex",
+        "totalPages",
+        "totalCount",
+        "hasPreviousPage",
+        "hasNextPage"
+      ],
+      "properties": {
+        "pageItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ThreadVmDto"
+          }
+        },
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hasPreviousPage": {
+          "type": "boolean"
+        },
+        "hasNextPage": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ThreadVmDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "text",
+        "threadImages"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "title": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "threadImages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PaginationParamsDto": {
+      "type": "object",
+      "required": [
+        "pageIndex",
+        "pageSize"
+      ],
+      "properties": {
+        "pageIndex": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     }

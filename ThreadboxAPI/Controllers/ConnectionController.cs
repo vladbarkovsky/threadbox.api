@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace ThreadboxAPI.Controllers
+namespace ThreadboxApi.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]

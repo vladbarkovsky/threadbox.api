@@ -30,7 +30,7 @@ namespace ThreadboxApi.Services
 				ExpirationTime = AppSettings.JwtAuthenticationExpirationTime,
 				Claims = new List<Claim>
 				{
-					new Claim(ClaimTypeConstants.UserId, userId.ToString())
+					new Claim(Configuration.ClaimTypes.UserId, userId.ToString())
 				}
 			};
 
@@ -49,7 +49,7 @@ namespace ThreadboxApi.Services
 				ExpirationTime = AppSettings.JwtRegistrationExpirationTime,
 				Claims = new List<Claim>
 				{
-					new Claim(ClaimTypeConstants.RegistrationKey, registrationKeyValue.ToString())
+					new Claim(Configuration.ClaimTypes.RegistrationKey, registrationKeyValue.ToString())
 				}
 			};
 
@@ -129,7 +129,7 @@ namespace ThreadboxApi.Services
 				return null;
 			}
 
-			var registrationKeyClaim = claims.FirstOrDefault(x => x.Type == ClaimTypeConstants.RegistrationKey);
+			var registrationKeyClaim = claims.FirstOrDefault(x => x.Type == Configuration.ClaimTypes.RegistrationKey);
 
 			if (registrationKeyClaim == null)
 			{
