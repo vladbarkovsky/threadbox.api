@@ -40,7 +40,7 @@ namespace ThreadboxApi.Controllers
 		[HttpGet("[action]")]
 		public async Task<ActionResult> GetPostImages(Guid postId)
 		{
-			var archive = await _imagesService.TryGetThreadImagesAsync(postId);
+			var archive = await _imagesService.TryGetPostImagesAsync(postId);
 			return archive != null ? File(archive, Application.Zip, $"Post_{postId}_images") : NotFound();
 		}
 	}

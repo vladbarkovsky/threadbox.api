@@ -23,6 +23,8 @@ namespace ThreadboxApi.Services
 			var threads = await _dbContext.Threads
 				.Where(x => x.BoardId == boardId)
 				.Include(x => x.ThreadImages)
+				.Include(x => x.Posts)
+				.ThenInclude(x => x.PostImages)
 				.ToListAsync();
 
 			return _mapper.Map<List<ListThreadDto>>(threads).ToPaginatedListDto(paginationParamsDto);

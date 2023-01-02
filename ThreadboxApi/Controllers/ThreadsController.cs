@@ -16,7 +16,7 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpPost("[action]")]
-		public async Task<ActionResult<PaginatedListDto<ListThreadDto>>> GetThreadsByBoardAsync(Guid boardId, PaginationParamsDto paginationParamsDto)
+		public async Task<ActionResult<PaginatedListDto<ListThreadDto>>> GetThreadsByBoard(Guid boardId, PaginationParamsDto paginationParamsDto)
 		{
 			return await _threadsService.GetThreadsByBoardAsync(boardId, paginationParamsDto);
 		}

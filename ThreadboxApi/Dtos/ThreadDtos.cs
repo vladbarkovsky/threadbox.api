@@ -11,6 +11,7 @@ namespace ThreadboxApi.Dtos
 		public string Title { get; set; } = null!;
 		public string Text { get; set; } = null!;
 		public List<string> ThreadImageUrls { get; set; } = null!;
+		public List<ListPostDto> Posts { get; set; } = null!;
 
 		public void Mapping(Profile profile)
 		{
@@ -23,7 +24,6 @@ namespace ThreadboxApi.Dtos
 
 	public class ThreadDto
 	{
-		public Guid Id { get; set; }
 		public string Title { get; set; } = null!;
 		public string Text { get; set; } = null!;
 		public List<IFormFile> ThreadImages { get; set; } = null!;

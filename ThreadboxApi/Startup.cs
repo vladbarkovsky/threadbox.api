@@ -49,9 +49,8 @@ namespace ThreadboxApi
 
 			/// IMPORTANT: CORS must be configured before
 			/// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
-			/// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>
-			/// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>),
-			/// otherwise it will cause HTTP responses with status 0
+			/// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
+			/// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>
 			CorsStartup.Configure(app);
 
 			app.MapControllers();

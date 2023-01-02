@@ -149,18 +149,127 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/BoardDto"
+              "$ref": "#/definitions/ComponentBoardDto"
             }
           }
         }
       }
     },
-    "/Connection/Check": {
+    "/Boards/CreateBoard": {
+      "post": {
+        "tags": [
+          "Boards"
+        ],
+        "operationId": "Boards_CreateBoard",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "createBoardDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BoardDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ListBoardDto"
+            }
+          }
+        }
+      }
+    },
+    "/Boards/EditBoard": {
+      "put": {
+        "tags": [
+          "Boards"
+        ],
+        "operationId": "Boards_EditBoard",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "boardId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "editBoardDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BoardDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ListBoardDto"
+            }
+          }
+        }
+      }
+    },
+    "/Boards/DeleteBoard": {
+      "delete": {
+        "tags": [
+          "Boards"
+        ],
+        "operationId": "Boards_DeleteBoard",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "boardId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/Test/Check": {
       "get": {
         "tags": [
-          "Connection"
+          "Test"
         ],
-        "operationId": "Connection_Check",
+        "operationId": "Test_Check",
         "responses": {
           "200": {
             "x-nullable": true,
@@ -276,6 +385,51 @@
         }
       }
     },
+    "/Posts/CreatePost": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "Posts_CreatePost",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "threadId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "postDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PostDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ListPostDto"
+            }
+          }
+        }
+      }
+    },
     "/Threads/GetThreadsByBoard": {
       "post": {
         "tags": [
@@ -377,10 +531,24 @@
         }
       }
     },
+    "ComponentBoardDto": {
+      "type": "object",
+      "required": [
+        "title",
+        "description"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
     "BoardDto": {
       "type": "object",
       "required": [
-        "id",
         "title",
         "description"
       ],
@@ -394,6 +562,52 @@
         },
         "description": {
           "type": "string"
+        }
+      }
+    },
+    "ListPostDto": {
+      "type": "object",
+      "required": [
+        "id",
+        "text",
+        "threadId",
+        "postImageUrls"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "guid"
+        },
+        "text": {
+          "type": "string"
+        },
+        "threadId": {
+          "type": "string",
+          "format": "guid"
+        },
+        "postImageUrls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PostDto": {
+      "type": "object",
+      "required": [
+        "text",
+        "postImages"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "postImages": {
+          "type": "array",
+          "items": {
+            "type": "file"
+          }
         }
       }
     },
@@ -440,7 +654,8 @@
         "id",
         "title",
         "text",
-        "threadImageUrls"
+        "threadImageUrls",
+        "posts"
       ],
       "properties": {
         "id": {
@@ -457,6 +672,12 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ListPostDto"
           }
         }
       }

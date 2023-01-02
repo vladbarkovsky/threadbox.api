@@ -29,6 +29,8 @@ namespace ThreadboxApi.Services
 			await SeedBoardsAsync();
 			await SeedThreadsAsync();
 			await SeedThreadImagesAsync();
+			await SeedPostsAsync();
+			await SeedPostImagesAsync();
 		}
 
 		private async Task SeedUsersAsync()
@@ -156,6 +158,98 @@ namespace ThreadboxApi.Services
 
 			_dbContext.Threads.UpdateRange(threads);
 			await _dbContext.ThreadImages.AddRangeAsync(threadImages);
+			await _dbContext.SaveChangesAsync();
+		}
+
+		private async Task SeedPostsAsync()
+		{
+			if (await _dbContext.Posts.AnyAsync())
+			{
+				return;
+			}
+
+			var threads = await _dbContext.Threads.ToListAsync();
+
+			var posts = new List<Post>
+			{
+				new Post
+				{
+					Text = "Post 1 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 2 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 3 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 4 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 5 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 6 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 7 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 8 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 9 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 10 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				},
+				new Post
+				{
+					Text = "Post 11 Attempt to leap between furniture but woefully miscalibrate and bellyflop onto the floor; what's your problem? i meant to do that now i shall wash myself intently shove bum in owner's face like camera lens get away from me stupid dog, mouse so i is playing on your console hooman. Kitty scratches couch bad kitty fall over dead (not really but gets sypathy) cats are cute."
+				}
+			};
+
+			threads[0].Posts = posts.GetRange(0, 1);
+			threads[1].Posts = posts.GetRange(1, 2);
+			threads[2].Posts = posts.GetRange(3, 3);
+			threads[3].Posts = posts.GetRange(6, 5);
+
+			_dbContext.Threads.UpdateRange(threads);
+			await _dbContext.Posts.AddRangeAsync(posts);
+			await _dbContext.SaveChangesAsync();
+		}
+
+		private async Task SeedPostImagesAsync()
+		{
+			if (await _dbContext.PostImages.AnyAsync())
+			{
+				return;
+			}
+
+			var posts = await _dbContext.Posts.ToListAsync();
+			var images = await _imagesService.GetImagesForSeeding(11, 22);
+			var postImages = _mapper.Map<List<PostImage>>(images);
+
+			posts[0].PostImages = postImages.GetRange(0, 1);
+			posts[1].PostImages = postImages.GetRange(1, 2);
+			posts[2].PostImages = postImages.GetRange(3, 3);
+			posts[3].PostImages = postImages.GetRange(6, 5);
+			posts[4].PostImages = postImages.GetRange(11, 1);
+			posts[5].PostImages = postImages.GetRange(12, 2);
+			posts[6].PostImages = postImages.GetRange(14, 3);
+			posts[7].PostImages = postImages.GetRange(17, 5);
+
+			_dbContext.Posts.UpdateRange(posts);
+			await _dbContext.PostImages.AddRangeAsync(postImages);
 			await _dbContext.SaveChangesAsync();
 		}
 	}

@@ -4,15 +4,15 @@ using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Dtos
 {
-	public class BoardDto : IMappedFrom<Board>
+	public class BoardDto
 	{
-		public Guid Id { get; set; }
+		public Guid? Id { get; set; }
 		public string Title { get; set; } = null!;
 		public string Description { get; set; } = null!;
 
-		public class BoardDtoValidator : AbstractValidator<BoardDto>
+		public class CreateBoardDtoValidator : AbstractValidator<BoardDto>
 		{
-			public BoardDtoValidator()
+			public CreateBoardDtoValidator()
 			{
 				RuleFor(x => x.Title).NotEmpty();
 			}
@@ -23,5 +23,11 @@ namespace ThreadboxApi.Dtos
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; } = null!;
+	}
+
+	public class ComponentBoardDto : IMappedFrom<Board>
+	{
+		public string Title { get; set; } = null!;
+		public string Description { get; set; } = null!;
 	}
 }
