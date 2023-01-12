@@ -264,23 +264,6 @@
         }
       }
     },
-    "/Test/Check": {
-      "get": {
-        "tags": [
-          "Test"
-        ],
-        "operationId": "Test_Check",
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
     "/Images/GetThreadImage": {
       "get": {
         "tags": [
@@ -425,6 +408,23 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/ListPostDto"
+            }
+          }
+        }
+      }
+    },
+    "/Test/Check": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "operationId": "Test_Check",
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
             }
           }
         }
