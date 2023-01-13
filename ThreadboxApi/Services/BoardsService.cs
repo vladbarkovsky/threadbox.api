@@ -24,10 +24,10 @@ namespace ThreadboxApi.Services
 			return _mapper.Map<List<ListBoardDto>>(boards);
 		}
 
-		public async Task<ComponentBoardDto> TryGetBoardAsync(Guid boardId)
+		public async Task<BoardDto> TryGetBoardAsync(Guid boardId)
 		{
 			var board = await _dbContext.Boards.FindAsync(boardId);
-			return _mapper.Map<ComponentBoardDto>(board);
+			return _mapper.Map<BoardDto>(board);
 		}
 
 		public async Task<ListBoardDto> CreateBoardAsync(BoardDto boardDto)
@@ -39,10 +39,9 @@ namespace ThreadboxApi.Services
 			return listBoardDto;
 		}
 
-		public async Task<ListBoardDto> EditBoardAsync(Guid boardId, BoardDto boardDto)
+		public async Task<ListBoardDto> EditBoardAsync(BoardDto boardDto)
 		{
 			var board = _mapper.Map<Board>(boardDto);
-			board.Id = boardId;
 			var editedBoard = _dbContext.Boards.Update(board);
 			var listBoardDto = _mapper.Map<ListBoardDto>(editedBoard.Entity);
 			await _dbContext.SaveChangesAsync();

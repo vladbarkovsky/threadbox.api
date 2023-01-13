@@ -4,7 +4,7 @@ using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Dtos
 {
-	public class BoardDto
+	public class BoardDto : IMappedFrom<Board>
 	{
 		public Guid? Id { get; set; }
 		public string Title { get; set; } = null!;
@@ -23,11 +23,5 @@ namespace ThreadboxApi.Dtos
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; } = null!;
-	}
-
-	public class ComponentBoardDto : IMappedFrom<Board>
-	{
-		public string Title { get; set; } = null!;
-		public string Description { get; set; } = null!;
 	}
 }

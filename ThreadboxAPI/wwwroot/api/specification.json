@@ -149,7 +149,7 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/ComponentBoardDto"
+              "$ref": "#/definitions/BoardDto"
             }
           }
         }
@@ -210,13 +210,6 @@
           "text/json"
         ],
         "parameters": [
-          {
-            "type": "string",
-            "name": "boardId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          },
           {
             "name": "editBoardDto",
             "in": "body",
@@ -474,6 +467,51 @@
           }
         }
       }
+    },
+    "/Threads/CreateThread": {
+      "post": {
+        "tags": [
+          "Threads"
+        ],
+        "operationId": "Threads_CreateThread",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "type": "string",
+            "name": "boardId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          },
+          {
+            "name": "threadDto",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ThreadDto"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ListThreadDto"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -527,21 +565,6 @@
           "format": "guid"
         },
         "title": {
-          "type": "string"
-        }
-      }
-    },
-    "ComponentBoardDto": {
-      "type": "object",
-      "required": [
-        "title",
-        "description"
-      ],
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "description": {
           "type": "string"
         }
       }
@@ -696,6 +719,43 @@
         "pageSize": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "ThreadDto": {
+      "type": "object",
+      "required": [
+        "title",
+        "text",
+        "threadImages"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "threadImages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ImageDto"
+          }
+        }
+      }
+    },
+    "ImageDto": {
+      "type": "object",
+      "required": [
+        "extension",
+        "base64"
+      ],
+      "properties": {
+        "extension": {
+          "type": "string"
+        },
+        "base64": {
+          "type": "string"
         }
       }
     }

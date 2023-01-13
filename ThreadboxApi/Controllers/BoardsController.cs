@@ -22,7 +22,7 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpGet("[action]")]
-		public async Task<ActionResult<ComponentBoardDto>> GetBoard(Guid boardId)
+		public async Task<ActionResult<BoardDto>> GetBoard(Guid boardId)
 		{
 			var boardDto = await _boardsService.TryGetBoardAsync(boardId);
 			return boardDto != null ? boardDto : NotFound();
@@ -35,9 +35,9 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpPut("[action]")]
-		public async Task<ActionResult<ListBoardDto>> EditBoard(Guid boardId, BoardDto editBoardDto)
+		public async Task<ActionResult<ListBoardDto>> EditBoard(BoardDto editBoardDto)
 		{
-			return await _boardsService.EditBoardAsync(boardId, editBoardDto);
+			return await _boardsService.EditBoardAsync(editBoardDto);
 		}
 
 		[HttpDelete("[action]")]

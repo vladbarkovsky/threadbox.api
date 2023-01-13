@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Buffers.Text;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Models;
 using ThreadboxApi.Tools;
@@ -26,6 +27,6 @@ namespace ThreadboxApi.Dtos
 	{
 		public string Title { get; set; } = null!;
 		public string Text { get; set; } = null!;
-		public List<IFormFile> ThreadImages { get; set; } = null!;
+		public List<ImageDto> ThreadImages { get; set; } = null!;
 	}
 }

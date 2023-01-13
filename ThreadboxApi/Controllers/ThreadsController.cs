@@ -20,5 +20,11 @@ namespace ThreadboxApi.Controllers
 		{
 			return await _threadsService.GetThreadsByBoardAsync(boardId, paginationParamsDto);
 		}
+
+		[HttpPost("[action]")]
+		public async Task<ActionResult<ListThreadDto>> CreateThread(Guid boardId, ThreadDto threadDto)
+		{
+			return await _threadsService.CreateThreadAsync(boardId, threadDto);
+		}
 	}
 }

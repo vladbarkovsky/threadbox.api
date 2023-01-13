@@ -4,6 +4,8 @@ using ThreadboxApi.Dtos;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Tools;
+using ThreadboxApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ThreadboxApi.Services
 {
@@ -28,6 +30,34 @@ namespace ThreadboxApi.Services
 				.ToListAsync();
 
 			return _mapper.Map<List<ListThreadDto>>(threads).ToPaginatedListDto(paginationParamsDto);
+		}
+
+		public async Task<ListThreadDto> CreateThreadAsync(Guid boardId, ThreadDto threadDto)
+		{
+			var thread = _mapper.Map<ThreadModel>(threadDto);
+			thread.BoardId = boardId;
+
+			foreach (var image in thread.ThreadImages)
+			{
+				image.Thread = thread;
+			}
+
+			await _dbContext.ThreadImages.AddRangeAsync(thread.ThreadImages);
+
+			var board = await _dbContext.Boards.FindAsync(boardId);
+
+			if (board == null)
+			{
+				throw new ArgumentException("Can't find board.", nameof(boardId));
+			}
+
+			board.Threads.Add(thread);
+			_dbContext.Update(board);
+
+			var createdThread = await _dbContext.Threads.AddAsync(thread);
+			var listThreadDto = _mapper.Map<ListThreadDto>(createdThread.Entity);
+			await _dbContext.SaveChangesAsync();
+			return listThreadDto;
 		}
 	}
 }
