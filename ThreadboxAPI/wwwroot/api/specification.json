@@ -412,12 +412,17 @@
           "Test"
         ],
         "operationId": "Test_Check",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
         "responses": {
           "200": {
-            "x-nullable": true,
+            "x-nullable": false,
             "description": "",
             "schema": {
-              "type": "file"
+              "type": "string"
             }
           }
         }
