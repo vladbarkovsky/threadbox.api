@@ -2,6 +2,8 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Serilog;
 using System.Reflection;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
@@ -13,11 +15,24 @@ namespace ThreadboxApi
 {
 	public class Startup
 	{
-		public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+		private readonly IConfiguration _configuration;
+		private readonly IWebHostEnvironment _webHostEnvironment;
+
+		public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+		{
+			_configuration = configuration;
+			_webHostEnvironment = webHostEnvironment;
+		}
+
+		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<ThreadboxDbContext>(options =>
 			{
-				options.UseNpgsql(configuration.GetConnectionString(AppSettings.DbConnectionString));
+				options.UseNpgsql(_configuration.GetConnectionString(AppSettings.DbConnectionString));
+
+				// Throw exceptions in case of performance issues with single queries
+				// See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
+				options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
 			});
 
 			services.AddIdentity<User, IdentityRole<Guid>>()
@@ -27,9 +42,9 @@ namespace ThreadboxApi
 
 			services.AddControllers();
 			SwaggerStartup.ConfigureServices(services);
-			CorsStartup.ConfigureServices(services, configuration);
+			CorsStartup.ConfigureServices(services, _configuration);
 
-			AuthenticationStartup.ConfigureServices(services, configuration);
+			AuthenticationStartup.ConfigureServices(services, _configuration);
 			services.AddAuthorization();
 
 			services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -38,26 +53,28 @@ namespace ThreadboxApi
 			services.AddFluentValidationAutoValidation();
 		}
 
-		public static async Task ConfigureAsync(WebApplication app)
+		public void Configure(IApplicationBuilder app)
 		{
-			using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
-			{
-				await scope.ServiceProvider.GetRequiredService<DbSeedingService>().SeedDbAsync();
-			}
-
-			SwaggerStartup.Configure(app);
+			SwaggerStartup.Configure(app, _webHostEnvironment);
 
 			/// IMPORTANT: CORS must be configured before
 			/// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
+			/// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
 			/// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
-			/// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>
+
 			CorsStartup.Configure(app);
 
-			app.MapControllers();
-			app.UseHttpsRedirection();
+			app.UseRouting();
 
 			app.UseAuthentication();
 			app.UseAuthorization();
+
+			app.UseEndpoints(endpoints =>
+			{
+				endpoints.MapControllers();
+			});
+
+			app.UseHttpsRedirection();
 		}
 	}
 }

@@ -32,29 +32,10 @@ namespace ThreadboxApi.Services
 			return _mapper.Map<List<ListThreadDto>>(threads).ToPaginatedListDto(paginationParamsDto);
 		}
 
-		public async Task<ListThreadDto> CreateThreadAsync(Guid boardId, ThreadDto threadDto)
+		public async Task<ListThreadDto> CreateThreadAsync(ThreadDto threadDto)
 		{
 			var thread = _mapper.Map<ThreadModel>(threadDto);
-			thread.BoardId = boardId;
-
-			foreach (var image in thread.ThreadImages)
-			{
-				image.Thread = thread;
-			}
-
-			await _dbContext.ThreadImages.AddRangeAsync(thread.ThreadImages);
-
-			var board = await _dbContext.Boards.FindAsync(boardId);
-
-			if (board == null)
-			{
-				throw new ArgumentException("Can't find board.", nameof(boardId));
-			}
-
-			board.Threads.Add(thread);
-			_dbContext.Update(board);
-
-			var createdThread = await _dbContext.Threads.AddAsync(thread);
+			var createdThread = _dbContext.Threads.Add(thread);
 			var listThreadDto = _mapper.Map<ListThreadDto>(createdThread.Entity);
 			await _dbContext.SaveChangesAsync();
 			return listThreadDto;

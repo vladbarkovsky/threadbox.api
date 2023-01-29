@@ -16,17 +16,21 @@ namespace ThreadboxApi.Dtos
 
 		public void Mapping(Profile profile)
 		{
+			profile.CreateMap<IFormFile, ThreadImage>()
+				.IncludeBase<IFormFile, IThreadboxFile>();
+
 			profile.CreateMap<ThreadModel, ListThreadDto>()
 				.ForMember(
 					d => d.ThreadImageUrls,
-					o => o.MapFrom(s => s.ThreadImages.Select(x => $"{Constants.DevelopmentBaseUrl}/Images/GetThreadImage?imageId={x.Id}")));
+					o => o.MapFrom(s => s.ThreadImages.Select(x => $"/Images/GetThreadImage?imageId={x.Id}")));
 		}
 	}
 
 	public class ThreadDto
 	{
+		public Guid BoardId { get; set; }
 		public string Title { get; set; } = null!;
 		public string Text { get; set; } = null!;
-		public List<ImageDto> ThreadImages { get; set; } = null!;
+		public List<IFormFile> ThreadImages { get; set; } = null!;
 	}
 }

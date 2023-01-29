@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ThreadboxApi.Configuration;
 using ThreadboxApi.Models;
 using ThreadboxApi.Tools;
 
@@ -17,7 +16,7 @@ namespace ThreadboxApi.Dtos
 			profile.CreateMap<Post, ListPostDto>()
 				.ForMember(
 					d => d.PostImageUrls,
-					o => o.MapFrom(s => s.PostImages.Select(x => $"{Constants.DevelopmentBaseUrl}/Images/GetPostImage?imageId={x.Id}")));
+					o => o.MapFrom(s => s.PostImages.Select(x => $"/Images/GetPostImage?imageId={x.Id}")));
 		}
 	}
 

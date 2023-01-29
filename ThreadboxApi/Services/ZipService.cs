@@ -1,15 +1,13 @@
-﻿using AutoMapper;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Models;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Services
 {
 	public class ZipService : IScopedService
 	{
 		// Source: https://swimburger.net/blog/dotnet/create-zip-files-on-http-request-without-intermediate-files-using-aspdotnet-mvc-framework
-		public async Task<byte[]> ArchiveAsync(IEnumerable<ThreadboxFile> files)
+		public async Task<byte[]> ArchiveAsync(IEnumerable<IThreadboxFile> files)
 		{
 			var archiveStream = new MemoryStream();
 			var copyOperationsAsync = new List<Task>();

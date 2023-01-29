@@ -480,9 +480,7 @@
         ],
         "operationId": "Threads_CreateThread",
         "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
+          "multipart/form-data"
         ],
         "produces": [
           "text/plain",
@@ -492,19 +490,32 @@
         "parameters": [
           {
             "type": "string",
-            "name": "boardId",
-            "in": "query",
+            "name": "BoardId",
+            "in": "formData",
             "format": "guid",
             "x-nullable": false
           },
           {
-            "name": "threadDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ThreadDto"
-            },
-            "x-nullable": false
+            "type": "string",
+            "name": "Title",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "string",
+            "name": "Text",
+            "in": "formData",
+            "x-nullable": true
+          },
+          {
+            "type": "file",
+            "name": "ThreadImages",
+            "in": "formData",
+            "collectionFormat": "multi",
+            "x-nullable": true,
+            "items": {
+              "type": "file"
+            }
           }
         ],
         "responses": {
@@ -724,43 +735,6 @@
         "pageSize": {
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "ThreadDto": {
-      "type": "object",
-      "required": [
-        "title",
-        "text",
-        "threadImages"
-      ],
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "text": {
-          "type": "string"
-        },
-        "threadImages": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ImageDto"
-          }
-        }
-      }
-    },
-    "ImageDto": {
-      "type": "object",
-      "required": [
-        "extension",
-        "base64"
-      ],
-      "properties": {
-        "extension": {
-          "type": "string"
-        },
-        "base64": {
-          "type": "string"
         }
       }
     }

@@ -1,6 +1,4 @@
-﻿using ThreadboxApi.Configuration;
-
-namespace ThreadboxApi.Configuration.Startup
+﻿namespace ThreadboxApi.Configuration.Startup
 {
 	public class CorsStartup
 	{
@@ -8,11 +6,13 @@ namespace ThreadboxApi.Configuration.Startup
 		{
 			services.AddCors(options =>
 			{
-				options.AddPolicy(configuration[AppSettings.CorsPolicy]!, builder =>
+				options.AddDefaultPolicy(builder =>
 				{
 					builder
 						.WithOrigins(configuration[AppSettings.CorsOrigins]!.Split(", "))
-						// TODO: CORS don't restrict methods that are no t allowed
+						// NOTE: CORS allows simple methods (GET, HEAD, POST) regardless of
+						// Access-Control-Allow-Methods header content
+						// Source: https://stackoverflow.com/a/44385327
 						.WithMethods(configuration[AppSettings.CorsMethods]!.Split(", "))
 						.WithHeaders(configuration[AppSettings.CorsHeaders]!.Split(", "))
 						.Build();
@@ -20,9 +20,9 @@ namespace ThreadboxApi.Configuration.Startup
 			});
 		}
 
-		public static void Configure(WebApplication app)
+		public static void Configure(IApplicationBuilder app)
 		{
-			app.UseCors(app.Configuration[AppSettings.CorsPolicy]!);
+			app.UseCors();
 		}
 	}
 }

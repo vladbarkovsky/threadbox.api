@@ -10,9 +10,9 @@
 			});
 		}
 
-		public static void Configure(WebApplication app)
+		public static void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
 		{
-			if (app.Environment.IsDevelopment())
+			if (webHostEnvironment.IsDevelopment())
 			{
 				app.UseOpenApi();
 				app.UseSwaggerUi3();

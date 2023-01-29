@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using NSwag.Annotations;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Services;
 
@@ -22,9 +24,9 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpPost("[action]")]
-		public async Task<ActionResult<ListThreadDto>> CreateThread(Guid boardId, ThreadDto threadDto)
+		public async Task<ActionResult<ListThreadDto>> CreateThread([FromForm] ThreadDto threadDto)
 		{
-			return await _threadsService.CreateThreadAsync(boardId, threadDto);
+			return await _threadsService.CreateThreadAsync(threadDto);
 		}
 	}
 }
