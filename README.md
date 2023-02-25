@@ -21,11 +21,10 @@ If you want to learn more about creating good readme files then refer the follow
 
 # Migrations
 
-dotnet ef database update 0
-dotnet ef migrations remove
-
-```bash
-dotnet ef migrations add TemplateMigration --project ThreadboxAPI
-dotnet ef database update --project ThreadboxAPI
-dotnet ef migrations remove --project ThreadboxAPI
+```
+dotnet ef database update 0 -p ThreadboxApi
+dotnet ef migrations add TemplateMigration -p ThreadboxApi
+dotnet ef database update -p ThreadboxApi
+dotnet ef database update TemplateMigration -p ThreadboxApi
+dotnet ef migrations remove -p ThreadboxApi
 ```
