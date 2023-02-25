@@ -2,6 +2,7 @@
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Models;
+using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Services
 {
@@ -14,7 +15,7 @@ namespace ThreadboxApi.Services
 			_dbContext = services.GetRequiredService<ThreadboxDbContext>();
 		}
 
-		public async Task<ThreadboxFile?> TryGetFileAsync<TEntity>(Guid fileEntityId)
+		public async Task<ThreadboxFile> GetFileAsync<TEntity>(Guid fileEntityId)
 			where TEntity : FileEntity<TEntity>
 		{
 			var file = await _dbContext.Set<TEntity>()
@@ -23,7 +24,8 @@ namespace ThreadboxApi.Services
 				.Select(x => x.File)
 				.FirstOrDefaultAsync();
 
-			return file;
+			HttpResponseExceptions.ThrowNotFoundIfNull(file);
+			return file!;
 		}
 	}
 }

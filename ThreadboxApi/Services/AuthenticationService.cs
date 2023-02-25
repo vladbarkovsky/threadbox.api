@@ -1,25 +1,70 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Dtos;
 using ThreadboxApi.Models;
+using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Services
 {
 	public class AuthenticationService : IScopedService
 	{
-		private readonly JwtService _jwtService;
 		private readonly ThreadboxDbContext _dbContext;
+		private readonly IMapper _mapper;
 		private readonly IConfiguration _configuration;
+		private readonly UserManager<User> _userManager;
+		private readonly JwtService _jwtService;
 
 		public AuthenticationService(IServiceProvider services)
 		{
-			_jwtService = services.GetRequiredService<JwtService>();
 			_dbContext = services.GetRequiredService<ThreadboxDbContext>();
+			_mapper = services.GetRequiredService<IMapper>();
 			_configuration = services.GetRequiredService<IConfiguration>();
+			_userManager = services.GetRequiredService<UserManager<User>>();
+			_jwtService = services.GetRequiredService<JwtService>();
+		}
+
+		public async Task<string> Login(LoginFormDto loginFormDto)
+		{
+			var user = await _userManager.FindByNameAsync(loginFormDto.UserName);
+
+			if (user == null)
+			{
+				throw new HttpResponseException("Can't found user with such name.");
+			}
+
+			var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginFormDto.Password);
+
+			if (!isPasswordCorrect)
+			{
+				throw new HttpResponseException("Password is incorrect.");
+			}
+
+			return CreateAuthenticationToken(user.Id);
+		}
+
+		public async Task Register(RegistrationFormDto registrationFormDto)
+		{
+			var isTokenAccepted = await UseRegistrationTokenAsync(registrationFormDto.RegistrationToken);
+
+			if (!isTokenAccepted)
+			{
+				throw new HttpResponseException("Registration token was not accepted.");
+			}
+
+			var user = _mapper.Map<User>(registrationFormDto);
+			var identityResult = await _userManager.CreateAsync(user, registrationFormDto.Password);
+
+			if (!identityResult.Succeeded)
+			{
+				throw new HttpResponseException("Something went wrong during user creation.");
+			}
 		}
 
 		public string CreateAuthenticationToken(Guid userId)
@@ -67,7 +112,7 @@ namespace ThreadboxApi.Services
 			return token;
 		}
 
-		public async Task<bool> UseRegistrationTokenAsync(string token)
+		private async Task<bool> UseRegistrationTokenAsync(string token)
 		{
 			string? tokenRegistrationKey = TryGetRegistrationKey(token);
 

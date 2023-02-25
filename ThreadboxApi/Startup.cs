@@ -3,13 +3,11 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Serilog;
 using System.Reflection;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Configuraton.Startup;
 using ThreadboxApi.Models;
-using ThreadboxApi.Services;
 
 namespace ThreadboxApi
 {
@@ -43,6 +41,7 @@ namespace ThreadboxApi
 			services.AddControllers();
 			SwaggerStartup.ConfigureServices(services);
 			CorsStartup.ConfigureServices(services, _configuration);
+			ExceptionHandlingStartup.ConfigureServices(services);
 
 			AuthenticationStartup.ConfigureServices(services, _configuration);
 			services.AddAuthorization();
@@ -63,6 +62,7 @@ namespace ThreadboxApi
 			/// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
 
 			CorsStartup.Configure(app);
+			ExceptionHandlingStartup.Configure(app);
 
 			app.UseRouting();
 

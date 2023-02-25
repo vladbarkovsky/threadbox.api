@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Services
 {
@@ -15,7 +16,7 @@ namespace ThreadboxApi.Services
 			_zipService = services.GetRequiredService<ZipService>();
 		}
 
-		public async Task<byte[]?> TryGetThreadImagesAsync(Guid threadId)
+		public async Task<byte[]> GetThreadImagesAsync(Guid threadId)
 		{
 			var images = await _dbContext.ThreadImages
 				.AsNoTracking()
@@ -25,13 +26,13 @@ namespace ThreadboxApi.Services
 
 			if (!images.Any())
 			{
-				return null;
+				throw HttpResponseExceptions.NotFound;
 			}
 
 			return await _zipService.ArchiveAsync(images);
 		}
 
-		public async Task<byte[]?> TryGetPostImagesAsync(Guid postId)
+		public async Task<byte[]> GetPostImagesAsync(Guid postId)
 		{
 			var images = await _dbContext.PostImages
 				.AsNoTracking()
@@ -41,7 +42,7 @@ namespace ThreadboxApi.Services
 
 			if (!images.Any())
 			{
-				return null;
+				throw HttpResponseExceptions.NotFound;
 			}
 
 			return await _zipService.ArchiveAsync(images);
