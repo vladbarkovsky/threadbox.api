@@ -19,7 +19,10 @@ namespace ThreadboxApi.Configuration
 		public ThreadboxDbContext(DbContextOptions<ThreadboxDbContext> options)
 			: base(options)
 		{
-			Database.EnsureCreated();
+			if (!Database.GetAppliedMigrations().Any())
+			{
+				Database.Migrate();
+			}
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

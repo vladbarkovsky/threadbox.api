@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using NSwag.Annotations;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Services;
+using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Controllers
 {
@@ -18,7 +17,7 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpPost("[action]")]
-		public async Task<ActionResult<PaginatedListDto<ListThreadDto>>> GetThreadsByBoard(Guid boardId, PaginationParamsDto paginationParamsDto)
+		public async Task<ActionResult<PaginatedResult<ListThreadDto>>> GetThreadsByBoard(Guid boardId, PaginationParamsDto paginationParamsDto)
 		{
 			return await _threadsService.GetThreadsByBoardAsync(boardId, paginationParamsDto);
 		}

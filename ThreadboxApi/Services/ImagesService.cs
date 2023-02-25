@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
-using ThreadboxApi.Models;
 
 namespace ThreadboxApi.Services
 {
@@ -10,19 +8,19 @@ namespace ThreadboxApi.Services
 	{
 		private readonly ThreadboxDbContext _dbContext;
 		private readonly ZipService _zipService;
-		private readonly IMapper _mapper;
 
 		public ImagesService(IServiceProvider services)
 		{
 			_dbContext = services.GetRequiredService<ThreadboxDbContext>();
 			_zipService = services.GetRequiredService<ZipService>();
-			_mapper = services.GetRequiredService<IMapper>();
 		}
 
 		public async Task<byte[]?> TryGetThreadImagesAsync(Guid threadId)
 		{
 			var images = await _dbContext.ThreadImages
+				.AsNoTracking()
 				.Where(x => x.ThreadId == threadId)
+				.Select(x => x.File)
 				.ToListAsync();
 
 			if (!images.Any())
@@ -30,14 +28,15 @@ namespace ThreadboxApi.Services
 				return null;
 			}
 
-			var files = _mapper.Map<List<ThreadboxFile>>(images);
-			return await _zipService.ArchiveAsync(files);
+			return await _zipService.ArchiveAsync(images);
 		}
 
 		public async Task<byte[]?> TryGetPostImagesAsync(Guid postId)
 		{
 			var images = await _dbContext.PostImages
+				.AsNoTracking()
 				.Where(x => x.PostId == postId)
+				.Select(x => x.File)
 				.ToListAsync();
 
 			if (!images.Any())
@@ -45,8 +44,7 @@ namespace ThreadboxApi.Services
 				return null;
 			}
 
-			var files = _mapper.Map<List<ThreadboxFile>>(images);
-			return await _zipService.ArchiveAsync(files);
+			return await _zipService.ArchiveAsync(images);
 		}
 	}
 }

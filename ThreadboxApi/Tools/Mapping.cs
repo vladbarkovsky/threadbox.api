@@ -1,13 +1,24 @@
 ﻿using AutoMapper;
 using System.Reflection;
+using ThreadboxApi.Models;
 
 namespace ThreadboxApi.Tools
 {
-	public interface IMappedFrom<T>
+	/// <summary>
+	/// Creates simple mapping from <typeparamref name="TSource"/> without any configuration
+	/// </summary>
+	/// <typeparam name="TSource"></typeparam>
+	public interface IMappedFrom<TSource>
 	{
-		void Mapping(Profile profile) => profile.CreateMap(typeof(T), GetType());
+		void Mapping(Profile profile)
+		{
+			profile.CreateMap(typeof(TSource), GetType());
+		}
 	}
 
+	/// <summary>
+	/// Allows to configure mappings inside implementing class
+	/// </summary>
 	public interface IMapped
 	{
 		void Mapping(Profile profile);
@@ -19,38 +30,43 @@ namespace ThreadboxApi.Tools
 		{
 			var assembly = Assembly.GetExecutingAssembly();
 
-			ApplyMappingsFromAssembly(assembly);
+			ApplyAutomaticMappingsFromAssembly(assembly);
 			ApplyManualMappingsFromAssembly(assembly);
 		}
 
-		private void ApplyMappingsFromAssembly(Assembly assembly)
+		private void ApplyAutomaticMappingsFromAssembly(Assembly assembly)
 		{
 			var types = assembly
 				.GetExportedTypes()
-				.Where(x => x
-					.GetInterfaces()
-					.Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IMappedFrom<>)))
+				.Where(x => x.GetInterfaces().Any(x => IsIMappedFrom(x)))
 				.ToList();
 
 			foreach (var type in types)
 			{
 				var instance = Activator.CreateInstance(type);
 
-				var methodInfo = type.GetMethod("Mapping") ?? type
-					.GetInterface("IMappedFrom`1")!
-					.GetMethod("Mapping");
+				var methodInfos = type
+					.GetInterfaces()
+					.Where(x => IsIMappedFrom(x))
+					.Select(x => x.GetMethod("Mapping"));
 
-				methodInfo!.Invoke(instance, new object[] { this });
+				foreach (var methodInfo in methodInfos)
+				{
+					methodInfo!.Invoke(instance, new object[] { this });
+				}
 			}
+		}
+
+		private static bool IsIMappedFrom(Type type)
+		{
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IMappedFrom<>);
 		}
 
 		private void ApplyManualMappingsFromAssembly(Assembly assembly)
 		{
 			var types = assembly
 				.GetExportedTypes()
-				.Where(x => x
-					.GetInterfaces()
-					.Contains(typeof(IMapped)))
+				.Where(x => x.GetInterfaces().Contains(typeof(IMapped)))
 				.ToList();
 
 			foreach (var type in types)
@@ -59,6 +75,15 @@ namespace ThreadboxApi.Tools
 				var methodInfo = type.GetMethod("Mapping");
 				methodInfo!.Invoke(instance, new object[] { this });
 			}
+		}
+	}
+
+	public static class MappingExtensions
+	{
+		public static IMappingExpression<IFormFile, TDestination> MapFromFormFile<TDestination>(this IMappingExpression<IFormFile, TDestination> mappingExpression)
+			where TDestination : FileEntity<TDestination>
+		{
+			return mappingExpression.ForMember(d => d.File, o => o.MapFrom(s => s));
 		}
 	}
 }

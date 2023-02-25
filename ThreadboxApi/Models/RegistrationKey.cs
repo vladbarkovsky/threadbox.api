@@ -1,9 +1,15 @@
-﻿namespace ThreadboxApi.Models
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ThreadboxApi.Models
 {
-	public class RegistrationKey : IEntity
+	public class RegistrationKey : Entity<RegistrationKey>
 	{
-		public Guid Id { get; set; }
 		public Guid Value { get; set; }
 		public DateTimeOffset CreatedAt { get; set; }
+
+		public override void Configure(EntityTypeBuilder<RegistrationKey> builder)
+		{
+			base.Configure(builder);
+		}
 	}
 }

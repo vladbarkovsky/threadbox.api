@@ -467,7 +467,7 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/PaginatedListDtoOfListThreadDto"
+              "$ref": "#/definitions/PaginatedResultOfListThreadDto"
             }
           }
         }
@@ -650,7 +650,7 @@
         }
       }
     },
-    "PaginatedListDtoOfListThreadDto": {
+    "PaginatedResultOfListThreadDto": {
       "type": "object",
       "required": [
         "pageItems",

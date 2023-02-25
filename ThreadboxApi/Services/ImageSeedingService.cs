@@ -1,26 +1,23 @@
-﻿using ThreadboxApi.Configuration;
+﻿using Microsoft.AspNetCore.StaticFiles;
+using System.Text.RegularExpressions;
+using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Models;
-using AutoMapper;
-using Microsoft.AspNetCore.StaticFiles;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace ThreadboxApi.Services
 {
-	public class ImageSeedingService : ITransientService
+	/// <summary>
+	/// Generates file entities for seeding
+	/// </summary>
+	public class FileSeedingService : ITransientService
 	{
-		private readonly IMapper _mapper;
-
 		private List<string> FilePaths { get; }
-		private int TotalImages => FilePaths.Count;
+		private int TotalFiles => FilePaths.Count;
 		private int Iterator { get; set; }
 		private FileExtensionContentTypeProvider FileExtensionContentTypeProvider { get; }
 
-		public ImageSeedingService(IServiceProvider services)
+		public FileSeedingService(IServiceProvider services)
 		{
-			_mapper = services.GetRequiredService<IMapper>();
-
 			FilePaths = Directory
 				.GetFiles(Constants.TestImagesDirectory)
 				// Pad each match of numeric values in the file path with a 0 character to a length of 4 characters.
@@ -33,19 +30,29 @@ namespace ThreadboxApi.Services
 			FileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
 		}
 
-		public async Task<List<TEntity>> GetImagesForSeeding<TEntity>(int count)
-			where TEntity : class, IEntity, IThreadboxFile
+		/// <summary>
+		/// Generates defined count of file entities.
+		/// Maximum total count of entities per service injection is equal to count of files
+		/// in directory used for files seeding
+		/// </summary>
+		/// <typeparam name="TEntity">Type of file entities you want to generate</typeparam>
+		/// <param name="count">Count of file entities you want to generate</param>
+		/// <returns>List of file entities</returns>
+		/// <exception cref="ArgumentException"></exception>
+		/// <exception cref="Exception"></exception>
+		public async Task<List<TEntity>> GetFilesForSeeding<TEntity>(int count)
+			where TEntity : FileEntity<TEntity>
 		{
-			if (Iterator + count > TotalImages)
+			if (Iterator + count > TotalFiles)
 			{
-				throw new ArgumentException("Not enough images.", nameof(count));
+				throw new ArgumentException("Not enough files.", nameof(count));
 			}
 
 			var filePaths = FilePaths.GetRange(Iterator, count);
 			Iterator += count;
-			var filesAsync = filePaths.Select(x => File.ReadAllBytesAsync(x));
-			var files = await Task.WhenAll(filesAsync);
-			var images = new List<ThreadboxFile>();
+			var filesDataAsync = filePaths.Select(x => File.ReadAllBytesAsync(x));
+			var filesData = await Task.WhenAll(filesDataAsync);
+			var files = new List<ThreadboxFile>();
 
 			for (int i = 0; i < filePaths.Count; i++)
 			{
@@ -54,16 +61,23 @@ namespace ThreadboxApi.Services
 					throw new Exception($"Can't get Content-Type of {filePaths[i]}.");
 				}
 
-				images.Add(new ThreadboxFile
+				files.Add(new ThreadboxFile
 				{
 					Name = Path.GetFileName(filePaths[i]),
 					Extension = Path.GetExtension(filePaths[i]),
 					ContentType = contentType,
-					Data = files[i],
+					Data = filesData[i],
 				});
 			}
 
-			return _mapper.Map<List<TEntity>>(images);
+			return files
+				.Select(x =>
+				{
+					var entity = Activator.CreateInstance<TEntity>();
+					entity.File = x;
+					return entity;
+				})
+				.ToList();
 		}
 	}
 }

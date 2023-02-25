@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Models;
@@ -8,19 +8,22 @@ namespace ThreadboxApi.Services
 	public class FilesService : IScopedService
 	{
 		private readonly ThreadboxDbContext _dbContext;
-		private readonly IMapper _mapper;
 
 		public FilesService(IServiceProvider services)
 		{
 			_dbContext = services.GetRequiredService<ThreadboxDbContext>();
-			_mapper = services.GetRequiredService<IMapper>();
 		}
 
-		public async Task<ThreadboxFile?> TryGetFileAsync<TEntity>(Guid entityId)
-			where TEntity : class, IEntity, IThreadboxFile
+		public async Task<ThreadboxFile?> TryGetFileAsync<TEntity>(Guid fileEntityId)
+			where TEntity : FileEntity<TEntity>
 		{
-			var entity = await _dbContext.FindAsync<TEntity>(entityId);
-			return entity != null ? _mapper.Map<ThreadboxFile>(entity) : null;
+			var file = await _dbContext.Set<TEntity>()
+				.AsNoTracking()
+				.Where(x => x.Id == fileEntityId)
+				.Select(x => x.File)
+				.FirstOrDefaultAsync();
+
+			return file;
 		}
 	}
 }

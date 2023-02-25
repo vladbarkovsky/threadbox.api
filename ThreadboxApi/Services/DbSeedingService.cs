@@ -8,13 +8,13 @@ namespace ThreadboxApi.Services
 {
 	public class DbSeedingService : ITransientService
 	{
-		private readonly ImageSeedingService _imageSeedingService;
+		private readonly FileSeedingService _imageSeedingService;
 		private readonly UserManager<User> _userManager;
 		private readonly ThreadboxDbContext _dbContext;
 
 		public DbSeedingService(IServiceProvider services)
 		{
-			_imageSeedingService = services.GetRequiredService<ImageSeedingService>();
+			_imageSeedingService = services.GetRequiredService<FileSeedingService>();
 			_userManager = services.GetRequiredService<UserManager<User>>();
 			_dbContext = services.GetRequiredService<ThreadboxDbContext>();
 		}
@@ -144,15 +144,13 @@ namespace ThreadboxApi.Services
 			}
 
 			var threads = await _dbContext.Threads.ToListAsync();
-			//var threadImages = _mapper.Map<List<ThreadImage>>(images);
 
-			threads[0].ThreadImages = await _imageSeedingService.GetImagesForSeeding<ThreadImage>(1);
-			threads[1].ThreadImages = await _imageSeedingService.GetImagesForSeeding<ThreadImage>(2);
-			threads[2].ThreadImages = await _imageSeedingService.GetImagesForSeeding<ThreadImage>(3);
-			threads[3].ThreadImages = await _imageSeedingService.GetImagesForSeeding<ThreadImage>(5);
+			threads[0].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(1);
+			threads[1].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(2);
+			threads[2].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(3);
+			threads[3].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(5);
 
 			_dbContext.Threads.UpdateRange(threads);
-			//await _dbContext.ThreadImages.AddRangeAsync(threadImages);
 			await _dbContext.SaveChangesAsync();
 		}
 
@@ -231,20 +229,17 @@ namespace ThreadboxApi.Services
 			}
 
 			var posts = await _dbContext.Posts.ToListAsync();
-			//var images = await _imagesService.GetImagesForSeeding(11, 22);
-			//var postImages = _mapper.Map<List<PostImage>>(images);
 
-			posts[0].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(1);
-			posts[1].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(2);
-			posts[2].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(3);
-			posts[3].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(5);
-			posts[4].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(1);
-			posts[5].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(2);
-			posts[6].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(3);
-			posts[7].PostImages = await _imageSeedingService.GetImagesForSeeding<PostImage>(5);
+			posts[0].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(1);
+			posts[1].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(2);
+			posts[2].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(3);
+			posts[3].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(5);
+			posts[4].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(1);
+			posts[5].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(2);
+			posts[6].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(3);
+			posts[7].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(5);
 
 			_dbContext.Posts.UpdateRange(posts);
-			//await _dbContext.PostImages.AddRangeAsync(postImages);
 			await _dbContext.SaveChangesAsync();
 		}
 	}
