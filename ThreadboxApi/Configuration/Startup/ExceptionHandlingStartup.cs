@@ -17,7 +17,8 @@ namespace ThreadboxApi.Configuration.Startup
 
 					if (exception is HttpResponseException)
 					{
-						httpContext.Response.StatusCode = (exception as HttpResponseException)!.HttpErrorResponseCode;
+						var httpResponseException = exception as HttpResponseException;
+						httpContext.Response.StatusCode = (int)httpResponseException!.ResponseCode;
 					}
 
 					return Task.CompletedTask;

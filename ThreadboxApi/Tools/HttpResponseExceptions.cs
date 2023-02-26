@@ -2,19 +2,19 @@
 {
 	public class HttpResponseException : Exception
 	{
-		public int HttpErrorResponseCode { get; set; }
+		public HttpErrorResponseCode ResponseCode { get; set; }
 
-		public HttpResponseException(string message, int httpErrorResponseCode = StatusCodes.Status400BadRequest)
+		public HttpResponseException(string message, HttpErrorResponseCode responseCode = HttpErrorResponseCode.BadRequest)
 			: base(message)
 		{
-			HttpErrorResponseCode = httpErrorResponseCode;
+			ResponseCode = responseCode;
 		}
 	}
 
 	public class HttpResponseExceptions
 	{
-		public static HttpResponseException BadRequest => new("Bad Request", StatusCodes.Status400BadRequest);
-		public static HttpResponseException NotFound => new("Not Found", StatusCodes.Status404NotFound);
+		public static HttpResponseException BadRequest => new("Bad Request", HttpErrorResponseCode.BadRequest);
+		public static HttpResponseException NotFound => new("Not Found", HttpErrorResponseCode.NotFound);
 
 		public static void ThrowNotFoundIfNull(object? data)
 		{
@@ -23,5 +23,11 @@
 				throw NotFound;
 			}
 		}
+	}
+
+	public enum HttpErrorResponseCode
+	{
+		BadRequest = StatusCodes.Status400BadRequest,
+		NotFound = StatusCodes.Status404NotFound
 	}
 }

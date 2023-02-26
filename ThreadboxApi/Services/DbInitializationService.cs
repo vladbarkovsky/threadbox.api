@@ -6,22 +6,46 @@ using ThreadboxApi.Models;
 
 namespace ThreadboxApi.Services
 {
-	public class DbSeedingService : ITransientService
+	public class DbInitializationService : ITransientService
 	{
-		private readonly FileSeedingService _imageSeedingService;
-		private readonly UserManager<User> _userManager;
 		private readonly ThreadboxDbContext _dbContext;
+		private readonly IWebHostEnvironment _webHostEnvironment;
+		private readonly IConfiguration _configuration;
+		private readonly UserManager<User> _userManager;
+		private readonly FileSeedingService _imageSeedingService;
 
-		public DbSeedingService(IServiceProvider services)
+		public DbInitializationService(IServiceProvider services)
 		{
-			_imageSeedingService = services.GetRequiredService<FileSeedingService>();
-			_userManager = services.GetRequiredService<UserManager<User>>();
 			_dbContext = services.GetRequiredService<ThreadboxDbContext>();
+			_webHostEnvironment = services.GetRequiredService<IWebHostEnvironment>();
+			_configuration = services.GetRequiredService<IConfiguration>();
+			_userManager = services.GetRequiredService<UserManager<User>>();
+			_imageSeedingService = services.GetRequiredService<FileSeedingService>();
 		}
 
-		public async Task SeedDbAsync()
+		public async Task InitializeIfNotExists()
+		{
+			var appliedMigrations = await _dbContext.Database.GetAppliedMigrationsAsync();
+			var databaseExists = appliedMigrations.Any();
+
+			if (databaseExists)
+			{
+				return;
+			}
+
+			_dbContext.Database.Migrate();
+			await SeedDbAsync();
+		}
+
+		private async Task SeedDbAsync()
 		{
 			await SeedUsersAsync();
+
+			if (!_webHostEnvironment.IsDevelopment())
+			{
+				return;
+			}
+
 			await SeedBoardsAsync();
 			await SeedThreadsAsync();
 			await SeedThreadImagesAsync();
@@ -31,21 +55,20 @@ namespace ThreadboxApi.Services
 
 		private async Task SeedUsersAsync()
 		{
-			if (await _userManager.Users.AnyAsync())
+			await _userManager.CreateAsync(
+				user: new User(_configuration[AppSettings.DefaultAdminUserName]!),
+				password: _configuration[AppSettings.DefaultAdminPassword]);
+
+			if (!_webHostEnvironment.IsDevelopment())
 			{
 				return;
 			}
 
-			await _userManager.CreateAsync(new User("admin"), "P@ssw0rd");
+			// Seed other users for development purposes
 		}
 
 		private async Task SeedBoardsAsync()
 		{
-			if (await _dbContext.Boards.AnyAsync())
-			{
-				return;
-			}
-
 			var boards = new List<Board>
 			{
 				new Board
@@ -71,11 +94,6 @@ namespace ThreadboxApi.Services
 
 		private async Task SeedThreadsAsync()
 		{
-			if (await _dbContext.Threads.AnyAsync())
-			{
-				return;
-			}
-
 			var boards = await _dbContext.Boards.ToListAsync();
 
 			var threads = new List<ThreadModel>
@@ -138,11 +156,6 @@ namespace ThreadboxApi.Services
 
 		private async Task SeedThreadImagesAsync()
 		{
-			if (await _dbContext.ThreadImages.AnyAsync())
-			{
-				return;
-			}
-
 			var threads = await _dbContext.Threads.ToListAsync();
 
 			threads[0].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(1);
@@ -156,11 +169,6 @@ namespace ThreadboxApi.Services
 
 		private async Task SeedPostsAsync()
 		{
-			if (await _dbContext.Posts.AnyAsync())
-			{
-				return;
-			}
-
 			var threads = await _dbContext.Threads.ToListAsync();
 
 			var posts = new List<Post>
@@ -223,11 +231,6 @@ namespace ThreadboxApi.Services
 
 		private async Task SeedPostImagesAsync()
 		{
-			if (await _dbContext.PostImages.AnyAsync())
-			{
-				return;
-			}
-
 			var posts = await _dbContext.Posts.ToListAsync();
 
 			posts[0].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(1);

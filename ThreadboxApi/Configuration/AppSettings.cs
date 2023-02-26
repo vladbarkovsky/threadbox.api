@@ -17,5 +17,8 @@
 
 		public const string JwtRegistrationSecurityKey = "Jwt:Registration:SecurityKey";
 		public const string JwtRegistrationExpirationTime = "Jwt:Registration:ExpirationTime";
+
+		public const string DefaultAdminUserName = "DefaultAdminCredentials:UserName";
+		public const string DefaultAdminPassword = "DefaultAdminCredentials:Password";
 	}
 }
