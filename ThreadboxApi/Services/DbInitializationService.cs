@@ -12,7 +12,7 @@ namespace ThreadboxApi.Services
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		private readonly IConfiguration _configuration;
 		private readonly UserManager<User> _userManager;
-		private readonly FileSeedingService _imageSeedingService;
+		private readonly FileSeedingService _fileSeedingService;
 
 		public DbInitializationService(IServiceProvider services)
 		{
@@ -20,7 +20,7 @@ namespace ThreadboxApi.Services
 			_webHostEnvironment = services.GetRequiredService<IWebHostEnvironment>();
 			_configuration = services.GetRequiredService<IConfiguration>();
 			_userManager = services.GetRequiredService<UserManager<User>>();
-			_imageSeedingService = services.GetRequiredService<FileSeedingService>();
+			_fileSeedingService = services.GetRequiredService<FileSeedingService>();
 		}
 
 		public async Task InitializeIfNotExists()
@@ -158,10 +158,10 @@ namespace ThreadboxApi.Services
 		{
 			var threads = await _dbContext.Threads.ToListAsync();
 
-			threads[0].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(1);
-			threads[1].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(2);
-			threads[2].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(3);
-			threads[3].ThreadImages = await _imageSeedingService.GetFilesForSeeding<ThreadImage>(5);
+			threads[0].ThreadImages = await _fileSeedingService.GetFilesForSeeding<ThreadImage>(1);
+			threads[1].ThreadImages = await _fileSeedingService.GetFilesForSeeding<ThreadImage>(2);
+			threads[2].ThreadImages = await _fileSeedingService.GetFilesForSeeding<ThreadImage>(3);
+			threads[3].ThreadImages = await _fileSeedingService.GetFilesForSeeding<ThreadImage>(5);
 
 			_dbContext.Threads.UpdateRange(threads);
 			await _dbContext.SaveChangesAsync();
@@ -233,14 +233,14 @@ namespace ThreadboxApi.Services
 		{
 			var posts = await _dbContext.Posts.ToListAsync();
 
-			posts[0].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(1);
-			posts[1].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(2);
-			posts[2].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(3);
-			posts[3].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(5);
-			posts[4].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(1);
-			posts[5].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(2);
-			posts[6].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(3);
-			posts[7].PostImages = await _imageSeedingService.GetFilesForSeeding<PostImage>(5);
+			posts[0].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(1);
+			posts[1].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(2);
+			posts[2].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(3);
+			posts[3].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(5);
+			posts[4].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(1);
+			posts[5].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(2);
+			posts[6].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(3);
+			posts[7].PostImages = await _fileSeedingService.GetFilesForSeeding<PostImage>(5);
 
 			_dbContext.Posts.UpdateRange(posts);
 			await _dbContext.SaveChangesAsync();

@@ -257,12 +257,12 @@
         }
       }
     },
-    "/Images/GetThreadImage": {
+    "/PostImages/GetPostImage": {
       "get": {
         "tags": [
-          "Images"
+          "PostImages"
         ],
-        "operationId": "Images_GetThreadImage",
+        "operationId": "PostImages_GetPostImage",
         "parameters": [
           {
             "type": "string",
@@ -283,64 +283,12 @@
         }
       }
     },
-    "/Images/GetPostImage": {
+    "/PostImages/GetPostImages": {
       "get": {
         "tags": [
-          "Images"
+          "PostImages"
         ],
-        "operationId": "Images_GetPostImage",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "imageId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Images/GetThreadImages": {
-      "get": {
-        "tags": [
-          "Images"
-        ],
-        "operationId": "Images_GetThreadImages",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "threadId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Images/GetPostImages": {
-      "get": {
-        "tags": [
-          "Images"
-        ],
-        "operationId": "Images_GetPostImages",
+        "operationId": "PostImages_GetPostImages",
         "parameters": [
           {
             "type": "string",
@@ -423,6 +371,58 @@
             "description": "",
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/ThreadImages/GetThreadImage": {
+      "get": {
+        "tags": [
+          "ThreadImages"
+        ],
+        "operationId": "ThreadImages_GetThreadImage",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "imageId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/ThreadImages/GetThreadImages": {
+      "get": {
+        "tags": [
+          "ThreadImages"
+        ],
+        "operationId": "ThreadImages_GetThreadImages",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "threadId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
             }
           }
         }

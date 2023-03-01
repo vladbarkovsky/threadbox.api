@@ -18,26 +18,7 @@ namespace ThreadboxApi.Configuration
 	{
 		public ThreadboxDbContext(DbContextOptions<ThreadboxDbContext> options)
 			: base(options)
-		{
-			//var databaseExists = Database.GetAppliedMigrations().Any();
-
-			//if (!databaseExists)
-			//{
-			//	Database.Migrate();
-			//}
-
-			//Database.EnsureCreated();
-
-			//var apliedMigrationsd = Database.GetAppliedMigrations();
-
-			/// Note that this API does **not * *use migrations to create the database.In addition, the database that is
-			///         created cannot be later updated using migrations. If you are targeting a relational database and using migrations,
-			///         then you can use <see cref="M:Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate" />
-			///         to ensure the database is created using migrations and that all migrations have been applied.
-			// We create database according to applied migrations but with no migrations applied
-
-			// This method does not use migrations to create the database
-		}
+		{ }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
