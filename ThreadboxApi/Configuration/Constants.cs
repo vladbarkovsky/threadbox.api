@@ -3,6 +3,11 @@
 	public class Constants
 	{
 		public const string TestImagesDirectory = "CataasImages";
+		public const string SeedingDataPath = @"Configuration/Seeding";
+
+		public const string BoardsSeedingFilePath = $"{SeedingDataPath}/boards.json";
+		public const string ThreadsSeedingFilePath = $"{SeedingDataPath}/threads.json";
+		public const string PostsSeedingFilePath = $"{SeedingDataPath}/posts.json";
 
 		/// <summary>
 		/// HTTP request URL to get <see cref="Models.ThreadImage"/> as file.

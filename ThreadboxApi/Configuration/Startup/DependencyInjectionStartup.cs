@@ -15,14 +15,14 @@
 		{
 			services.Scan(scan => scan.FromAssemblyOf<Program>()
 				.AddClasses(x => x.AssignableTo<ISingletonService>())
-					.AsSelfWithInterfaces()
-					.WithSingletonLifetime()
+				.AsSelfWithInterfaces()
+				.WithSingletonLifetime()
 				.AddClasses(x => x.AssignableTo<IScopedService>())
-					.AsSelfWithInterfaces()
-					.WithScopedLifetime()
+				.AsSelfWithInterfaces()
+				.WithScopedLifetime()
 				.AddClasses(x => x.AssignableTo<ITransientService>())
-					.AsSelfWithInterfaces()
-					.WithTransientLifetime());
+				.AsSelfWithInterfaces()
+				.WithTransientLifetime());
 
 			services.AddHttpContextAccessor();
 		}

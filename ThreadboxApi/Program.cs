@@ -22,13 +22,11 @@ namespace ThreadboxApi
 			using (var scope = host.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
-				var hostEnvironment = services.GetRequiredService<IWebHostEnvironment>();
 				var dbInitializationService = services.GetRequiredService<DbInitializationService>();
-
 				await dbInitializationService.InitializeIfNotExists();
-			}
 
-			await host.RunAsync();
+				await host.RunAsync();
+			}
 		}
 	}
 }
