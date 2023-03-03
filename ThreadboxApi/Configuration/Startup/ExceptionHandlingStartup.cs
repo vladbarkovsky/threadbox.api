@@ -11,6 +11,7 @@ namespace ThreadboxApi.Configuration.Startup
 			{
 				options.AllowStatusCode404Response = true;
 
+				// NOTE: Must be declared through options.ExceptionHandler - otherwise it won't work
 				options.ExceptionHandler = httpContext =>
 				{
 					var exception = httpContext.Features.Get<IExceptionHandlerFeature>()?.Error;

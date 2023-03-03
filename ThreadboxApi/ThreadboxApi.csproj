@@ -35,8 +35,15 @@
     <Folder Include="CataasImages\" />
   </ItemGroup>
 
+
+	
   <Target Name="NSwag" AfterTargets="Build" Condition="$(Configuration) == 'Debug'">
-    <Exec Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" />
+	<!-- NOTE: NSwag target does something with reflection, that launches code with ASPNETCORE_ENVIRONMENT=Production by default
+	during build process before application launch. It can cause problems, for example, in DbInitializationService.SeedDbAsync().
+	Therefore we set ASPNETCORE_ENVIRONMENT=Development -->
+    <Exec
+	  Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)"
+	  EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"/>
   </Target>
 
 </Project>
