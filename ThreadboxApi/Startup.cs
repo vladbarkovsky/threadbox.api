@@ -40,6 +40,7 @@ namespace ThreadboxApi
 
 			services.AddControllers();
 			SwaggerStartup.ConfigureServices(services);
+			AntiForgeryStartup.ConfigureServices(services);
 			CorsStartup.ConfigureServices(services, _configuration);
 			ExceptionHandlingStartup.ConfigureServices(services);
 
@@ -55,6 +56,7 @@ namespace ThreadboxApi
 		public void Configure(IApplicationBuilder app)
 		{
 			SwaggerStartup.Configure(app, _webHostEnvironment);
+			AntiForgeryStartup.Configure(app);
 
 			/// IMPORTANT: CORS must be configured before
 			/// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
