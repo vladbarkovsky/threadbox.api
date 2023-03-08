@@ -29,15 +29,15 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpPost("[action]")]
-		public async Task<ActionResult<ListBoardDto>> CreateBoard(BoardDto createBoardDto)
+		public async Task<ActionResult<ListBoardDto>> CreateBoard(BoardDto boardDto)
 		{
-			return await _boardsService.CreateBoardAsync(createBoardDto);
+			return await _boardsService.CreateBoardAsync(boardDto);
 		}
 
 		[HttpPut("[action]")]
-		public async Task<ActionResult<ListBoardDto>> EditBoard(BoardDto editBoardDto)
+		public async Task<ActionResult<ListBoardDto>> EditBoard(BoardDto boardDto)
 		{
-			return await _boardsService.EditBoardAsync(editBoardDto);
+			return await _boardsService.EditBoardAsync(boardDto);
 		}
 
 		[HttpDelete("[action]")]

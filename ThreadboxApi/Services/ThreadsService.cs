@@ -57,16 +57,7 @@ namespace ThreadboxApi.Services
 		{
 			var thread = _mapper.Map<ThreadModel>(threadDto);
 			var createdThread = _dbContext.Threads.Add(thread).Entity;
-
-			var listThreadDto = new ListThreadDto
-			{
-				Id = createdThread.Id,
-				Title = createdThread.Title,
-				Text = createdThread.Text,
-				ThreadImageUrls = createdThread.ThreadImages
-					.Select(threadImage => string.Format(Constants.ThreadImageRequest, threadImage.Id))
-					.ToList()
-			};
+			var listThreadDto = _mapper.Map<ListThreadDto>(createdThread);
 
 			await _dbContext.SaveChangesAsync();
 			return listThreadDto;

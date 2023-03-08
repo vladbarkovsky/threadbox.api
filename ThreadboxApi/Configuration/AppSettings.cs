@@ -13,10 +13,10 @@
 		public const string JwtValidIssuer = "Jwt:ValidIssuer";
 
 		public const string JwtAuthenticationSecurityKey = "Jwt:Authentication:SecurityKey";
-		public const string JwtAuthenticationExpirationTime = "Jwt:Authentication:ExpirationTime";
+		public const string JwtAuthenticationExpirationTimeS = "Jwt:Authentication:ExpirationTimeS";
 
 		public const string JwtRegistrationSecurityKey = "Jwt:Registration:SecurityKey";
-		public const string JwtRegistrationExpirationTime = "Jwt:Registration:ExpirationTime";
+		public const string JwtRegistrationExpirationTimeS = "Jwt:Registration:ExpirationTimeS";
 
 		public const string DefaultAdminUserName = "DefaultAdminCredentials:UserName";
 		public const string DefaultAdminPassword = "DefaultAdminCredentials:Password";

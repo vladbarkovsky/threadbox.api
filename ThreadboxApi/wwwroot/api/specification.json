@@ -173,7 +173,7 @@
         ],
         "parameters": [
           {
-            "name": "createBoardDto",
+            "name": "boardDto",
             "in": "body",
             "required": true,
             "schema": {
@@ -211,7 +211,7 @@
         ],
         "parameters": [
           {
-            "name": "editBoardDto",
+            "name": "boardDto",
             "in": "body",
             "required": true,
             "schema": {

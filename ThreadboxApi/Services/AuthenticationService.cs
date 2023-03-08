@@ -72,7 +72,7 @@ namespace ThreadboxApi.Services
 			var jwtConfiguration = new JwtConfiguration
 			{
 				SecurityKey = AppSettings.JwtAuthenticationSecurityKey,
-				ExpirationTime = AppSettings.JwtAuthenticationExpirationTime,
+				ExpirationTimeS = AppSettings.JwtAuthenticationExpirationTimeS,
 				Claims = new List<Claim>
 				{
 					new Claim(Configuration.ClaimTypes.UserId, userId.ToString())
@@ -91,7 +91,7 @@ namespace ThreadboxApi.Services
 			var jwtConfiguration = new JwtConfiguration
 			{
 				SecurityKey = AppSettings.JwtRegistrationSecurityKey,
-				ExpirationTime = AppSettings.JwtRegistrationExpirationTime,
+				ExpirationTimeS = AppSettings.JwtRegistrationExpirationTimeS,
 				Claims = new List<Claim>
 				{
 					new Claim(Configuration.ClaimTypes.RegistrationKey, registrationKeyValue.ToString())
@@ -136,7 +136,7 @@ namespace ThreadboxApi.Services
 
 		private async Task RemoveExpiredRegistrationKeysAsync()
 		{
-			var lifetime = TimeSpan.FromSeconds(Convert.ToInt32(_configuration[AppSettings.JwtRegistrationExpirationTime]!));
+			var lifetime = TimeSpan.FromSeconds(Convert.ToInt32(_configuration[AppSettings.JwtRegistrationExpirationTimeS]!));
 			var expiredKeys = _dbContext.RegistrationKeys.Where(x => x.CreatedAt - DateTimeOffset.UtcNow < lifetime);
 			_dbContext.RemoveRange(expiredKeys);
 			await _dbContext.SaveChangesAsync();
