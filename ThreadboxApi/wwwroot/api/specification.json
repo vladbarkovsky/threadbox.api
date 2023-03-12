@@ -327,13 +327,6 @@
         ],
         "parameters": [
           {
-            "type": "string",
-            "name": "threadId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
             "name": "postDto",
             "in": "body",
             "required": true,
@@ -533,10 +526,6 @@
   "definitions": {
     "LoginFormDto": {
       "type": "object",
-      "required": [
-        "userName",
-        "password"
-      ],
       "properties": {
         "userName": {
           "type": "string"
@@ -548,12 +537,6 @@
     },
     "RegistrationFormDto": {
       "type": "object",
-      "required": [
-        "userName",
-        "password",
-        "confirmPassword",
-        "registrationToken"
-      ],
       "properties": {
         "userName": {
           "type": "string"
@@ -572,8 +555,7 @@
     "ListBoardDto": {
       "type": "object",
       "required": [
-        "id",
-        "title"
+        "id"
       ],
       "properties": {
         "id": {
@@ -587,10 +569,6 @@
     },
     "BoardDto": {
       "type": "object",
-      "required": [
-        "title",
-        "description"
-      ],
       "properties": {
         "id": {
           "type": "string",
@@ -608,9 +586,7 @@
       "type": "object",
       "required": [
         "id",
-        "text",
-        "threadId",
-        "postImageUrls"
+        "threadId"
       ],
       "properties": {
         "id": {
@@ -634,10 +610,6 @@
     },
     "PostDto": {
       "type": "object",
-      "required": [
-        "text",
-        "postImages"
-      ],
       "properties": {
         "text": {
           "type": "string"
@@ -653,7 +625,6 @@
     "PaginatedResultOfListThreadDto": {
       "type": "object",
       "required": [
-        "pageItems",
         "pageIndex",
         "totalPages",
         "totalCount",
@@ -690,11 +661,7 @@
     "ListThreadDto": {
       "type": "object",
       "required": [
-        "id",
-        "title",
-        "text",
-        "threadImageUrls",
-        "posts"
+        "id"
       ],
       "properties": {
         "id": {
