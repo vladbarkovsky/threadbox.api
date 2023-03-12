@@ -21,7 +21,7 @@ namespace ThreadboxApi.Configuraton.Startup
 					options.RequireHttpsMetadata = false;
 					options.SaveToken = false;
 
-					var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.JwtAuthenticationSecurityKey]!);
+					var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.JwtAuthenticationSecurityKey]);
 
 					options.TokenValidationParameters = new TokenValidationParameters
 					{
@@ -39,6 +39,11 @@ namespace ThreadboxApi.Configuraton.Startup
 						ValidateLifetime = true,
 					};
 				});
+		}
+
+		public static void Configure(IApplicationBuilder app)
+		{
+			app.UseAuthentication();
 		}
 	}
 }

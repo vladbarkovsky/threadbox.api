@@ -11,19 +11,19 @@ namespace ThreadboxApi.Models
 		/// <summary>
 		/// File name with extension ('file.ext')
 		/// </summary>
-		public string Name { get; set; } = null!;
+		public string Name { get; set; } 
 
 		/// <summary>
 		/// File extension ('.ext')
 		/// </summary>
-		public string Extension { get; set; } = null!;
+		public string Extension { get; set; } 
 
 		/// <summary>
 		/// Content-Type HTTP header value
 		/// </summary>
-		public string ContentType { get; set; } = null!;
+		public string ContentType { get; set; } 
 
-		public byte[] Data { get; set; } = null!;
+		public byte[] Data { get; set; } 
 
 		public void Mapping(Profile profile)
 		{

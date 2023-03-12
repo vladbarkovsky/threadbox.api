@@ -8,13 +8,15 @@ namespace ThreadboxApi.Dtos
 	public class ListThreadDto : IMapped
 	{
 		public Guid Id { get; set; }
-		public string Title { get; set; } = null!;
-		public string Text { get; set; } = null!;
-		public List<string> ThreadImageUrls { get; set; } = null!;
-		public List<ListPostDto> Posts { get; set; } = null!;
+		public string Title { get; set; }
+		public string Text { get; set; }
+		public List<string> ThreadImageUrls { get; set; }
+		public List<ListPostDto> Posts { get; set; }
 
 		public void Mapping(Profile profile)
 		{
+			/// Mapping for <see cref="Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry.Entity"/>.
+			/// In other cases manual mapping must be used to reduce database load
 			profile.CreateMap<ThreadModel, ListThreadDto>()
 				.ForMember(
 					d => d.ThreadImageUrls,
@@ -25,8 +27,8 @@ namespace ThreadboxApi.Dtos
 	public class ThreadDto
 	{
 		public Guid BoardId { get; set; }
-		public string Title { get; set; } = null!;
-		public string Text { get; set; } = null!;
-		public List<IFormFile> ThreadImages { get; set; } = null!;
+		public string Title { get; set; }
+		public string Text { get; set; }
+		public List<IFormFile> ThreadImages { get; set; }
 	}
 }

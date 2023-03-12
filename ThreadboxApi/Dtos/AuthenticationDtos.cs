@@ -5,8 +5,8 @@ namespace ThreadboxApi.Dtos
 {
 	public class LoginFormDto
 	{
-		public string UserName { get; set; } = null!;
-		public string Password { get; set; } = null!;
+		public string UserName { get; set; }
+		public string Password { get; set; }
 
 		public class LoginFormDtoValidator : AbstractValidator<LoginFormDto>
 		{
@@ -20,10 +20,10 @@ namespace ThreadboxApi.Dtos
 
 	public class RegistrationFormDto
 	{
-		public string UserName { get; set; } = null!;
-		public string Password { get; set; } = null!;
-		public string ConfirmPassword { get; set; } = null!;
-		public string RegistrationToken { get; set; } = null!;
+		public string UserName { get; set; }
+		public string Password { get; set; }
+		public string ConfirmPassword { get; set; }
+		public string RegistrationToken { get; set; }
 
 		public class RegistrationFormDtoValidator : AbstractValidator<RegistrationFormDto>
 		{

@@ -24,8 +24,8 @@ namespace ThreadboxApi.Controllers
 		[HttpGet("[action]")]
 		public async Task<ActionResult<BoardDto>> GetBoard(Guid boardId)
 		{
-			var boardDto = await _boardsService.TryGetBoardAsync(boardId);
-			return boardDto != null ? boardDto : NotFound();
+			var boardDto = await _boardsService.GetBoardAsync(boardId);
+			return boardDto;
 		}
 
 		[HttpPost("[action]")]

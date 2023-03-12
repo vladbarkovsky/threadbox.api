@@ -16,11 +16,11 @@
 		public static HttpResponseException BadRequest => new("Bad Request", HttpErrorResponseCode.BadRequest);
 		public static HttpResponseException NotFound => new("Not Found", HttpErrorResponseCode.NotFound);
 
-		public static void ThrowNotFoundIfNull(object? data)
+		public static void ThrowNotFoundIfNull(object data)
 		{
 			if (data == null)
 			{
-				throw NotFound;
+				throw new HttpResponseException($"{data.GetType().Name} not found", HttpErrorResponseCode.NotFound);
 			}
 		}
 	}

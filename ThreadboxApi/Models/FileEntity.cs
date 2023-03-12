@@ -5,7 +5,7 @@ namespace ThreadboxApi.Models
 	public abstract class FileEntity<TEntity> : Entity<TEntity>
 		where TEntity : FileEntity<TEntity>
 	{
-		public ThreadboxFile File { get; set; } = null!;
+		public ThreadboxFile File { get; set; } 
 
 		public override void Configure(EntityTypeBuilder<TEntity> builder)
 		{

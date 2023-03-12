@@ -27,10 +27,10 @@ namespace ThreadboxApi.Configuration
 		}
 
 		public DbSet<RegistrationKey> RegistrationKeys { get; set; }
-		public DbSet<Board> Boards { get; set; } = null!;
-		public DbSet<ThreadModel> Threads { get; set; } = null!;
-		public DbSet<ThreadImage> ThreadImages { get; set; } = null!;
-		public DbSet<Post> Posts { get; set; } = null!;
-		public DbSet<PostImage> PostImages { get; set; } = null!;
+		public DbSet<Board> Boards { get; set; }
+		public DbSet<ThreadModel> Threads { get; set; }
+		public DbSet<ThreadImage> ThreadImages { get; set; }
+		public DbSet<Post> Posts { get; set; }
+		public DbSet<PostImage> PostImages { get; set; }
 	}
 }

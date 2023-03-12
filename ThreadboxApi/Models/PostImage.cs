@@ -7,7 +7,7 @@ namespace ThreadboxApi.Models
 	public class PostImage : FileEntity<PostImage>, IMapped
 	{
 		public Guid PostId { get; set; }
-		public Post Post { get; set; } = null!;
+		public Post Post { get; set; } 
 
 		public override void Configure(EntityTypeBuilder<PostImage> builder)
 		{

@@ -16,7 +16,7 @@ namespace ThreadboxApi.Controllers
 		}
 
 		[HttpPost("[action]")]
-		public async Task<ActionResult<ListPostDto>> CreatePost(Guid threadId, PostDto postDto)
+		public async Task<ActionResult<ListPostDto>> CreatePost(PostDto postDto)
 		{
 			return new ListPostDto();
 		}

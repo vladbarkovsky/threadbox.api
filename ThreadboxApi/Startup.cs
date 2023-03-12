@@ -66,7 +66,7 @@ namespace ThreadboxApi
 
 			app.UseRouting();
 
-			app.UseAuthentication();
+			AuthenticationStartup.Configure(app);
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

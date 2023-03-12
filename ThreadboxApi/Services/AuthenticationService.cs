@@ -114,7 +114,7 @@ namespace ThreadboxApi.Services
 
 		private async Task<bool> UseRegistrationTokenAsync(string token)
 		{
-			string? tokenRegistrationKey = TryGetRegistrationKey(token);
+			string tokenRegistrationKey = TryGetRegistrationKey(token);
 
 			if (tokenRegistrationKey == null)
 			{
@@ -136,15 +136,15 @@ namespace ThreadboxApi.Services
 
 		private async Task RemoveExpiredRegistrationKeysAsync()
 		{
-			var lifetime = TimeSpan.FromSeconds(Convert.ToInt32(_configuration[AppSettings.JwtRegistrationExpirationTimeS]!));
+			var lifetime = TimeSpan.FromSeconds(Convert.ToInt32(_configuration[AppSettings.JwtRegistrationExpirationTimeS]));
 			var expiredKeys = _dbContext.RegistrationKeys.Where(x => x.CreatedAt - DateTimeOffset.UtcNow < lifetime);
 			_dbContext.RemoveRange(expiredKeys);
 			await _dbContext.SaveChangesAsync();
 		}
 
-		public string? TryGetRegistrationKey(string token)
+		public string TryGetRegistrationKey(string token)
 		{
-			var securityKey = Encoding.UTF8.GetBytes(_configuration[AppSettings.JwtRegistrationSecurityKey]!);
+			var securityKey = Encoding.UTF8.GetBytes(_configuration[AppSettings.JwtRegistrationSecurityKey]);
 
 			var validationParams = new TokenValidationParameters
 			{

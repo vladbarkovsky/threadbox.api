@@ -6,9 +6,9 @@ namespace ThreadboxApi.Models
 {
 	public class Board : Entity<Board>, IMappedFrom<BoardDto>
 	{
-		public string Title { get; set; } = null!;
-		public string Description { get; set; } = null!;
-		public List<ThreadModel> Threads { get; set; } = null!;
+		public string Title { get; set; }
+		public string Description { get; set; }
+		public List<ThreadModel> Threads { get; set; }
 
 		public override void Configure(EntityTypeBuilder<Board> builder)
 		{

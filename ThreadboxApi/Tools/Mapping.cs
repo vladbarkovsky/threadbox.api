@@ -52,7 +52,7 @@ namespace ThreadboxApi.Tools
 
 				foreach (var methodInfo in methodInfos)
 				{
-					methodInfo!.Invoke(instance, new object[] { this });
+					methodInfo.Invoke(instance, new object[] { this });
 				}
 			}
 		}
@@ -73,7 +73,7 @@ namespace ThreadboxApi.Tools
 			{
 				var instance = Activator.CreateInstance(type);
 				var methodInfo = type.GetMethod("Mapping");
-				methodInfo!.Invoke(instance, new object[] { this });
+				methodInfo.Invoke(instance, new object[] { this });
 			}
 		}
 	}

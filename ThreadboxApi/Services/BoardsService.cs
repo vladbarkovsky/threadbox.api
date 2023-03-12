@@ -4,6 +4,7 @@ using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Models;
+using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Services
 {
@@ -20,20 +21,27 @@ namespace ThreadboxApi.Services
 
 		public async Task<List<ListBoardDto>> GetBoardsListAsync()
 		{
-			var boards = await _dbContext.Boards.ToListAsync();
-			return _mapper.Map<List<ListBoardDto>>(boards);
+			var boards = await _dbContext.Boards.AsNoTracking().ToListAsync();
+
+			var listBoardDtos = _mapper.Map<List<ListBoardDto>>(boards);
+			return listBoardDtos;
 		}
 
-		public async Task<BoardDto> TryGetBoardAsync(Guid boardId)
+		public async Task<BoardDto> GetBoardAsync(Guid boardId)
 		{
-			var board = await _dbContext.Boards.FindAsync(boardId);
-			return _mapper.Map<BoardDto>(board);
+			var board = await _dbContext.Boards
+				.AsNoTracking()
+				.FirstOrDefaultAsync(x => x.Id == boardId);
+
+			HttpResponseExceptions.ThrowNotFoundIfNull(board);
+			var boardDto = _mapper.Map<BoardDto>(board);
+			return boardDto;
 		}
 
 		public async Task<ListBoardDto> CreateBoardAsync(BoardDto boardDto)
 		{
 			var board = _mapper.Map<Board>(boardDto);
-			var addedBoard = await _dbContext.AddAsync(board);
+			var addedBoard = _dbContext.Add(board);
 			var listBoardDto = _mapper.Map<ListBoardDto>(addedBoard.Entity);
 			await _dbContext.SaveChangesAsync();
 			return listBoardDto;
@@ -51,12 +59,7 @@ namespace ThreadboxApi.Services
 		public async Task DeleteBoardAsync(Guid boardId)
 		{
 			var board = await _dbContext.Boards.FindAsync(boardId);
-
-			if (board == null)
-			{
-				throw new ArgumentException("Can't find board to delete.", nameof(boardId));
-			}
-
+			HttpResponseExceptions.ThrowNotFoundIfNull(board);
 			_dbContext.Boards.Remove(board);
 			await _dbContext.SaveChangesAsync();
 		}

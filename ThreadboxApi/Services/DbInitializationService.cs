@@ -68,7 +68,7 @@ namespace ThreadboxApi.Services
 		private async Task SeedUsersAsync()
 		{
 			await _userManager.CreateAsync(
-				user: new User(_configuration[AppSettings.DefaultAdminUserName]!),
+				user: new User(_configuration[AppSettings.DefaultAdminUserName]),
 				password: _configuration[AppSettings.DefaultAdminPassword]);
 
 			if (_webHostEnvironment.IsProduction())
@@ -142,7 +142,7 @@ namespace ThreadboxApi.Services
 		private T LoadFromJson<T>(string path)
 		{
 			var data = File.ReadAllText(path);
-			return JsonSerializer.Deserialize<T>(data, JsonSerializerOptions)!;
+			return JsonSerializer.Deserialize<T>(data, JsonSerializerOptions);
 		}
 	}
 }

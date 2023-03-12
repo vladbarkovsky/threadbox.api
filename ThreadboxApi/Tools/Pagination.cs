@@ -6,7 +6,7 @@ namespace ThreadboxApi.Tools
 {
 	public class PaginatedResult<T>
 	{
-		public List<T> PageItems { get; set; } = null!;
+		public List<T> PageItems { get; set; } 
 		public int PageIndex { get; set; }
 
 		/// <summary>

@@ -18,8 +18,8 @@ namespace ThreadboxApi.Services
 
 		public string CreateToken(JwtConfiguration jwtConfiguration)
 		{
-			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[jwtConfiguration.SecurityKey]!));
-			var lifetime = Convert.ToInt32(_configuration[jwtConfiguration.ExpirationTimeS]!);
+			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[jwtConfiguration.SecurityKey]));
+			var lifetime = Convert.ToInt32(_configuration[jwtConfiguration.ExpirationTimeS]);
 
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
@@ -39,8 +39,8 @@ namespace ThreadboxApi.Services
 
 	public class JwtConfiguration
 	{
-		public string SecurityKey { get; set; } = null!;
-		public string ExpirationTimeS { get; set; } = null!;
-		public List<Claim> Claims { get; set; } = null!;
+		public string SecurityKey { get; set; }
+		public string ExpirationTimeS { get; set; }
+		public List<Claim> Claims { get; set; }
 	}
 }

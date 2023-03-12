@@ -5,10 +5,10 @@ namespace ThreadboxApi.Models
 {
 	public class Post : Entity<Post>
 	{
-		public string Text { get; set; } = null!;
+		public string Text { get; set; } 
 		public Guid ThreadId { get; set; }
-		public ThreadModel Thread { get; set; } = null!;
-		public List<PostImage> PostImages { get; set; } = null!;
+		public ThreadModel Thread { get; set; } 
+		public List<PostImage> PostImages { get; set; } 
 
 		public override void Configure(EntityTypeBuilder<Post> builder)
 		{

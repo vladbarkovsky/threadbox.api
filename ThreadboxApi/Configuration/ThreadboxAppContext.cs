@@ -15,47 +15,25 @@ namespace ThreadboxApi.Configuration
 			_userManager = services.GetRequiredService<UserManager<User>>();
 		}
 
-		public Guid? UserId
+		public Guid UserId
 		{
 			get
 			{
-				try
-				{
-					var id = _httpContextAccessor.HttpContext?.User.Claims.First(x => x.Type == ClaimTypes.UserId).Value;
-					return Guid.Parse(id!);
-				}
-				catch
-				{
-					return null;
-				}
+				var id = _httpContextAccessor.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.UserId).Value;
+				return Guid.Parse(id);
 			}
 		}
 
-		public async Task<User?> TryGetUserAsync()
+		public async Task<User> GetUserAsync()
 		{
-			try
-			{
-				return await _userManager.FindByIdAsync(UserId.ToString());
-			}
-			catch
-			{
-				return null;
-			}
+			return await _userManager.FindByIdAsync(UserId.ToString());
 		}
 
-		public async Task<List<string>?> TryGetRolesAsync()
+		public async Task<List<string>> GetRolesAsync()
 		{
-			var user = await TryGetUserAsync();
-
-			try
-			{
-				var roles = await _userManager.GetRolesAsync(user!);
-				return roles.ToList();
-			}
-			catch
-			{
-				return null;
-			}
+			var user = await GetUserAsync();
+			var roles = await _userManager.GetRolesAsync(user);
+			return roles.ToList();
 		}
 	}
 }
