@@ -7,7 +7,7 @@ namespace ThreadboxApi.Models
 	public class ThreadImage : FileEntity<ThreadImage>, IMapped
 	{
 		public Guid ThreadId { get; set; }
-		public ThreadModel Thread { get; set; } 
+		public Thread Thread { get; set; } 
 
 		public override void Configure(EntityTypeBuilder<ThreadImage> builder)
 		{

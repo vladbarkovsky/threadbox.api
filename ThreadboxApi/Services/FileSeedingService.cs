@@ -19,7 +19,7 @@ namespace ThreadboxApi.Services
 		public FileSeedingService(IServiceProvider services)
 		{
 			FilePaths = Directory
-				.GetFiles(Constants.TestImagesDirectory)
+				.GetFiles(Constants.SeedingImagesPath)
 				// Pad each match of numeric values in the file path with a 0 character to a length of 4 characters.
 				// This is necessary to preserve the order of files containing a serial number in the name.
 				// WARNING: tested only on NTFS

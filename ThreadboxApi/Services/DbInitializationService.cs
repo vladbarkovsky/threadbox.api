@@ -36,18 +36,18 @@ namespace ThreadboxApi.Services
 		// NOTE: NSwag target in project file does something with reflection; therefore application code
 		// executes during build because of NSwag target and again during application launch.
 		// Therefore don't be surprised that databaseExists == true
-		public async Task InitializeIfNotExists()
+		public async Task EnsureInitializedAsync()
 		{
 			var databaseExists = await _dbContext.Database.CanConnectAsync();
 
 			if (!databaseExists)
 			{
 				_dbContext.Database.Migrate();
-				await SeedDbAsync();
+				await SeedAsync();
 			}
 		}
 
-		private async Task SeedDbAsync()
+		private async Task SeedAsync()
 		{
 			await SeedUsersAsync();
 
@@ -89,7 +89,7 @@ namespace ThreadboxApi.Services
 		private async Task SeedThreadsAsync()
 		{
 			var boards = await _dbContext.Boards.ToListAsync();
-			var threads = LoadFromJson<List<ThreadModel>>(Constants.ThreadsSeedingFilePath);
+			var threads = LoadFromJson<List<Models.Thread>>(Constants.ThreadsSeedingFilePath);
 			boards.First().Threads = threads;
 			await _dbContext.SaveChangesAsync();
 		}

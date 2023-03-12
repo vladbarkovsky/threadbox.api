@@ -22,7 +22,7 @@ namespace ThreadboxApi.Services
 
 		public async Task<PaginatedResult<ListThreadDto>> GetThreadsByBoardAsync(Guid boardId, PaginationParamsDto paginationParamsDto)
 		{
-			Expression<Func<ThreadModel, ListThreadDto>> listThreadDtoSelectExpression = thread => new ListThreadDto
+			Expression<Func<Models.Thread, ListThreadDto>> listThreadDtoSelectExpression = thread => new ListThreadDto
 			{
 				Id = thread.Id,
 				Title = thread.Title,
@@ -55,7 +55,7 @@ namespace ThreadboxApi.Services
 
 		public async Task<ListThreadDto> CreateThreadAsync(ThreadDto threadDto)
 		{
-			var thread = _mapper.Map<ThreadModel>(threadDto);
+			var thread = _mapper.Map<Models.Thread>(threadDto);
 			var createdThread = _dbContext.Threads.Add(thread).Entity;
 			var listThreadDto = _mapper.Map<ListThreadDto>(createdThread);
 

@@ -21,7 +21,7 @@ namespace ThreadboxApi.Configuraton.Startup
 					options.RequireHttpsMetadata = false;
 					options.SaveToken = false;
 
-					var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.JwtAuthenticationSecurityKey]);
+					var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.JwtSecurityKey]);
 
 					options.TokenValidationParameters = new TokenValidationParameters
 					{

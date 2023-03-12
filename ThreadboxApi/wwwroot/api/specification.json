@@ -44,6 +44,76 @@
         }
       }
     },
+    "/Authentication/RefreshAccessToken": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_RefreshAccessToken",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/Authentication/CreateRegistrationUrl": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_CreateRegistrationUrl",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/Authentication/ValidateRegistrationKey": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "Authentication_ValidateRegistrationKey",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "registrationKeyId",
+            "in": "query",
+            "format": "guid",
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
     "/Authentication/Register": {
       "post": {
         "tags": [
@@ -77,12 +147,12 @@
         }
       }
     },
-    "/Authentication/GetRegistrationToken": {
+    "/Authentication/CreateRegistrationKey": {
       "get": {
         "tags": [
           "Authentication"
         ],
-        "operationId": "Authentication_GetRegistrationToken",
+        "operationId": "Authentication_CreateRegistrationKey",
         "produces": [
           "text/plain",
           "application/json",
@@ -353,17 +423,12 @@
           "Test"
         ],
         "operationId": "Test_Check",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
         "responses": {
           "200": {
-            "x-nullable": false,
+            "x-nullable": true,
             "description": "",
             "schema": {
-              "type": "string"
+              "type": "file"
             }
           }
         }
@@ -537,6 +602,9 @@
     },
     "RegistrationFormDto": {
       "type": "object",
+      "required": [
+        "registrationKeyId"
+      ],
       "properties": {
         "userName": {
           "type": "string"
@@ -547,8 +615,9 @@
         "confirmPassword": {
           "type": "string"
         },
-        "registrationToken": {
-          "type": "string"
+        "registrationKeyId": {
+          "type": "string",
+          "format": "guid"
         }
       }
     },

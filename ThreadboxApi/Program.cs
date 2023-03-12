@@ -23,7 +23,7 @@ namespace ThreadboxApi
 			{
 				var services = scope.ServiceProvider;
 				var dbInitializationService = services.GetRequiredService<DbInitializationService>();
-				await dbInitializationService.InitializeIfNotExists();
+				await dbInitializationService.EnsureInitializedAsync();
 
 				await host.RunAsync();
 			}

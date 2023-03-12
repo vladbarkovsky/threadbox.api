@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using ThreadboxApi.Configuration;
-using ThreadboxApi.Models;
 using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Dtos
@@ -17,7 +16,7 @@ namespace ThreadboxApi.Dtos
 		{
 			/// Mapping for <see cref="Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry.Entity"/>.
 			/// In other cases manual mapping must be used to reduce database load
-			profile.CreateMap<ThreadModel, ListThreadDto>()
+			profile.CreateMap<Models.Thread, ListThreadDto>()
 				.ForMember(
 					d => d.ThreadImageUrls,
 					o => o.MapFrom(s => s.ThreadImages.Select(x => string.Format(Constants.ThreadImageRequest, x.Id)).ToList()));

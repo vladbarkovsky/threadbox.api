@@ -23,7 +23,7 @@ namespace ThreadboxApi.Dtos
 		public string UserName { get; set; }
 		public string Password { get; set; }
 		public string ConfirmPassword { get; set; }
-		public string RegistrationToken { get; set; }
+		public Guid RegistrationKeyId { get; set; }
 
 		public class RegistrationFormDtoValidator : AbstractValidator<RegistrationFormDto>
 		{
@@ -32,7 +32,7 @@ namespace ThreadboxApi.Dtos
 				RuleFor(x => x.UserName).UserNameRules();
 				RuleFor(x => x.Password).PasswordRules();
 				RuleFor(x => x.ConfirmPassword).Equal(x => x.Password);
-				RuleFor(x => x.RegistrationToken).NotEmpty();
+				RuleFor(x => x.RegistrationKeyId).NotEmpty();
 			}
 		}
 	}

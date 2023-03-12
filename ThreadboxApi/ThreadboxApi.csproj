@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>28b81a09-22e3-438e-a058-5c3bf4817dcc</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,11 +40,10 @@
 	
   <Target Name="NSwag" AfterTargets="Build" Condition="$(Configuration) == 'Debug'">
 	<!-- NOTE: NSwag target does something with reflection, that launches code with ASPNETCORE_ENVIRONMENT=Production by default
-	during build process before application launch. It can cause problems, for example, in DbInitializationService.SeedDbAsync().
-	Therefore we set ASPNETCORE_ENVIRONMENT=Development -->
+	during build process before application launch. It can cause problems; therefore we set ASPNETCORE_ENVIRONMENT=Development -->
     <Exec
-	  Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)"
-	  EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"/>
+		Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)"
+		EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" />
   </Target>
 
 </Project>

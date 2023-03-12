@@ -20,7 +20,7 @@
 		{
 			if (data == null)
 			{
-				throw new HttpResponseException($"{data.GetType().Name} not found", HttpErrorResponseCode.NotFound);
+				throw new HttpResponseException($"{data.GetType().Name} not found.", HttpErrorResponseCode.NotFound);
 			}
 		}
 	}

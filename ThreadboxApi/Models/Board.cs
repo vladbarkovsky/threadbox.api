@@ -8,7 +8,7 @@ namespace ThreadboxApi.Models
 	{
 		public string Title { get; set; }
 		public string Description { get; set; }
-		public List<ThreadModel> Threads { get; set; }
+		public List<Thread> Threads { get; set; }
 
 		public override void Configure(EntityTypeBuilder<Board> builder)
 		{

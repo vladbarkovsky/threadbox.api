@@ -7,7 +7,7 @@ namespace ThreadboxApi.Models
 	{
 		public string Text { get; set; } 
 		public Guid ThreadId { get; set; }
-		public ThreadModel Thread { get; set; } 
+		public Thread Thread { get; set; } 
 		public List<PostImage> PostImages { get; set; } 
 
 		public override void Configure(EntityTypeBuilder<Post> builder)

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ThreadboxApi.Configuration;
@@ -11,9 +12,11 @@ using ThreadboxApi.Configuration;
 namespace ThreadboxApi.Migrations
 {
     [DbContext(typeof(ThreadboxDbContext))]
-    partial class ThreadboxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230312172215_RegistrationKeyToGuid")]
+    partial class RegistrationKeyToGuid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

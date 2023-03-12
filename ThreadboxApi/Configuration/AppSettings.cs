@@ -11,14 +11,13 @@
 
 		public const string JwtValidAudience = "Jwt:ValidAudience";
 		public const string JwtValidIssuer = "Jwt:ValidIssuer";
-
-		public const string JwtAuthenticationSecurityKey = "Jwt:Authentication:SecurityKey";
-		public const string JwtAuthenticationExpirationTimeS = "Jwt:Authentication:ExpirationTimeS";
-
-		public const string JwtRegistrationSecurityKey = "Jwt:Registration:SecurityKey";
-		public const string JwtRegistrationExpirationTimeS = "Jwt:Registration:ExpirationTimeS";
+		public const string JwtSecurityKey = "Jwt:Authentication:SecurityKey";
+		public const string JwtExpirationTimeS = "Jwt:Authentication:ExpirationTimeS";
 
 		public const string DefaultAdminUserName = "DefaultAdminCredentials:UserName";
 		public const string DefaultAdminPassword = "DefaultAdminCredentials:Password";
+
+		public const string AngularClientBaseUrl = "AngularClientBaseUrl";
+		public const string RegistrationKeyExpirationTimeS = "RegistrationKeyExpirationTimeS";
 	}
 }

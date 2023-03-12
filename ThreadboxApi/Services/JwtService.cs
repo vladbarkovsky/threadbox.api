@@ -16,16 +16,19 @@ namespace ThreadboxApi.Services
 			_configuration = services.GetRequiredService<IConfiguration>();
 		}
 
-		public string CreateToken(JwtConfiguration jwtConfiguration)
+		public string CreateAccessToken(Guid userId)
 		{
-			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[jwtConfiguration.SecurityKey]));
-			var lifetime = Convert.ToInt32(_configuration[jwtConfiguration.ExpirationTimeS]);
+			var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[AppSettings.JwtSecurityKey]));
+			var lifetime = Convert.ToInt32(_configuration[AppSettings.JwtExpirationTimeS]);
 
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Audience = _configuration[AppSettings.JwtValidAudience],
 				Issuer = _configuration[AppSettings.JwtValidIssuer],
-				Subject = new ClaimsIdentity(jwtConfiguration.Claims),
+				Subject = new ClaimsIdentity(new List<Claim>
+				{
+					new Claim(Configuration.ClaimTypes.UserId, userId.ToString())
+				}),
 				Expires = DateTime.UtcNow.AddSeconds(lifetime),
 				NotBefore = DateTime.UtcNow,
 				SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
@@ -35,12 +38,5 @@ namespace ThreadboxApi.Services
 			var token = tokenHandler.CreateToken(tokenDescriptor);
 			return tokenHandler.WriteToken(token);
 		}
-	}
-
-	public class JwtConfiguration
-	{
-		public string SecurityKey { get; set; }
-		public string ExpirationTimeS { get; set; }
-		public List<Claim> Claims { get; set; }
 	}
 }

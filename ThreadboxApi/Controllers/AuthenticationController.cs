@@ -19,21 +19,46 @@ namespace ThreadboxApi.Controllers
 		[HttpPost("[action]")]
 		public async Task<ActionResult<string>> Login(LoginFormDto loginFormDto)
 		{
-			return await _authenticationService.Login(loginFormDto);
+			var accessToken = await _authenticationService.Login(loginFormDto);
+			return accessToken;
+		}
+
+		[Authorize]
+		[HttpGet("[action]")]
+		public ActionResult<string> RefreshAccessToken()
+		{
+			var accessToken = _authenticationService.RefreshAccessToken();
+			return accessToken;
+		}
+
+		// TODO: Admin access
+		[Authorize]
+		[HttpGet("[action]")]
+		public async Task<ActionResult<string>> CreateRegistrationUrl()
+		{
+			var registrationUrl = await _authenticationService.CreateRegistrationUrlAsync();
+			return registrationUrl;
+		}
+
+		[HttpGet("[action]")]
+		public async Task<ActionResult> ValidateRegistrationKey(Guid registrationKeyId)
+		{
+			await _authenticationService.ValidateRegistrationKeyAsync(registrationKeyId);
+			return NoContent();
 		}
 
 		[HttpPost("[action]")]
 		public async Task<ActionResult> Register(RegistrationFormDto registrationFormDto)
 		{
 			await _authenticationService.Register(registrationFormDto);
-			return Ok();
+			return NoContent();
 		}
 
 		[Authorize]
 		[HttpGet("[action]")]
-		public async Task<ActionResult<string>> GetRegistrationToken()
+		public async Task<ActionResult<string>> CreateRegistrationKey()
 		{
-			return await _authenticationService.CreateRegistrationTokenAsync();
+			return await _authenticationService.CreateRegistrationUrlAsync();
 		}
 	}
 }
