@@ -11,8 +11,8 @@
 
 		public const string JwtValidAudience = "Jwt:ValidAudience";
 		public const string JwtValidIssuer = "Jwt:ValidIssuer";
-		public const string JwtSecurityKey = "Jwt:Authentication:SecurityKey";
-		public const string JwtExpirationTimeS = "Jwt:Authentication:ExpirationTimeS";
+		public const string JwtSecurityKey = "Jwt:SecurityKey";
+		public const string JwtExpirationTimeS = "Jwt:ExpirationTimeS";
 
 		public const string DefaultAdminUserName = "DefaultAdminCredentials:UserName";
 		public const string DefaultAdminPassword = "DefaultAdminCredentials:Password";
