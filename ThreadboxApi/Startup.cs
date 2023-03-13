@@ -63,6 +63,7 @@ namespace ThreadboxApi
 
 			CorsStartup.Configure(app);
 			ExceptionHandlingStartup.Configure(app);
+			app.UseMiddleware<JwtAccessTokenRefreshMiddleware>();
 
 			app.UseRouting();
 
