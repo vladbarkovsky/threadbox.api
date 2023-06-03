@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Models;
 
 namespace ThreadboxApi.Configuraton.Startup
 {
@@ -9,6 +11,10 @@ namespace ThreadboxApi.Configuraton.Startup
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            services
+                .AddIdentity<User, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ThreadboxDbContext>();
+
             services
                 .AddAuthentication(options =>
                 {

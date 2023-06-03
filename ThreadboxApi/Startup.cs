@@ -1,13 +1,7 @@
-﻿using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Configuraton.Startup;
-using ThreadboxApi.Models;
 
 namespace ThreadboxApi
 {
@@ -24,18 +18,7 @@ namespace ThreadboxApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ThreadboxDbContext>(options =>
-            {
-                options.UseNpgsql(_configuration.GetConnectionString(AppSettings.DbConnectionString));
-
-                // Throw exceptions in case of performance issues with single queries
-                // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
-                options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-            });
-
-            services.AddIdentity<User, IdentityRole<Guid>>()
-                .AddEntityFrameworkStores<ThreadboxDbContext>();
-
+            DbStartup.ConfigureServices(services, _configuration);
             DependencyInjectionStartup.ConfigureServices(services);
             services.AddControllers();
             SwaggerStartup.ConfigureServices(services);
@@ -43,9 +26,8 @@ namespace ThreadboxApi
             ExceptionHandlingStartup.ConfigureServices(services);
             IdentityStartup.ConfigureServices(services, _configuration);
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddFluentValidationAutoValidation();
+            MediatRStartup.ConfigureServices(services);
+            FluentValidationStartup.ConfigureServices(services);
         }
 
         public void Configure(IApplicationBuilder app)
