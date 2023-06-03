@@ -63,7 +63,12 @@
               "type": "string"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/Authentication/CreateRegistrationUrl": {
@@ -85,7 +90,12 @@
               "type": "string"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/Authentication/ValidateRegistrationKey": {
@@ -166,7 +176,12 @@
               "type": "string"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/Boards/GetBoardsList": {
@@ -774,5 +789,18 @@
         }
       }
     }
-  }
+  },
+  "securityDefinitions": {
+    "JWT": {
+      "type": "apiKey",
+      "description": "Type into the textbox: Bearer {your JWT token}.",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
 }

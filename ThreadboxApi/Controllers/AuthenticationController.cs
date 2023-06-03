@@ -5,60 +5,60 @@ using ThreadboxApi.Services;
 
 namespace ThreadboxApi.Controllers
 {
-	[ApiController]
-	[Route("[controller]")]
-	public class AuthenticationController : ControllerBase
-	{
-		private readonly AuthenticationService _authenticationService;
+    [ApiController]
+    [Route("[controller]")]
+    public class AuthenticationController : ControllerBase
+    {
+        private readonly IdentityService _identityService;
 
-		public AuthenticationController(IServiceProvider services)
-		{
-			_authenticationService = services.GetRequiredService<AuthenticationService>();
-		}
+        public AuthenticationController(IServiceProvider services)
+        {
+            _identityService = services.GetRequiredService<IdentityService>();
+        }
 
-		[HttpPost("[action]")]
-		public async Task<ActionResult<string>> Login(LoginFormDto loginFormDto)
-		{
-			var accessToken = await _authenticationService.Login(loginFormDto);
-			return accessToken;
-		}
+        [HttpPost("[action]")]
+        public async Task<ActionResult<string>> Login(LoginFormDto loginFormDto)
+        {
+            var accessToken = await _identityService.Login(loginFormDto);
+            return accessToken;
+        }
 
-		[Authorize]
-		[HttpGet("[action]")]
-		public ActionResult<string> RefreshAccessToken()
-		{
-			var accessToken = _authenticationService.RefreshAccessToken();
-			return accessToken;
-		}
+        [Authorize]
+        [HttpGet("[action]")]
+        public ActionResult<string> RefreshAccessToken()
+        {
+            var accessToken = _identityService.RefreshAccessToken();
+            return accessToken;
+        }
 
-		// TODO: Admin access
-		[Authorize]
-		[HttpGet("[action]")]
-		public async Task<ActionResult<string>> CreateRegistrationUrl()
-		{
-			var registrationUrl = await _authenticationService.CreateRegistrationUrlAsync();
-			return registrationUrl;
-		}
+        // TODO: Admin access
+        [Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult<string>> CreateRegistrationUrl()
+        {
+            var registrationUrl = await _identityService.CreateRegistrationUrlAsync();
+            return registrationUrl;
+        }
 
-		[HttpGet("[action]")]
-		public async Task<ActionResult> ValidateRegistrationKey(Guid registrationKeyId)
-		{
-			await _authenticationService.ValidateRegistrationKeyAsync(registrationKeyId);
-			return NoContent();
-		}
+        [HttpGet("[action]")]
+        public async Task<ActionResult> ValidateRegistrationKey(Guid registrationKeyId)
+        {
+            await _identityService.ValidateRegistrationKeyAsync(registrationKeyId);
+            return NoContent();
+        }
 
-		[HttpPost("[action]")]
-		public async Task<ActionResult> Register(RegistrationFormDto registrationFormDto)
-		{
-			await _authenticationService.Register(registrationFormDto);
-			return NoContent();
-		}
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Register(RegistrationFormDto registrationFormDto)
+        {
+            await _identityService.Register(registrationFormDto);
+            return NoContent();
+        }
 
-		[Authorize]
-		[HttpGet("[action]")]
-		public async Task<ActionResult<string>> CreateRegistrationKey()
-		{
-			return await _authenticationService.CreateRegistrationUrlAsync();
-		}
-	}
+        [Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult<string>> CreateRegistrationKey()
+        {
+            return await _identityService.CreateRegistrationUrlAsync();
+        }
+    }
 }

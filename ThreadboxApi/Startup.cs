@@ -11,71 +11,64 @@ using ThreadboxApi.Models;
 
 namespace ThreadboxApi
 {
-	public class Startup
-	{
-		private readonly IConfiguration _configuration;
-		private readonly IWebHostEnvironment _webHostEnvironment;
+    public class Startup
+    {
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
-		{
-			_configuration = configuration;
-			_webHostEnvironment = webHostEnvironment;
-		}
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        {
+            _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
+        }
 
-		public void ConfigureServices(IServiceCollection services)
-		{
-			services.AddDbContext<ThreadboxDbContext>(options =>
-			{
-				options.UseNpgsql(_configuration.GetConnectionString(AppSettings.DbConnectionString));
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContext<ThreadboxDbContext>(options =>
+            {
+                options.UseNpgsql(_configuration.GetConnectionString(AppSettings.DbConnectionString));
 
-				// Throw exceptions in case of performance issues with single queries
-				// See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
-				options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
-			});
+                // Throw exceptions in case of performance issues with single queries
+                // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
+                options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+            });
 
-			services.AddIdentity<User, IdentityRole<Guid>>()
-				.AddEntityFrameworkStores<ThreadboxDbContext>();
+            services.AddIdentity<User, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ThreadboxDbContext>();
 
-			DependencyInjectionStartup.ConfigureServices(services);
+            DependencyInjectionStartup.ConfigureServices(services);
+            services.AddControllers();
+            SwaggerStartup.ConfigureServices(services);
+            CorsStartup.ConfigureServices(services, _configuration);
+            ExceptionHandlingStartup.ConfigureServices(services);
+            IdentityStartup.ConfigureServices(services, _configuration);
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-			services.AddControllers();
-			SwaggerStartup.ConfigureServices(services);
-			CorsStartup.ConfigureServices(services, _configuration);
-			ExceptionHandlingStartup.ConfigureServices(services);
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddFluentValidationAutoValidation();
+        }
 
-			AuthenticationStartup.ConfigureServices(services, _configuration);
-			services.AddAuthorization();
+        public void Configure(IApplicationBuilder app)
+        {
+            SwaggerStartup.Configure(app, _webHostEnvironment);
 
-			services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            /// IMPORTANT: CORS must be configured before
+            /// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
+            /// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
+            /// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
 
-			services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-			services.AddFluentValidationAutoValidation();
-		}
+            CorsStartup.Configure(app);
+            ExceptionHandlingStartup.Configure(app);
+            app.UseMiddleware<JwtAccessTokenRefreshMiddleware>();
+            app.UseRouting();
+            IdentityStartup.Configure(app);
 
-		public void Configure(IApplicationBuilder app)
-		{
-			SwaggerStartup.Configure(app, _webHostEnvironment);
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
-			/// IMPORTANT: CORS must be configured before
-			/// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
-			/// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
-			/// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
-
-			CorsStartup.Configure(app);
-			ExceptionHandlingStartup.Configure(app);
-			app.UseMiddleware<JwtAccessTokenRefreshMiddleware>();
-
-			app.UseRouting();
-
-			AuthenticationStartup.Configure(app);
-			app.UseAuthorization();
-
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
-			});
-
-			app.UseHttpsRedirection();
-		}
-	}
+            app.UseHttpsRedirection();
+        }
+    }
 }

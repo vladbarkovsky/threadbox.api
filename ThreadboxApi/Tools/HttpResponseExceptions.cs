@@ -1,33 +1,23 @@
 ﻿namespace ThreadboxApi.Tools
 {
-	public class HttpResponseException : Exception
-	{
-		public HttpErrorResponseCode ResponseCode { get; set; }
+    public class HttpResponseException : Exception
+    {
+        public static HttpResponseException BadRequest => new("Bad Request", StatusCodes.Status400BadRequest);
+        public static HttpResponseException NotFound => new("Not Found", StatusCodes.Status404NotFound);
+        public int StatusCode { get; set; }
 
-		public HttpResponseException(string message, HttpErrorResponseCode responseCode = HttpErrorResponseCode.BadRequest)
-			: base(message)
-		{
-			ResponseCode = responseCode;
-		}
-	}
+        public HttpResponseException(string message, int statusCode = StatusCodes.Status400BadRequest)
+            : base(message)
+        {
+            StatusCode = statusCode;
+        }
 
-	public class HttpResponseExceptions
-	{
-		public static HttpResponseException BadRequest => new("Bad Request", HttpErrorResponseCode.BadRequest);
-		public static HttpResponseException NotFound => new("Not Found", HttpErrorResponseCode.NotFound);
-
-		public static void ThrowNotFoundIfNull(object data)
-		{
-			if (data == null)
-			{
-				throw new HttpResponseException($"{data.GetType().Name} not found.", HttpErrorResponseCode.NotFound);
-			}
-		}
-	}
-
-	public enum HttpErrorResponseCode
-	{
-		BadRequest = StatusCodes.Status400BadRequest,
-		NotFound = StatusCodes.Status404NotFound
-	}
+        public static void ThrowNotFoundIfNull(object data)
+        {
+            if (data == null)
+            {
+                throw new HttpResponseException($"{data.GetType().Name} not found.", StatusCodes.Status404NotFound);
+            }
+        }
+    }
 }
