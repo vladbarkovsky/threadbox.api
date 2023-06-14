@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using ThreadboxApi.Configuration;
-using ThreadboxApi.Models;
+using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Dtos
 {
-	public class ListPostDto : IMapped
+    public class ListPostDto : IMapped
 	{
 		public Guid Id { get; set; }
 		public string Text { get; set; }

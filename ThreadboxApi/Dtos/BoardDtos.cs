@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
-using ThreadboxApi.Models;
+using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Dtos
 {
-	public class BoardDto : IMappedFrom<Board>
+    public class BoardDto : IMappedFrom<Board>
 	{
 		public Guid? Id { get; set; }
 		public string Title { get; set; }

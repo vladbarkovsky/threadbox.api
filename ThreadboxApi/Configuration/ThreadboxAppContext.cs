@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using ThreadboxApi.Configuration.Startup;
-using ThreadboxApi.Models;
+using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Configuration
 {

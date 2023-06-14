@@ -33,8 +33,8 @@
 
   <ItemGroup>
     <Folder Include="Logs\" />
-    <Folder Include="Migrations\" />
-    <Folder Include="CataasImages\" />
+    <Folder Include="Infrastructure\Persistence\Migrations\" />
+    <Folder Include="Infrastructure\Persistence\Seed\CataasImages\" />
   </ItemGroup>
 
 
