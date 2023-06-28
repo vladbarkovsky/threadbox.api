@@ -16,6 +16,8 @@ Threadbox is anonymous imageboard for sharing texts and images.
 
 All endpoints that you add on server automatically generated on launch. See `api-client.ts` file on client.
 
+The API specification is available at the link https://localhost:5000/swagger/index.html
+
 # Migrations
 
 ```
