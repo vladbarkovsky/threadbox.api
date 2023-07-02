@@ -1,21 +1,21 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Infrastructure.Persistence;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Application.Services
 {
     public class BoardsService : IScopedService
     {
-        private readonly Infrastructure.Persistence.DbContext _dbContext;
+        private readonly Infrastructure.Persistence.ThreadboxDbContext _dbContext;
         private readonly IMapper _mapper;
 
         public BoardsService(IServiceProvider services)
         {
-            _dbContext = services.GetRequiredService<Infrastructure.Persistence.DbContext>();
+            _dbContext = services.GetRequiredService<Infrastructure.Persistence.ThreadboxDbContext>();
             _mapper = services.GetRequiredService<IMapper>();
         }
 

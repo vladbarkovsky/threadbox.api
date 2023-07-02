@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
-using ThreadboxApi.Tools;
+using ThreadboxApi.Application.Common.Helpers;
 
 namespace ThreadboxApi.Startup
 {

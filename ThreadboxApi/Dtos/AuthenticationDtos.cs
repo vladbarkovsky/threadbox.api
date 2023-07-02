@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using ThreadboxApi.Tools;
+using ThreadboxApi.Application.Common.Helpers.Validation;
 
 namespace ThreadboxApi.Dtos
 {
-	public class LoginFormDto
+    public class LoginFormDto
 	{
 		public string UserName { get; set; }
 		public string Password { get; set; }

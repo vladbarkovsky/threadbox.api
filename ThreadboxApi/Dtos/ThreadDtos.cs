@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Configuration;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Dtos
 {

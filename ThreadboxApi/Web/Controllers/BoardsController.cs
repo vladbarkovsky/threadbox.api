@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using ThreadboxApi.Application.Boards.Commands;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Dtos;
 
 namespace ThreadboxApi.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class BoardsController : ControllerBase
+    public class BoardsController : MediatRController
     {
         private readonly BoardsService _boardsService;
 
@@ -29,9 +28,10 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<ListBoardDto>> CreateBoard(BoardDto boardDto)
+        public async Task<ActionResult> CreateBoard([FromBody] CreateBoard.Command command)
         {
-            return await _boardsService.CreateBoardAsync(boardDto);
+            await Mediator.Send(command);
+            return NoContent();
         }
 
         [HttpPut("[action]")]

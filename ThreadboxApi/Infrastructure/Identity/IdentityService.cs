@@ -2,19 +2,19 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Infrastructure.Persistence;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {
     public class IdentityService : IScopedService
     {
-        private readonly Persistence.DbContext _dbContext;
+        private readonly Persistence.ThreadboxDbContext _dbContext;
         private readonly ThreadboxAppContext _appContext;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
@@ -31,7 +31,7 @@ namespace ThreadboxApi.Infrastructure.Identity
 
         public IdentityService(IServiceProvider services)
         {
-            _dbContext = services.GetRequiredService<Persistence.DbContext>();
+            _dbContext = services.GetRequiredService<Persistence.ThreadboxDbContext>();
             _appContext = services.GetRequiredService<ThreadboxAppContext>();
             _mapper = services.GetRequiredService<IMapper>();
             _configuration = services.GetRequiredService<IConfiguration>();

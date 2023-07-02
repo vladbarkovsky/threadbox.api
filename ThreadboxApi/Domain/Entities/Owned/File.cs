@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Tools;
+using ThreadboxApi.Application.Common.Helpers;
 
 namespace ThreadboxApi.Domain.Entities.Owned
 {

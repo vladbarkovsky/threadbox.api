@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Dtos;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {

@@ -14,7 +14,7 @@ namespace ThreadboxApi.Startup
         {
             services
                 .AddIdentity<User, IdentityRole<Guid>>()
-                .AddEntityFrameworkStores<DbContext>();
+                .AddEntityFrameworkStores<ThreadboxDbContext>();
 
             services
                 .AddAuthentication(options =>

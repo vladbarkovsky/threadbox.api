@@ -11,7 +11,7 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Migrations
 {
-    [DbContext(typeof(Infrastructure.Persistence.DbContext))]
+    [DbContext(typeof(Infrastructure.Persistence.ThreadboxDbContext))]
     [Migration("20221224173046_RegistrationKeysAndExtendedUser")]
     partial class RegistrationKeysAndExtendedUser
     {

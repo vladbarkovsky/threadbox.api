@@ -32,9 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\Boards\Queries\" />
     <Folder Include="Logs\" />
     <Folder Include="Infrastructure\Persistence\Migrations\" />
-    <Folder Include="Infrastructure\Persistence\Seed\CataasImages\" />
   </ItemGroup>
 
 

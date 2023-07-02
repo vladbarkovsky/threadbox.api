@@ -3,7 +3,7 @@ using System.Reflection;
 using ThreadboxApi.Domain.Common;
 using ThreadboxApi.Domain.Entities;
 
-namespace ThreadboxApi.Tools
+namespace ThreadboxApi.Application.Common.Helpers
 {
     /// <summary>
     /// Allows to configure mappings inside implementing class

@@ -7,7 +7,7 @@ using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Infrastructure.Persistence
 {
-    public class DbContext : IdentityDbContext<
+    public class ThreadboxDbContext : IdentityDbContext<
         User,
         IdentityRole<Guid>,
         Guid,
@@ -17,7 +17,7 @@ namespace ThreadboxApi.Infrastructure.Persistence
         IdentityRoleClaim<Guid>,
         IdentityUserToken<Guid>>
     {
-        public DbContext(DbContextOptions<DbContext> options)
+        public ThreadboxDbContext(DbContextOptions<ThreadboxDbContext> options)
             : base(options)
         { }
 

@@ -7,11 +7,11 @@ using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
-namespace ThreadboxApi.Infrastructure.Persistence.Seed
+namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 {
     public class DbInitializationService : ITransientService
     {
-        private readonly DbContext _dbContext;
+        private readonly ThreadboxDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
@@ -21,7 +21,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seed
 
         public DbInitializationService(IServiceProvider services)
         {
-            _dbContext = services.GetRequiredService<DbContext>();
+            _dbContext = services.GetRequiredService<ThreadboxDbContext>();
             _webHostEnvironment = services.GetRequiredService<IWebHostEnvironment>();
             _configuration = services.GetRequiredService<IConfiguration>();
             _userManager = services.GetRequiredService<UserManager<User>>();

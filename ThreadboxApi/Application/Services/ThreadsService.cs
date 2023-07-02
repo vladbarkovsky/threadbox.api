@@ -3,20 +3,20 @@ using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
-using ThreadboxApi.Tools;
 using System.Linq.Expressions;
 using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Common.Helpers;
 
 namespace ThreadboxApi.Application.Services
 {
     public class ThreadsService : IScopedService
     {
-        private readonly Infrastructure.Persistence.DbContext _dbContext;
+        private readonly Infrastructure.Persistence.ThreadboxDbContext _dbContext;
         private readonly IMapper _mapper;
 
         public ThreadsService(IServiceProvider services)
         {
-            _dbContext = services.GetRequiredService<Infrastructure.Persistence.DbContext>();
+            _dbContext = services.GetRequiredService<Infrastructure.Persistence.ThreadboxDbContext>();
             _mapper = services.GetRequiredService<IMapper>();
         }
 

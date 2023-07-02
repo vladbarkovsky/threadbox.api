@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.StaticFiles;
 using System.Text.RegularExpressions;
 using ThreadboxApi.Application.Common.Interfaces;
-using ThreadboxApi.Configuration;
 using ThreadboxApi.Domain.Common;
 
-namespace ThreadboxApi.Infrastructure.Persistence.Seed
+namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 {
     /// <summary>
     /// Generates file entities for seeding
@@ -20,7 +19,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seed
         public FileSeedingService(GuidCombGenerator guidCombGenerator)
         {
             FilePaths = Directory
-                .GetFiles(Constants.SeedingImagesPath)
+                .GetFiles(Constants.CataasImagesDirectory)
                 // Pad each match of numeric values in the file path with a 0 character to a length of 4 characters.
                 // This is necessary to preserve the order of files containing a serial number in the name.
                 // NOTE: tested only on Windows 10 NTFS

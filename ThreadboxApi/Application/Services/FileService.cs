@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Domain.Common;
 using ThreadboxApi.Infrastructure.Persistence;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Application.Services
 {
     public class FileService : IScopedService
     {
-        private readonly Infrastructure.Persistence.DbContext _dbContext;
+        private readonly Infrastructure.Persistence.ThreadboxDbContext _dbContext;
         private readonly ZipService _zipService;
 
-        public FileService(Infrastructure.Persistence.DbContext dbContext, ZipService zipService)
+        public FileService(Infrastructure.Persistence.ThreadboxDbContext dbContext, ZipService zipService)
         {
             _dbContext = dbContext;
             _zipService = zipService;

@@ -11,7 +11,7 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Migrations
 {
-    [DbContext(typeof(Infrastructure.Persistence.DbContext))]
+    [DbContext(typeof(Infrastructure.Persistence.ThreadboxDbContext))]
     [Migration("20230312172215_RegistrationKeyToGuid")]
     partial class RegistrationKeyToGuid
     {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Domain.Common;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Domain.Entities
 {

@@ -1,4 +1,4 @@
-﻿namespace ThreadboxApi.Infrastructure.Persistence.Seed
+﻿namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 {
     public class Constants
     {

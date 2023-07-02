@@ -1,6 +1,6 @@
-﻿using ThreadboxApi.Domain.Common;
+﻿using ThreadboxApi.Application.Common.Helpers;
+using ThreadboxApi.Domain.Common;
 using ThreadboxApi.Dtos;
-using ThreadboxApi.Tools;
 
 namespace ThreadboxApi.Domain.Entities
 {
