@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Application.Common.Helpers.Pagination;
+using ThreadboxApi.Application.Common.Interfaces;
 
 namespace ThreadboxApi.Application.Services
 {

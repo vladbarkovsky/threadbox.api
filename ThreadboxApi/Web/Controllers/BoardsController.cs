@@ -1,30 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Boards.Commands;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Dtos;
+using ThreadboxApi.Application.Boards.Models;
+using ThreadboxApi.Application.Boards.Queries;
 
 namespace ThreadboxApi.Web.Controllers
 {
     public class BoardsController : MediatRController
     {
-        private readonly BoardsService _boardsService;
-
-        public BoardsController(IServiceProvider services)
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<BoardListDto>>> GetBoardsList()
         {
-            _boardsService = services.GetRequiredService<BoardsService>();
+            return await Mediator.Send(new GetBoardsList.Query());
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<List<ListBoardDto>>> GetBoardsList()
+        public async Task<ActionResult<BoardDto>> GetBoard([FromQuery] GetBoard.Query query)
         {
-            return await _boardsService.GetBoardsListAsync();
-        }
-
-        [HttpGet("[action]")]
-        public async Task<ActionResult<BoardDto>> GetBoard(Guid boardId)
-        {
-            var boardDto = await _boardsService.GetBoardAsync(boardId);
-            return boardDto;
+            return await Mediator.Send(query);
         }
 
         [HttpPost("[action]")]
@@ -35,15 +27,16 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<ActionResult<ListBoardDto>> EditBoard(BoardDto boardDto)
+        public async Task<ActionResult> UpdateBoard([FromBody] UpdateBoard.Command command)
         {
-            return await _boardsService.EditBoardAsync(boardDto);
+            await Mediator.Send(command);
+            return NoContent();
         }
 
         [HttpDelete("[action]")]
-        public async Task<ActionResult> DeleteBoard(Guid boardId)
+        public async Task<ActionResult> DeleteBoard([FromQuery] DeleteBoard.Command command)
         {
-            await _boardsService.DeleteBoardAsync(boardId);
+            await Mediator.Send(command);
             return NoContent();
         }
     }

@@ -43,7 +43,7 @@ namespace ThreadboxApi.Application.Boards.Commands
             };
 
             _dbContext.Add(board);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
     }

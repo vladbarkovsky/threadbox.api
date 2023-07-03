@@ -5,7 +5,7 @@ using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using System.Linq.Expressions;
 using ThreadboxApi.Infrastructure.Persistence;
-using ThreadboxApi.Application.Common.Helpers;
+using ThreadboxApi.Application.Common.Helpers.Pagination;
 
 namespace ThreadboxApi.Application.Services
 {
@@ -20,7 +20,7 @@ namespace ThreadboxApi.Application.Services
             _mapper = services.GetRequiredService<IMapper>();
         }
 
-        public async Task<PaginatedResult<ListThreadDto>> GetThreadsByBoardAsync(Guid boardId, PaginationParamsDto paginationParamsDto)
+        public async Task<PaginatedResult<ListThreadDto>> GetThreadsByBoardAsync(Guid boardId, PaginatedQuery paginationParamsDto)
         {
             Expression<Func<Domain.Entities.Thread, ListThreadDto>> listThreadDtoSelectExpression = thread => new ListThreadDto
             {
