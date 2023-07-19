@@ -2,7 +2,7 @@
 {
     public class AppSettings
     {
-        public const string DbConnectionString = "ThreadboxApiDev";
+        public const string DevDbConnectionString = "ThreadboxApiDev";
 
         public const string CorsPolicy = "Cors:Policy";
         public const string CorsOrigins = "Cors:Origins";
@@ -12,12 +12,12 @@
         public const string JwtValidAudience = "Jwt:ValidAudience";
         public const string JwtValidIssuer = "Jwt:ValidIssuer";
         public const string JwtSecurityKey = "Jwt:SecurityKey";
-        public const string JwtExpirationTimeS = "Jwt:ExpirationTimeS";
+        public const string JwtExpirationTimeSeconds = "Jwt:ExpirationTimeSeconds";
 
         public const string DefaultAdminUserName = "DefaultAdminCredentials:UserName";
         public const string DefaultAdminPassword = "DefaultAdminCredentials:Password";
 
         public const string AngularClientBaseUrl = "AngularClientBaseUrl";
-        public const string RegistrationKeyExpirationTimeS = "RegistrationKeyExpirationTimeS";
+        public const string RegistrationKeyExpirationTimeSeconds = "RegistrationKeyExpirationTimeSeconds";
     }
 }

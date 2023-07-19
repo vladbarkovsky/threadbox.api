@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using ThreadboxApi.Application.Common;
-using ThreadboxApi.Configuration.Startup;
+using ThreadboxApi.Application.Common.Interfaces;
 
 namespace ThreadboxApi.Application.Services
 {
@@ -19,7 +19,7 @@ namespace ThreadboxApi.Application.Services
         public string CreateAccessToken(Guid userId)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[AppSettings.JwtSecurityKey]));
-            var lifetime = Convert.ToInt32(_configuration[AppSettings.JwtExpirationTimeS]);
+            var lifetime = Convert.ToInt32(_configuration[AppSettings.JwtExpirationTimeSeconds]);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

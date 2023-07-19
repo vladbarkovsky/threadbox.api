@@ -28,6 +28,8 @@ namespace ThreadboxApi.Infrastructure.Persistence
         }
 
         public DbSet<RegistrationKey> RegistrationKeys { get; set; }
+        public DbSet<Domain.Entities.FileInfo> FileInfos { get; set; }
+        public DbSet<DbFile> DbFiles { get; set; }
         public DbSet<Board> Boards { get; set; }
         public DbSet<Domain.Entities.Thread> Threads { get; set; }
         public DbSet<ThreadImage> ThreadImages { get; set; }

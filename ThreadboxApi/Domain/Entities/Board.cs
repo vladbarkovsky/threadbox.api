@@ -1,10 +1,8 @@
-﻿using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Domain.Common;
-using ThreadboxApi.Dtos;
+﻿using ThreadboxApi.Domain.Common;
 
 namespace ThreadboxApi.Domain.Entities
 {
-    public class Board : BaseEntity<Board>, IMappedFrom<BoardDto>
+    public class Board : BaseEntity
     {
         public string Title { get; set; }
         public string Description { get; set; }

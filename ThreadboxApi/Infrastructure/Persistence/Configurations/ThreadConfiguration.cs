@@ -11,12 +11,24 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
             builder
                 .HasMany(x => x.Posts)
                 .WithOne(x => x.Thread)
-                .HasForeignKey(x => x.ThreadId);
+                .HasForeignKey(x => x.ThreadId)
+                .IsRequired();
 
             builder
                 .HasMany(x => x.ThreadImages)
                 .WithOne(x => x.Thread)
-                .HasForeignKey(x => x.ThreadId);
+                .HasForeignKey(x => x.ThreadId)
+                .IsRequired();
+
+            builder
+                .Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(128);
+
+            builder
+                .Property(x => x.Text)
+                .IsRequired()
+                .HasMaxLength(131072);
         }
     }
 }

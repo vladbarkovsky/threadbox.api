@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using ThreadboxApi.Domain.Common;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Persistence;
 
@@ -25,19 +22,16 @@ namespace ThreadboxApi.Application.Boards.Commands
         }
 
         private readonly ThreadboxDbContext _dbContext;
-        private GuidCombGenerator _guidCombGenerator;
 
-        public CreateBoard(ThreadboxDbContext dbContext, GuidCombGenerator guidCombGenerator)
+        public CreateBoard(ThreadboxDbContext dbContext)
         {
             _dbContext = dbContext;
-            _guidCombGenerator = guidCombGenerator;
         }
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
             var board = new Board
             {
-                Id = _guidCombGenerator.Generate(),
                 Title = request.Title,
                 Description = request.Description
             };

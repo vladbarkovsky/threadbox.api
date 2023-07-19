@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Interfaces;
+using ThreadboxApi.Application.Files.Interfaces;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
@@ -15,17 +16,22 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
-        private readonly FileSeedingService _fileSeedingService;
+        private readonly IFileStorage _fileStorage;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
-        public DbInitializationService(IServiceProvider services)
+        public DbInitializationService(
+            ThreadboxDbContext dbContext,
+            IWebHostEnvironment webHostEnvironment,
+            IConfiguration configuration,
+            UserManager<User> userManager,
+            IFileStorage fileStorage)
         {
-            _dbContext = services.GetRequiredService<ThreadboxDbContext>();
-            _webHostEnvironment = services.GetRequiredService<IWebHostEnvironment>();
-            _configuration = services.GetRequiredService<IConfiguration>();
-            _userManager = services.GetRequiredService<UserManager<User>>();
-            _fileSeedingService = services.GetRequiredService<FileSeedingService>();
+            _dbContext = dbContext;
+            _webHostEnvironment = webHostEnvironment;
+            _configuration = configuration;
+            _userManager = userManager;
+            _fileStorage = fileStorage;
 
             JsonSerializerOptions = new JsonSerializerOptions
             {
@@ -52,16 +58,14 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             await SeedUsersAsync();
 
-            if (_webHostEnvironment.IsProduction())
+            if (_webHostEnvironment.IsDevelopment())
             {
-                return;
+                await SeedBoardsAsync();
+                await SeedThreadsAsync();
+                await SeedThreadImagesAsync();
+                await SeedPostsAsync();
+                await SeedPostImagesAsync();
             }
-
-            await SeedBoardsAsync();
-            await SeedThreadsAsync();
-            await SeedThreadImagesAsync();
-            await SeedPostsAsync();
-            await SeedPostImagesAsync();
 
             System.Diagnostics.Debug.WriteLine("Database initialized and seeded.");
         }
@@ -99,10 +103,10 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var threads = await _dbContext.Threads.ToListAsync();
 
-            threads[0].ThreadImages = await _fileSeedingService.GetFiles<ThreadImage>(1);
-            threads[1].ThreadImages = await _fileSeedingService.GetFiles<ThreadImage>(2);
-            threads[2].ThreadImages = await _fileSeedingService.GetFiles<ThreadImage>(3);
-            threads[3].ThreadImages = await _fileSeedingService.GetFiles<ThreadImage>(5);
+            threads[0].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(1);
+            threads[1].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(2);
+            threads[2].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(3);
+            threads[3].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(5);
 
             _dbContext.Threads.UpdateRange(threads);
             await _dbContext.SaveChangesAsync();
@@ -127,14 +131,14 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var posts = await _dbContext.Posts.ToListAsync();
 
-            posts[0].PostImages = await _fileSeedingService.GetFiles<PostImage>(1);
-            posts[1].PostImages = await _fileSeedingService.GetFiles<PostImage>(2);
-            posts[2].PostImages = await _fileSeedingService.GetFiles<PostImage>(3);
-            posts[3].PostImages = await _fileSeedingService.GetFiles<PostImage>(5);
-            posts[4].PostImages = await _fileSeedingService.GetFiles<PostImage>(1);
-            posts[5].PostImages = await _fileSeedingService.GetFiles<PostImage>(2);
-            posts[6].PostImages = await _fileSeedingService.GetFiles<PostImage>(3);
-            posts[7].PostImages = await _fileSeedingService.GetFiles<PostImage>(5);
+            posts[0].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
+            posts[1].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
+            posts[2].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
+            posts[3].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
+            posts[4].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
+            posts[5].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
+            posts[6].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
+            posts[7].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
 
             _dbContext.Posts.UpdateRange(posts);
             await _dbContext.SaveChangesAsync();

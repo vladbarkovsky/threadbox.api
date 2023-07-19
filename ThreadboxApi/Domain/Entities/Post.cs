@@ -2,7 +2,7 @@
 
 namespace ThreadboxApi.Domain.Entities
 {
-    public class Post : BaseEntity<Post>
+    public class Post : BaseEntity
     {
         public string Text { get; set; }
         public Guid ThreadId { get; set; }

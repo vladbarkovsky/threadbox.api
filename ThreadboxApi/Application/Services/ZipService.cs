@@ -1,20 +1,20 @@
 ﻿using System.IO.Compression;
-using ThreadboxApi.Configuration.Startup;
-using ThreadboxApi.Domain.Entities;
+using ThreadboxApi.Application.Common.Interfaces;
+using ThreadboxApi.Application.Files.Models;
 
 namespace ThreadboxApi.Application.Services
 {
     public class ZipService : IScopedService
     {
         // Source: https://swimburger.net/blog/dotnet/create-zip-files-on-http-request-without-intermediate-files-using-aspdotnet-mvc-framework
-        public async Task<byte[]> ArchiveAsync(IEnumerable<Domain.Entities.File> files)
+        public async Task<byte[]> ArchiveAsync(IEnumerable<ArchivableFile> archivableFiles)
         {
             var archiveStream = new MemoryStream();
             var copyOperationsAsync = new List<Task>();
 
             using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, leaveOpen: true))
             {
-                foreach (var file in files)
+                foreach (var file in archivableFiles)
                 {
                     var entry = archive.CreateEntry(file.Name);
 
@@ -26,7 +26,7 @@ namespace ThreadboxApi.Application.Services
 
             await Task.WhenAll(copyOperationsAsync);
             archiveStream.Seek(0, SeekOrigin.Begin);
-            return archiveStream.ToArray();
+            return archiveStream.ToArray()
         }
     }
 }

@@ -4,7 +4,7 @@ using ThreadboxApi.Dtos;
 
 namespace ThreadboxApi.Domain.Entities
 {
-    public class Thread : BaseEntity<Thread>, IMappedFrom<ThreadDto>
+    public class Thread : BaseEntity, IMappedFrom<ThreadDto>
     {
         public string Title { get; set; }
         public string Text { get; set; }

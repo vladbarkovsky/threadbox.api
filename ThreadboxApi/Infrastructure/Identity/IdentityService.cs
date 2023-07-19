@@ -25,7 +25,7 @@ namespace ThreadboxApi.Infrastructure.Identity
         {
             get
             {
-                return TimeSpan.FromSeconds(Convert.ToInt32(_configuration[AppSettings.RegistrationKeyExpirationTimeS]));
+                return TimeSpan.FromSeconds(Convert.ToInt32(_configuration[AppSettings.RegistrationKeyExpirationTimeSeconds]));
             }
         }
 
