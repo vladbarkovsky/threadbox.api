@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using ThreadboxApi.Configuration;
-using ThreadboxApi.Startup;
 
 namespace ThreadboxApi
 {

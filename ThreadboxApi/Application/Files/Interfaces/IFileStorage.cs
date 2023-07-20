@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ThreadboxApi.Application.Common.Interfaces;
+﻿using ThreadboxApi.Application.Common.Interfaces;
 
 namespace ThreadboxApi.Application.Files.Interfaces
 {

@@ -4,7 +4,7 @@ namespace ThreadboxApi.Application.Common.Helpers.Pagination
 {
     public static class PaginationExtensions
     {
-        public static async Task<PaginatedResult<T>> ToPaginatedResultAsync<T>(this IQueryable<T> query, PaginatedQuery paginatedQuery)
+        public static async Task<PaginatedResult<T>> ToPaginatedResultAsync<T>(this IQueryable<T> query, PaginatedQuery paginatedQuery, CancellationToken cancellationToken = default)
         {
             var pageIndex = paginatedQuery.PageIndex;
             var pageSize = paginatedQuery.PageSize;
@@ -12,7 +12,7 @@ namespace ThreadboxApi.Application.Common.Helpers.Pagination
             var items = await query
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return new PaginatedResult<T>(items, pageIndex, items.Count, pageSize);
         }

@@ -7,6 +7,7 @@ namespace ThreadboxApi.Application.Common.Constants
         public static List<AllowedImage> AllowedImages { get; } = new()
         {
             new AllowedImage { ContentType = MediaTypeNames.Image.Jpeg, Extension = ".jpeg" },
+            new AllowedImage { ContentType = MediaTypeNames.Image.Jpeg, Extension = ".jpg" },
             new AllowedImage { ContentType = MediaTypeNames.Image.Gif, Extension = ".gif" },
             new AllowedImage { ContentType = "image/png", Extension = ".png" },
             new AllowedImage { ContentType = "image/bmp", Extension = ".bmp" },

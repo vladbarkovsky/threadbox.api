@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Configuration;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Dtos
 {
@@ -19,7 +19,7 @@ namespace ThreadboxApi.Dtos
 			profile.CreateMap<Domain.Entities.Thread, ListThreadDto>()
 				.ForMember(
 					d => d.ThreadImageUrls,
-					o => o.MapFrom(s => s.ThreadImages.Select(x => string.Format(Constants.ThreadImageRequest, x.Id)).ToList()));
+					o => o.MapFrom(s => s.ThreadImages.Select(x => string.Format(ImageRequestConstants.ThreadImageRequestUrl, x.Id)).ToList()));
 		}
 	}
 

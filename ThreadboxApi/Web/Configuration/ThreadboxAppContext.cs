@@ -3,7 +3,7 @@ using System.Security.Claims;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Infrastructure.Identity;
 
-namespace ThreadboxApi.Configuration
+namespace ThreadboxApi.Web.Configuration
 {
     public class ThreadboxAppContext : IScopedService
     {

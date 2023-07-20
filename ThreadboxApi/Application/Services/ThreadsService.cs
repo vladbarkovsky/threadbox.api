@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Dtos;
-using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using System.Linq.Expressions;
 using ThreadboxApi.Infrastructure.Persistence;
 using ThreadboxApi.Application.Common.Helpers.Pagination;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Application.Services
 {
@@ -28,7 +28,7 @@ namespace ThreadboxApi.Application.Services
                 Title = thread.Title,
                 Text = thread.Text,
                 ThreadImageUrls = thread.ThreadImages
-                    .Select(threadImage => string.Format(Constants.ThreadImageRequest, threadImage.Id))
+                    .Select(threadImage => string.Format(ImageRequestConstants.ThreadImageRequestUrl, threadImage.Id))
                     .ToList(),
                 Posts = thread.Posts
                     .Select(post => new ListPostDto
@@ -37,7 +37,7 @@ namespace ThreadboxApi.Application.Services
                         ThreadId = post.ThreadId,
                         Text = post.Text,
                         PostImageUrls = post.PostImages
-                            .Select(postImage => string.Format(Constants.PostImageRequest, postImage.Id))
+                            .Select(postImage => string.Format(ImageRequestConstants.PostImageRequestUrl, postImage.Id))
                             .ToList()
                     })
                     .ToList()

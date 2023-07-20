@@ -54,18 +54,31 @@ namespace ThreadboxApi.Application.Posts.Commands
                 SavePostImage(formFile, post.Id, cancellationToken);
             }
 
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
 
         private async void SavePostImage(IFormFile formFile, Guid postId, CancellationToken cancellationToken)
         {
+            var filePath = $"Images/PostImages/{postId}/{formFile.Name}";
+
             using var memoryStream = new MemoryStream();
             formFile.CopyTo(memoryStream);
             var data = memoryStream.ToArray();
 
-            await _fileStorage.SaveFileAsync($"Images/PostImages/{postId}/{formFile.Name}", data, cancellationToken);
+            await _fileStorage.SaveFileAsync(filePath, data, cancellationToken);
 
-            // business transaction safety problem
+            var postImage = new PostImage
+            {
+                FileInfo = new Domain.Entities.FileInfo
+                {
+                    Name = formFile.Name,
+                    ContentType = formFile.ContentType,
+                    Path = filePath
+                }
+            };
+
+            _dbContext.PostImages.Add(postImage);
         }
     }
 }

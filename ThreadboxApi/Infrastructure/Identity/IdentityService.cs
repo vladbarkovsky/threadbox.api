@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Services;
-using ThreadboxApi.Configuration;
 using ThreadboxApi.Configuration.Startup;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Web;
+using ThreadboxApi.Web.Configuration;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {
@@ -72,7 +73,7 @@ namespace ThreadboxApi.Infrastructure.Identity
             await _dbContext.SaveChangesAsync();
 
             return string.Format(
-                Constants.RegistrationUrl,
+                ImageRequestConstants.RegistrationUrl,
                 _configuration[AppSettings.AngularClientBaseUrl],
                 entityEntry.Entity.Id);
         }

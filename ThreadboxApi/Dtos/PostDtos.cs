@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Configuration;
 using ThreadboxApi.Domain.Entities;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Dtos
 {
@@ -19,7 +19,7 @@ namespace ThreadboxApi.Dtos
 			profile.CreateMap<Post, ListPostDto>()
 				.ForMember(
 					d => d.PostImageUrls,
-					o => o.MapFrom(s => s.PostImages.Select(x => string.Format(Constants.PostImageRequest, x.Id)).ToList()));
+					o => o.MapFrom(s => s.PostImages.Select(x => string.Format(ImageRequestConstants.PostImageRequestUrl, x.Id)).ToList()));
 		}
 	}
 
