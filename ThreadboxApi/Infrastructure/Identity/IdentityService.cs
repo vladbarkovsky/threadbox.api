@@ -9,14 +9,13 @@ using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Dtos;
 using ThreadboxApi.Infrastructure.Persistence;
 using ThreadboxApi.Web;
-using ThreadboxApi.Web.Configuration;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {
     public class IdentityService : IScopedService
     {
-        private readonly Persistence.ThreadboxDbContext _dbContext;
-        private readonly ThreadboxAppContext _appContext;
+        private readonly Persistence.AppDbContext _dbContext;
+        private readonly Application.Services.AppContext _appContext;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
@@ -32,8 +31,8 @@ namespace ThreadboxApi.Infrastructure.Identity
 
         public IdentityService(IServiceProvider services)
         {
-            _dbContext = services.GetRequiredService<Persistence.ThreadboxDbContext>();
-            _appContext = services.GetRequiredService<ThreadboxAppContext>();
+            _dbContext = services.GetRequiredService<Persistence.AppDbContext>();
+            _appContext = services.GetRequiredService<Application.Services.AppContext>();
             _mapper = services.GetRequiredService<IMapper>();
             _configuration = services.GetRequiredService<IConfiguration>();
             _userManager = services.GetRequiredService<UserManager<User>>();

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(ThreadboxDbContext))]
+    [DbContext(typeof(AppDbContext))]
     partial class ThreadboxDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

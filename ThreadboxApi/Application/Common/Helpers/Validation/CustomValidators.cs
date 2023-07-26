@@ -28,11 +28,9 @@ namespace ThreadboxApi.Application.Common.Helpers.Validation
                 .Must(x => x.Length > 0)
                 .WithMessage("Empty file.")
                 .Must(x => x.Length <= 10 * 1024 * 1024)
-                .WithMessage("Maximal allowed file size is 10 MB.")
-                .Must(file => MediaConstants.AllowedImages.Any(allowedImage =>
-                    file.ContentType == allowedImage.ContentType &&
-                    Path.GetExtension(file.Name) == allowedImage.Extension))
-                .WithMessage("File format is not allowed or ContentType is not compatible with extension.");
+                .WithMessage(x => "Maximal allowed file size is 10 MB.")
+                .Must(file => MediaConstants.AllowedImageFormats.Contains(file.ContentType))
+                .WithMessage("Content-Type is not allowed.");
         }
     }
 }

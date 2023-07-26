@@ -4,20 +4,13 @@ namespace ThreadboxApi.Application.Common.Constants
 {
     public class MediaConstants
     {
-        public static List<AllowedImage> AllowedImages { get; } = new()
+        public static List<string> AllowedImageFormats { get; } = new()
         {
-            new AllowedImage { ContentType = MediaTypeNames.Image.Jpeg, Extension = ".jpeg" },
-            new AllowedImage { ContentType = MediaTypeNames.Image.Jpeg, Extension = ".jpg" },
-            new AllowedImage { ContentType = MediaTypeNames.Image.Gif, Extension = ".gif" },
-            new AllowedImage { ContentType = "image/png", Extension = ".png" },
-            new AllowedImage { ContentType = "image/bmp", Extension = ".bmp" },
-            new AllowedImage { ContentType = "image/svg+xml", Extension = ".svg" }
+            MediaTypeNames.Image.Jpeg,
+            MediaTypeNames.Image.Gif,
+            "image/png",
+            "image/bmp",
+            "image/svg+xml"
         };
-
-        public class AllowedImage
-        {
-            public string ContentType { get; set; }
-            public string Extension { get; set; }
-        }
     }
 }

@@ -9,7 +9,7 @@ namespace ThreadboxApi.Startup
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<Infrastructure.Persistence.ThreadboxDbContext>(options =>
+            services.AddDbContext<Infrastructure.Persistence.AppDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString(AppSettings.DevDbConnectionString));
 

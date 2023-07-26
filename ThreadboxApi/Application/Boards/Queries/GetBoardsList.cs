@@ -11,10 +11,10 @@ namespace ThreadboxApi.Application.Boards.Queries
         public class Query : IRequest<List<BoardListDto>>
         { }
 
-        private readonly ThreadboxDbContext _dbContext;
+        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
         private IMapper _mapper;
 
-        public GetBoardsList(ThreadboxDbContext dbContext, IMapper mapper)
+        public GetBoardsList(Infrastructure.Persistence.AppDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

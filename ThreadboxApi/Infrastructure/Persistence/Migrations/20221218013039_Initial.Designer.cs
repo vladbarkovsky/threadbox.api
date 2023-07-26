@@ -11,7 +11,7 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Migrations
 {
-    [DbContext(typeof(Infrastructure.Persistence.ThreadboxDbContext))]
+    [DbContext(typeof(Infrastructure.Persistence.AppDbContext))]
     [Migration("20221218013039_Initial")]
     partial class Initial
     {

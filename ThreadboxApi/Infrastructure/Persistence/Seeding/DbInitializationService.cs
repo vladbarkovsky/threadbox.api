@@ -12,7 +12,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 {
     public class DbInitializationService : ITransientService
     {
-        private readonly ThreadboxDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
@@ -21,7 +21,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
         public DbInitializationService(
-            ThreadboxDbContext dbContext,
+            AppDbContext dbContext,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
             UserManager<User> userManager,

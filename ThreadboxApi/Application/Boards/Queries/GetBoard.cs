@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Application.Boards.Queries
 {
@@ -23,10 +22,10 @@ namespace ThreadboxApi.Application.Boards.Queries
             }
         }
 
-        private readonly ThreadboxDbContext _dbContext;
+        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
         private IMapper _mapper;
 
-        public GetBoard(ThreadboxDbContext dbContext, IMapper mapper)
+        public GetBoard(Infrastructure.Persistence.AppDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

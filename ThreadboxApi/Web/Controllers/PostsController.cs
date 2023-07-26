@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Dtos;
+using ThreadboxApi.Application.Posts.Commands;
+using ThreadboxApi.Application.Posts.Models;
+using ThreadboxApi.Application.Posts.Queries;
 
 namespace ThreadboxApi.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class PostsController : ControllerBase
+    public class PostsController : MediatRController
     {
-        private readonly PostsService _postsService;
-
-        public PostsController(IServiceProvider services)
+        [HttpGet("[action]")]
+        public async Task<ActionResult<List<PostDto>>> GetPostsByThread([FromQuery] GetPostsByThread.Query query)
         {
-            _postsService = services.GetRequiredService<PostsService>();
+            return await Mediator.Send(query);
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<ListPostDto>> CreatePost(PostDto postDto)
+        public async Task<ActionResult> CreatePost([FromBody] CreatePost.Command command)
         {
-            return new ListPostDto();
+            await Mediator.Send(command);
+            return NoContent();
         }
     }
 }

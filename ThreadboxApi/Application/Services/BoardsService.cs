@@ -10,12 +10,12 @@ namespace ThreadboxApi.Application.Services
 {
     public class BoardsService : IScopedService
     {
-        private readonly Infrastructure.Persistence.ThreadboxDbContext _dbContext;
+        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
         private readonly IMapper _mapper;
 
         public BoardsService(IServiceProvider services)
         {
-            _dbContext = services.GetRequiredService<Infrastructure.Persistence.ThreadboxDbContext>();
+            _dbContext = services.GetRequiredService<Infrastructure.Persistence.AppDbContext>();
             _mapper = services.GetRequiredService<IMapper>();
         }
 

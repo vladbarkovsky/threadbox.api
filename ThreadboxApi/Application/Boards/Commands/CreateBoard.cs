@@ -21,9 +21,9 @@ namespace ThreadboxApi.Application.Boards.Commands
             }
         }
 
-        private readonly ThreadboxDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public CreateBoard(ThreadboxDbContext dbContext)
+        public CreateBoard(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

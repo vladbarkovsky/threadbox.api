@@ -12,24 +12,24 @@ namespace ThreadboxApi.Application.Posts.Commands
         public class Command : IRequest<Unit>
         {
             public string Text { get; set; }
-            public List<IFormFile> PostImages { get; set; } = new();
+            public List<IFormFile> PostImages { get; set; }
             public Guid ThreadId { get; set; }
 
             public class Validator : AbstractValidator<Command>
             {
                 public Validator()
                 {
-                    RuleFor(x => x.Text).NotEmpty();
+                    RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.PostImages).ForEach(x => x.ValidateImage());
                     RuleFor(x => x.ThreadId).NotEmpty();
                 }
             }
         }
 
-        private readonly ThreadboxDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
 
-        public CreatePost(ThreadboxDbContext dbContext, IFileStorage fileStorage)
+        public CreatePost(AppDbContext dbContext, IFileStorage fileStorage)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;
@@ -43,11 +43,6 @@ namespace ThreadboxApi.Application.Posts.Commands
                 Text = request.Text,
                 ThreadId = request.ThreadId,
             };
-
-            if (!request.PostImages.Any())
-            {
-                return Unit.Value;
-            }
 
             foreach (var formFile in request.PostImages)
             {
