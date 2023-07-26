@@ -53,7 +53,7 @@ namespace ThreadboxApi.Application.Posts.Commands
             return Unit.Value;
         }
 
-        private async void SavePostImage(IFormFile formFile, Guid postId, CancellationToken cancellationToken)
+        private async Task SavePostImage(IFormFile formFile, Guid postId, CancellationToken cancellationToken)
         {
             var filePath = $"Images/PostImages/{postId}/{formFile.Name}";
 
@@ -65,6 +65,7 @@ namespace ThreadboxApi.Application.Posts.Commands
 
             var postImage = new PostImage
             {
+                PostId = postId,
                 FileInfo = new Domain.Entities.FileInfo
                 {
                     Name = formFile.Name,

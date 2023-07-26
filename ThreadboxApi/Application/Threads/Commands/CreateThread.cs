@@ -2,6 +2,7 @@
 using MediatR;
 using ThreadboxApi.Application.Common.Helpers.Validation;
 using ThreadboxApi.Application.Files.Interfaces;
+using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Application.Threads.Commands
@@ -46,10 +47,37 @@ namespace ThreadboxApi.Application.Threads.Commands
                 BoardId = request.BoardId,
             };
 
-            if (request.ThreadImages == null || !request.ThreadImages.Any())
+            foreach (var threadImage in request.ThreadImages)
             {
-                return Unit.Value;
+                await SaveThreadImage(threadImage, thread.Id, cancellationToken);
             }
+
+            await _dbContext.SaveChangesAsync();
+            return Unit.Value;
+        }
+
+        private async Task SaveThreadImage(IFormFile formFile, Guid threadId, CancellationToken cancellationToken)
+        {
+            var filePath = $"Images/ThreadImages/{threadId}/{formFile.Name}";
+
+            using var memoryStream = new MemoryStream();
+            formFile.CopyTo(memoryStream);
+            var data = memoryStream.ToArray();
+
+            await _fileStorage.SaveFileAsync(filePath, data);
+
+            var threadImage = new ThreadImage
+            {
+                ThreadId = threadId,
+                FileInfo = new Domain.Entities.FileInfo
+                {
+                    Name = formFile.Name,
+                    ContentType = formFile.ContentType,
+                    Path = filePath
+                }
+            };
+
+            _dbContext.ThreadImages.Add(threadImage);
         }
     }
 }
