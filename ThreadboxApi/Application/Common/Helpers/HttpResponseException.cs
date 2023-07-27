@@ -12,11 +12,11 @@
             StatusCode = statusCode;
         }
 
-        public static void ThrowNotFoundIfNull<TData>(TData data)
+        public static void ThrowNotFoundIfNull<T>(T data)
         {
             if (data == null)
             {
-                throw new HttpResponseException($"{typeof(TData)} not found.", StatusCodes.Status404NotFound);
+                throw new HttpResponseException($"{typeof(T)} not found.", StatusCodes.Status404NotFound);
             }
         }
     }

@@ -1,31 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Common.Helpers.Pagination;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Dtos;
+using ThreadboxApi.Application.Threads.Commands;
+using ThreadboxApi.Application.Threads.Models;
+using ThreadboxApi.Application.Threads.Queries;
 
 namespace ThreadboxApi.Web.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class ThreadsController : ControllerBase
+    public class ThreadsController : MediatRController
     {
-        private readonly ThreadsService _threadsService;
-
-        public ThreadsController(IServiceProvider services)
+        [HttpPost("[action]")]
+        public async Task<ActionResult<PaginatedResult<ThreadDto>>> GetThreadsByBoard([FromBody] GetThreadsByBoard.Query query)
         {
-            _threadsService = services.GetRequiredService<ThreadsService>();
+            return await Mediator.Send(query);
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<PaginatedResult<ListThreadDto>>> GetThreadsByBoard(Guid boardId, PaginatedQuery paginationParamsDto)
+        public async Task<ActionResult> CreateThread([FromBody] CreateThread.Command command)
         {
-            return await _threadsService.GetThreadsByBoardAsync(boardId, paginationParamsDto);
-        }
-
-        [HttpPost("[action]")]
-        public async Task<ActionResult<ListThreadDto>> CreateThread([FromForm] ThreadDto threadDto)
-        {
-            return await _threadsService.CreateThreadAsync(threadDto);
+            await Mediator.Send(command);
+            return NoContent();
         }
     }
 }

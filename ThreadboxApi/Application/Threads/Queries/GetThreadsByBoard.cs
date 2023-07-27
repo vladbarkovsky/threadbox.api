@@ -8,7 +8,7 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Application.Threads.Queries
 {
-    public class GetThreadsPaginated : IRequestHandler<GetThreadsPaginated.Query, PaginatedResult<ThreadDto>>
+    public class GetThreadsByBoard : IRequestHandler<GetThreadsByBoard.Query, PaginatedResult<ThreadDto>>
     {
         public class Query : PaginatedQuery, IRequest<PaginatedResult<ThreadDto>>
         {
@@ -27,7 +27,7 @@ namespace ThreadboxApi.Application.Threads.Queries
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetThreadsPaginated(AppDbContext dbContext, IMapper mapper)
+        public GetThreadsByBoard(AppDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
