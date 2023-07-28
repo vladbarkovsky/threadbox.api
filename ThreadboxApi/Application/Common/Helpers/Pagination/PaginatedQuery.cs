@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace ThreadboxApi.Application.Common.Helpers.Pagination
+﻿namespace ThreadboxApi.Application.Common.Helpers.Pagination
 {
     public class PaginatedQuery
     {

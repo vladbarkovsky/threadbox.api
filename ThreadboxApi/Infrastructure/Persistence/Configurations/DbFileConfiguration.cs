@@ -3,11 +3,10 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class DbFileConfiguration : BaseEntityConfiguration<DbFile>
+    public class DbFileConfiguration : EntityConfigurationTemplate<DbFile>
     {
-        public override void Configure(EntityTypeBuilder<DbFile> builder)
+        protected override void ConfigureConcrete(EntityTypeBuilder<DbFile> builder)
         {
-            base.Configure(builder);
             builder.HasIndex(x => x.Path).IsUnique();
 
             builder

@@ -14,10 +14,9 @@ namespace ThreadboxApi.Application.Threads.Queries
         {
             public Guid BoardId { get; set; }
 
-            public class Validator : PaginatedQueryValidator<Query>
+            public class Validator : PaginatedQueryValidatorTemplate<Query>
             {
-                public Validator()
-                    : base()
+                protected override void ApplyConcreteRules()
                 {
                     RuleFor(x => x.BoardId).NotEmpty();
                 }
