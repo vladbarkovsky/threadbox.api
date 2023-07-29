@@ -1,9 +1,8 @@
-﻿using ThreadboxApi.Application.Files.Interfaces;
-using ThreadboxApi.Domain.Common;
+﻿using ThreadboxApi.Domain.Common;
 
 namespace ThreadboxApi.Domain.Entities
 {
-    public class DbFile : BaseEntity, IFile
+    public class DbFile : BaseEntity
     {
         public string Path { get; set; }
 

@@ -26,7 +26,7 @@ namespace ThreadboxApi.Application.Services
 
             await Task.WhenAll(copyOperationsAsync);
             archiveStream.Seek(0, SeekOrigin.Begin);
-            return archiveStream.ToArray()
+            return archiveStream.ToArray();
         }
     }
 }

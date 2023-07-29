@@ -23,6 +23,7 @@ namespace ThreadboxApi
             CorsStartup.ConfigureServices(services, _configuration);
             ExceptionHandlingStartup.ConfigureServices(services);
             IdentityStartup.ConfigureServices(services, _configuration);
+            IdentityServer4Startup.ConfigureServices(services);
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             MediatRStartup.ConfigureServices(services);
             FluentValidationStartup.ConfigureServices(services);
@@ -39,13 +40,14 @@ namespace ThreadboxApi
 
             CorsStartup.Configure(app);
             ExceptionHandlingStartup.Configure(app);
-            app.UseMiddleware<JwtAccessTokenRefreshMiddleware>();
             app.UseRouting();
             IdentityStartup.Configure(app);
+            app.UseStaticFiles();
+            IdentityServer4Startup.Configure(app);
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
 
             app.UseHttpsRedirection();

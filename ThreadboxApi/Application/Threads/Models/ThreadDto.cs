@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ThreadboxApi.Application.Common.Helpers.Mapping.Interfaces;
-using ThreadboxApi.Dtos;
+using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Application.Threads.Models

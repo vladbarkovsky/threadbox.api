@@ -1,7 +1,5 @@
 using Serilog;
-using ThreadboxApi.Infrastructure.Persistence;
-using ThreadboxApi.Infrastructure.Persistence.Seed;
-using ThreadboxApi.Web;
+using ThreadboxApi.Infrastructure.Persistence.Seeding;
 
 namespace ThreadboxApi
 {

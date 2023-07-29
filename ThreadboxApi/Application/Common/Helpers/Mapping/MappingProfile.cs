@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System.Reflection;
+using ThreadboxApi.Application.Common.Helpers.Mapping.Interfaces;
 
 namespace ThreadboxApi.Application.Common.Helpers.Mapping
 {

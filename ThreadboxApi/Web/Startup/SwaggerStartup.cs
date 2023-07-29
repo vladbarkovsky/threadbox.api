@@ -34,7 +34,8 @@ namespace ThreadboxApi.Web.Startup
 
                 app.UseSwaggerUi3(settings =>
                 {
-                    settings.Path = "/swagger";
+                    settings.Path = "/api";
+                    settings.DocumentPath = "/api/specification.json";
                 });
             }
         }

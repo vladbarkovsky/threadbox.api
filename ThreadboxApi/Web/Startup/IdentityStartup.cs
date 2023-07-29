@@ -14,7 +14,8 @@ namespace ThreadboxApi.Web.Startup
         {
             services
                 .AddIdentity<AppUser, IdentityRole<Guid>>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services
                 .AddAuthentication(options =>
