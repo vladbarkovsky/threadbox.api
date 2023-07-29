@@ -1,7 +1,7 @@
 ﻿using NSwag.Generation.Processors.Security;
 using NSwag;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class SwaggerStartup
     {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Infrastructure.Persistence;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class DbStartup
     {

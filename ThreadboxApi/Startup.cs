@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using ThreadboxApi.Configuration;
+using ThreadboxApi.Web.Startup;
 
 namespace ThreadboxApi
 {

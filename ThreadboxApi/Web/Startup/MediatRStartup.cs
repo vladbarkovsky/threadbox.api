@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class MediatRStartup
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using ThreadboxApi.Application.Common.Helpers;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class ExceptionHandlingStartup
     {

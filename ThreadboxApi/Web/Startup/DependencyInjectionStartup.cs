@@ -1,6 +1,6 @@
 ﻿using ThreadboxApi.Application.Common.Interfaces;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class DependencyInjectionStartup
     {

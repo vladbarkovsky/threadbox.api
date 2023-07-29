@@ -1,6 +1,6 @@
 ﻿using ThreadboxApi.Application.Common;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class CorsStartup
     {

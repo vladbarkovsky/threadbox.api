@@ -6,7 +6,7 @@ using ThreadboxApi.Application.Common;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
 
-namespace ThreadboxApi.Startup
+namespace ThreadboxApi.Web.Startup
 {
     public class IdentityStartup
     {
