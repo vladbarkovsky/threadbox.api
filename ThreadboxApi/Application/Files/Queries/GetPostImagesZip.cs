@@ -2,16 +2,16 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Files.Interfaces;
 using ThreadboxApi.Application.Files.Models;
 using ThreadboxApi.Application.Services;
-using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Application.Files.Queries
 {
-    public class GetPostImages : IRequestHandler<GetPostImages.Query, FileContentResult>
+    public class GetPostImagesZip : IRequestHandler<GetPostImagesZip.Query, FileContentResult>
     {
         public class Query : IRequest<FileContentResult>
         {
@@ -30,7 +30,7 @@ namespace ThreadboxApi.Application.Files.Queries
         private readonly IFileStorage _fileStorage;
         private readonly ZipService _zipService;
 
-        public GetPostImages(AppDbContext dbContext, IFileStorage fileStorage, ZipService zipService)
+        public GetPostImagesZip(AppDbContext dbContext, IFileStorage fileStorage, ZipService zipService)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;
@@ -47,18 +47,22 @@ namespace ThreadboxApi.Application.Files.Queries
                 .FirstOrDefaultAsync(cancellationToken);
 
             HttpResponseException.ThrowNotFoundIfNull(post);
+
             var fileInfos = post.PostImages.Select(x => x.FileInfo);
+            var fileRetrievalTasks = post.PostImages.Select(x => _fileStorage.GetFileAsync(x.FileInfo.Path, cancellationToken));
+            var filesData = await Task.WhenAll(fileRetrievalTasks);
 
-            var archive = _zipService.ArchiveAsync(archivableFiles);
-        }
-
-        private async Task<ArchivableFile> GetFileForArchivation(IEnumerable<Domain.Entities.FileInfo> fileInfos, CancellationToken cancellationToken)
-        {
-            var data = await _fileStorage.GetFileAsync(fileInfo.Path, cancellationToken);
-            return new ArchivableFile
+            var archivableFiles = fileInfos.Zip(filesData, (fileInfo, data) => new ArchivableFile
             {
                 Name = fileInfo.Name,
                 Data = data
+            });
+
+            var archive = await _zipService.ArchiveAsync(archivableFiles);
+
+            return new FileContentResult(archive, MediaTypeNames.Application.Zip)
+            {
+                FileDownloadName = $"Post_{post.Id}_images.zip"
             };
         }
     }

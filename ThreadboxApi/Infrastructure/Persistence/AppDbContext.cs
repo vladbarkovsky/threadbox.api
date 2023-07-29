@@ -8,7 +8,7 @@ using ThreadboxApi.Infrastructure.Identity;
 namespace ThreadboxApi.Infrastructure.Persistence
 {
     public class AppDbContext : IdentityDbContext<
-        User,
+        AppUser,
         IdentityRole<Guid>,
         Guid,
         IdentityUserClaim<Guid>,

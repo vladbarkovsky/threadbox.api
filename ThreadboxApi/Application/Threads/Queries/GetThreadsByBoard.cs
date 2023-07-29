@@ -16,7 +16,7 @@ namespace ThreadboxApi.Application.Threads.Queries
 
             public class Validator : PaginatedQueryValidatorTemplate<Query>
             {
-                protected override void ApplyConcreteRules()
+                protected override void OnConfiguring()
                 {
                     RuleFor(x => x.BoardId).NotEmpty();
                 }

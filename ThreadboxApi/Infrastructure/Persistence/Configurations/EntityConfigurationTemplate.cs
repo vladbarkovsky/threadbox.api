@@ -10,10 +10,11 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<T> builder)
         {
             builder.HasKey(x => x.Id);
+
             Configure(builder);
         }
 
-        protected virtual void ConfigureConcrete(EntityTypeBuilder<T> builder)
+        protected virtual void OnConfiguring(EntityTypeBuilder<T> builder)
         { }
     }
 }

@@ -4,7 +4,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class ThreadConfiguration : EntityConfigurationTemplate<Domain.Entities.Thread>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<Domain.Entities.Thread> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<Domain.Entities.Thread> builder)
         {
             builder
                 .HasMany(x => x.Posts)

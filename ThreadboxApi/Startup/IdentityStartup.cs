@@ -13,7 +13,7 @@ namespace ThreadboxApi.Startup
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services
-                .AddIdentity<User, IdentityRole<Guid>>()
+                .AddIdentity<AppUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<AppDbContext>();
 
             services
@@ -28,17 +28,17 @@ namespace ThreadboxApi.Startup
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = false;
 
-                    var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.JwtSecurityKey]);
+                    var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.Jwt.SecurityKey]);
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey = new SymmetricSecurityKey(securityKey),
                         ValidateIssuerSigningKey = true,
 
-                        ValidIssuer = configuration[AppSettings.JwtValidIssuer],
+                        ValidIssuer = configuration[AppSettings.Jwt.ValidIssuer],
                         ValidateIssuer = true,
 
-                        ValidAudience = configuration[AppSettings.JwtValidAudience],
+                        ValidAudience = configuration[AppSettings.Jwt.ValidAudience],
                         ValidateAudience = true,
 
                         RequireExpirationTime = true,

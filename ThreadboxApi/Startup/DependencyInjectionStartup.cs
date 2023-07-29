@@ -1,4 +1,6 @@
-﻿namespace ThreadboxApi.Startup
+﻿using ThreadboxApi.Application.Common.Interfaces;
+
+namespace ThreadboxApi.Startup
 {
     public class DependencyInjectionStartup
     {

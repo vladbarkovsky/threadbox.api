@@ -18,7 +18,7 @@ namespace ThreadboxApi.Infrastructure.Identity
         private readonly Application.Services.AppContext _appContext;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly JwtService _jwtService;
 
         private TimeSpan RegistrationKeyLifetime
@@ -35,7 +35,7 @@ namespace ThreadboxApi.Infrastructure.Identity
             _appContext = services.GetRequiredService<Application.Services.AppContext>();
             _mapper = services.GetRequiredService<IMapper>();
             _configuration = services.GetRequiredService<IConfiguration>();
-            _userManager = services.GetRequiredService<UserManager<User>>();
+            _userManager = services.GetRequiredService<UserManager<AppUser>>();
             _jwtService = services.GetRequiredService<JwtService>();
         }
 
@@ -73,7 +73,7 @@ namespace ThreadboxApi.Infrastructure.Identity
 
             return string.Format(
                 ImageRequestConstants.RegistrationUrl,
-                _configuration[AppSettings.AngularClientBaseUrl],
+                _configuration[AppSettings.ClientBaseUrl],
                 entityEntry.Entity.Id);
         }
 
@@ -99,7 +99,7 @@ namespace ThreadboxApi.Infrastructure.Identity
             HttpResponseException.ThrowNotFoundIfNull(registrationKey);
 
             _dbContext.RegistrationKeys.Remove(registrationKey);
-            var user = _mapper.Map<User>(registrationFormDto);
+            var user = _mapper.Map<AppUser>(registrationFormDto);
             await _userManager.CreateAsync(user, registrationFormDto.Password);
         }
 

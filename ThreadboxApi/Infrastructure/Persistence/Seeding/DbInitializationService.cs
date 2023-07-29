@@ -15,7 +15,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private readonly AppDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly IFileStorage _fileStorage;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
@@ -24,7 +24,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             AppDbContext dbContext,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
-            UserManager<User> userManager,
+            UserManager<AppUser> userManager,
             IFileStorage fileStorage)
         {
             _dbContext = dbContext;
@@ -73,7 +73,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedUsersAsync()
         {
             await _userManager.CreateAsync(
-                user: new User(_configuration[AppSettings.DefaultAdminUserName]),
+                user: new AppUser(_configuration[AppSettings.DefaultAdminUserName]),
                 password: _configuration[AppSettings.DefaultAdminPassword]);
 
             if (_webHostEnvironment.IsProduction())

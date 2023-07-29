@@ -5,7 +5,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class PostImageConfiguration : EntityConfigurationTemplate<PostImage>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<PostImage> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<PostImage> builder)
         {
             builder
                 .HasOne(x => x.FileInfo)

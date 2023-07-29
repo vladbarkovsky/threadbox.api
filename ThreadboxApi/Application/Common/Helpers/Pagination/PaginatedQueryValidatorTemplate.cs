@@ -10,10 +10,10 @@ namespace ThreadboxApi.Application.Common.Helpers.Pagination
             RuleFor(x => x.PageIndex).GreaterThanOrEqualTo(0);
             RuleFor(x => x.PageSize).GreaterThan(0);
 
-            ApplyConcreteRules();
+            OnConfiguring();
         }
 
-        protected virtual void ApplyConcreteRules()
+        protected virtual void OnConfiguring()
         { }
     }
 }

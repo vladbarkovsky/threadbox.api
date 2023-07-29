@@ -6,9 +6,9 @@ namespace ThreadboxApi.Startup
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddMediatR(cfg =>
+            services.AddMediatR(configuration =>
             {
-                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
         }
     }

@@ -5,7 +5,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class DbFileConfiguration : EntityConfigurationTemplate<DbFile>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<DbFile> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<DbFile> builder)
         {
             builder.HasIndex(x => x.Path).IsUnique();
 

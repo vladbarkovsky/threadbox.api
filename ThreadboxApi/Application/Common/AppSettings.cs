@@ -2,22 +2,33 @@
 {
     public class AppSettings
     {
-        public const string DevDbConnectionString = "ThreadboxApiDev";
-
-        public const string CorsPolicy = "Cors:Policy";
-        public const string CorsOrigins = "Cors:Origins";
-        public const string CorsMethods = "Cors:Methods";
-        public const string CorsHeaders = "Cors:Headers";
-
-        public const string JwtValidAudience = "Jwt:ValidAudience";
-        public const string JwtValidIssuer = "Jwt:ValidIssuer";
-        public const string JwtSecurityKey = "Jwt:SecurityKey";
-        public const string JwtExpirationTimeSeconds = "Jwt:ExpirationTimeSeconds";
-
-        public const string DefaultAdminUserName = "DefaultAdminCredentials:UserName";
-        public const string DefaultAdminPassword = "DefaultAdminCredentials:Password";
-
-        public const string AngularClientBaseUrl = "AngularClientBaseUrl";
         public const string RegistrationKeyExpirationTimeSeconds = "RegistrationKeyExpirationTimeSeconds";
+
+        public class ConnectionStrings
+        {
+            public const string Dev = "ThreadboxApiDev";
+        }
+
+        public class Cors
+        {
+            public const string Policy = "Cors:Policy";
+            public const string Origins = "Cors:Origins";
+            public const string Methods = "Cors:Methods";
+            public const string Headers = "Cors:Headers";
+        }
+
+        public class Jwt
+        {
+            public const string ValidAudience = "Jwt:ValidAudience";
+            public const string ValidIssuer = "Jwt:ValidIssuer";
+            public const string SecurityKey = "Jwt:SecurityKey";
+            public const string ExpirationTimeSeconds = "Jwt:ExpirationTimeSeconds";
+        }
+
+        public class DefaultAdminCredentials
+        {
+            public const string UserName = "DefaultAdminCredentials:UserName";
+            public const string Password = "DefaultAdminCredentials:Password";
+        }
     }
 }

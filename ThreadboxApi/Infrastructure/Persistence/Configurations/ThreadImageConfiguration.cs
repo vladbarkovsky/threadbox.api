@@ -5,7 +5,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class ThreadImageConfiguration : EntityConfigurationTemplate<ThreadImage>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<ThreadImage> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<ThreadImage> builder)
         {
             builder
                 .HasOne(x => x.FileInfo)

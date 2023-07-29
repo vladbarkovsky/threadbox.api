@@ -5,7 +5,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class BoardConfiguration : EntityConfigurationTemplate<Board>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<Board> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<Board> builder)
         {
             builder
                 .HasMany(x => x.Threads)

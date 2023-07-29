@@ -5,7 +5,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class PostConfiguration : EntityConfigurationTemplate<Post>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<Post> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<Post> builder)
         {
             builder
                 .HasMany(x => x.PostImages)

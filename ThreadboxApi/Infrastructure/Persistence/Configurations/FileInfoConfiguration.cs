@@ -4,7 +4,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
     public class FileInfoConfiguration : EntityConfigurationTemplate<Domain.Entities.FileInfo>
     {
-        protected override void ConfigureConcrete(EntityTypeBuilder<Domain.Entities.FileInfo> builder)
+        protected override void OnConfiguring(EntityTypeBuilder<Domain.Entities.FileInfo> builder)
         {
             builder
                 .Property(x => x.Name)

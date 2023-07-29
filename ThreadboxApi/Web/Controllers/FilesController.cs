@@ -10,5 +10,17 @@ namespace ThreadboxApi.Web.Controllers
         {
             return await Mediator.Send(query);
         }
+
+        [HttpGet("[action]")]
+        public async Task<FileContentResult> GetThreadImagesZip([FromQuery] GetTreadImagesZip.Query query)
+        {
+            return await Mediator.Send(query);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<FileContentResult> GetPostImagesZip([FromQuery] GetPostImagesZip.Query query)
+        {
+            return await Mediator.Send(query);
+        }
     }
 }
