@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -13,48 +14,21 @@ namespace ThreadboxApi.Web.Startup
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services
-                .AddIdentity<AppUser, IdentityRole<Guid>>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+                .AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
 
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = false;
+            services.AddIdentityServer()
+                .AddApiAuthorization<AppUser, AppDbContext>();
 
-                    var securityKey = Encoding.UTF8.GetBytes(configuration[AppSettings.Jwt.SecurityKey]);
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        IssuerSigningKey = new SymmetricSecurityKey(securityKey),
-                        ValidateIssuerSigningKey = true,
-
-                        ValidIssuer = configuration[AppSettings.Jwt.ValidIssuer],
-                        ValidateIssuer = true,
-
-                        ValidAudience = configuration[AppSettings.Jwt.ValidAudience],
-                        ValidateAudience = true,
-
-                        RequireExpirationTime = true,
-                        ClockSkew = TimeSpan.Zero,
-                        ValidateLifetime = true,
-                    };
-                });
-
-            services.AddAuthorization();
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
         }
 
         public static void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseIdentityServer();
         }
     }
 }

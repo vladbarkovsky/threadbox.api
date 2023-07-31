@@ -46,7 +46,7 @@ namespace ThreadboxApi.Application.Posts.Commands
 
             foreach (var formFile in request.PostImages)
             {
-                SavePostImage(formFile, post.Id, cancellationToken);
+                await SavePostImage(formFile, post.Id, cancellationToken);
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);

@@ -2,10 +2,12 @@
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class FileInfoConfiguration : EntityConfigurationTemplate<Domain.Entities.FileInfo>
+    public class FileInfoConfiguration : BaseEntityConfiguration<Domain.Entities.FileInfo>
     {
-        protected override void OnConfiguring(EntityTypeBuilder<Domain.Entities.FileInfo> builder)
+        public override void Configure(EntityTypeBuilder<Domain.Entities.FileInfo> builder)
         {
+            base.Configure(builder);
+
             builder
                 .Property(x => x.Name)
                 .IsRequired()

@@ -4,7 +4,6 @@ namespace ThreadboxApi.Application.Services
 {
     public class AppContext : IScopedService
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AppContext(IHttpContextAccessor httpContextAccessor)

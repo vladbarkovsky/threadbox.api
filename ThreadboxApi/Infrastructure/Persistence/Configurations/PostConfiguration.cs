@@ -3,10 +3,12 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class PostConfiguration : EntityConfigurationTemplate<Post>
+    public class PostConfiguration : BaseEntityConfiguration<Post>
     {
-        protected override void OnConfiguring(EntityTypeBuilder<Post> builder)
+        public override void Configure(EntityTypeBuilder<Post> builder)
         {
+            base.Configure(builder);
+
             builder
                 .HasMany(x => x.PostImages)
                 .WithOne(x => x.Post)

@@ -73,8 +73,11 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedUsersAsync()
         {
             await _userManager.CreateAsync(
-                user: new AppUser(_configuration[AppSettings.DefaultAdminUserName]),
-                password: _configuration[AppSettings.DefaultAdminPassword]);
+                user: new AppUser
+                {
+                    UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
+                },
+                password: _configuration[AppSettings.DefaultAdminCredentials.Password]);
 
             if (_webHostEnvironment.IsProduction())
             {
@@ -86,7 +89,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
         private async Task SeedBoardsAsync()
         {
-            var boards = LoadFromJson<List<Board>>(Constants.BoardsSeedingFile);
+            var boards = LoadFromJson<List<Board>>(SeedingConstants.BoardsSeedFile);
             await _dbContext.AddRangeAsync(boards);
             await _dbContext.SaveChangesAsync();
         }
@@ -94,7 +97,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedThreadsAsync()
         {
             var boards = await _dbContext.Boards.ToListAsync();
-            var threads = LoadFromJson<List<Domain.Entities.Thread>>(Constants.ThreadsSeedingFile);
+            var threads = LoadFromJson<List<Domain.Entities.Thread>>(SeedingConstants.ThreadsSeedFile);
             boards.First().Threads = threads;
             await _dbContext.SaveChangesAsync();
         }
@@ -103,10 +106,10 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var threads = await _dbContext.Threads.ToListAsync();
 
-            threads[0].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(1);
-            threads[1].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(2);
-            threads[2].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(3);
-            threads[3].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(5);
+            //threads[0].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(1);
+            //threads[1].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(2);
+            //threads[2].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(3);
+            //threads[3].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(5);
 
             _dbContext.Threads.UpdateRange(threads);
             await _dbContext.SaveChangesAsync();
@@ -115,7 +118,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedPostsAsync()
         {
             var threads = await _dbContext.Threads.ToListAsync();
-            var posts = LoadFromJson<List<Post>>(Constants.PostsSeedingFile);
+            var posts = LoadFromJson<List<Post>>(SeedingConstants.PostsSeedFile);
 
             threads[0].Posts = posts.GetRange(0, 1);
             threads[1].Posts = posts.GetRange(1, 2);
@@ -131,14 +134,14 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var posts = await _dbContext.Posts.ToListAsync();
 
-            posts[0].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
-            posts[1].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
-            posts[2].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
-            posts[3].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
-            posts[4].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
-            posts[5].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
-            posts[6].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
-            posts[7].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
+            //posts[0].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
+            //posts[1].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
+            //posts[2].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
+            //posts[3].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
+            //posts[4].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
+            //posts[5].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
+            //posts[6].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
+            //posts[7].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
 
             _dbContext.Posts.UpdateRange(posts);
             await _dbContext.SaveChangesAsync();

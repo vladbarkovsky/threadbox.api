@@ -1,24 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Duende.IdentityServer.EntityFramework.Options;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Infrastructure.Persistence
 {
-    public class AppDbContext : IdentityDbContext<
-        AppUser,
-        IdentityRole<Guid>,
-        Guid,
-        IdentityUserClaim<Guid>,
-        IdentityUserRole<Guid>,
-        IdentityUserLogin<Guid>,
-        IdentityRoleClaim<Guid>,
-        IdentityUserToken<Guid>>
+    public class AppDbContext : ApiAuthorizationDbContext<AppUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions)
+            : base(options, operationalStoreOptions)
         { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +20,7 @@ namespace ThreadboxApi.Infrastructure.Persistence
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
+        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<RegistrationKey> RegistrationKeys { get; set; }
         public DbSet<Domain.Entities.FileInfo> FileInfos { get; set; }
         public DbSet<DbFile> DbFiles { get; set; }

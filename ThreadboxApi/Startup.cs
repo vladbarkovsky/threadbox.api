@@ -17,6 +17,7 @@ namespace ThreadboxApi
         public void ConfigureServices(IServiceCollection services)
         {
             DbStartup.ConfigureServices(services, _configuration);
+            services.AddRazorPages();
             DependencyInjectionStartup.ConfigureServices(services);
             services.AddControllers();
             SwaggerStartup.ConfigureServices(services);
@@ -37,14 +38,15 @@ namespace ThreadboxApi
             /// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
             /// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
 
-            CorsStartup.Configure(app);
-            ExceptionHandlingStartup.Configure(app);
+            app.UseCors();
+            app.UseExceptionHandler();
             app.UseRouting();
             IdentityStartup.Configure(app);
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
             app.UseHttpsRedirection();

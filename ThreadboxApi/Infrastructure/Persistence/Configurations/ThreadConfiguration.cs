@@ -2,10 +2,12 @@
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class ThreadConfiguration : EntityConfigurationTemplate<Domain.Entities.Thread>
+    public class ThreadConfiguration : BaseEntityConfiguration<Domain.Entities.Thread>
     {
-        protected override void OnConfiguring(EntityTypeBuilder<Domain.Entities.Thread> builder)
+        public override void Configure(EntityTypeBuilder<Domain.Entities.Thread> builder)
         {
+            base.Configure(builder);
+
             builder
                 .HasMany(x => x.Posts)
                 .WithOne(x => x.Thread)

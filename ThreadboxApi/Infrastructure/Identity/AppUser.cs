@@ -3,9 +3,8 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {
-    public class AppUser : IdentityUser<Guid>
+    public class AppUser : IdentityUser
     {
-        public Guid PersonId { get; set; }
         public Person Person { get; set; }
     }
 }

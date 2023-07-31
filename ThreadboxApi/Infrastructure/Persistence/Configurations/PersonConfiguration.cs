@@ -3,10 +3,12 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class PersonConfiguration : EntityConfigurationTemplate<Person>
+    public class PersonConfiguration : BaseEntityConfiguration<Person>
     {
-        protected override void OnConfiguring(EntityTypeBuilder<Person> builder)
+        public override void Configure(EntityTypeBuilder<Person> builder)
         {
+            base.Configure(builder);
+
             builder
                 .HasOne(x => x.AppUser)
                 .WithOne(x => x.Person)

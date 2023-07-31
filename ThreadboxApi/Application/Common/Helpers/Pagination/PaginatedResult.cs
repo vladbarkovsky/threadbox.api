@@ -2,7 +2,7 @@
 {
     public class PaginatedResult<T>
     {
-        public List<T> PageItems { get; set; }
+        public List<T> PageItems { get; set; } = new();
         public int PageIndex { get; set; }
 
         /// <summary>

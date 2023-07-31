@@ -3,10 +3,12 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class PostImageConfiguration : EntityConfigurationTemplate<PostImage>
+    public class PostImageConfiguration : BaseEntityConfiguration<PostImage>
     {
-        protected override void OnConfiguring(EntityTypeBuilder<PostImage> builder)
+        public override void Configure(EntityTypeBuilder<PostImage> builder)
         {
+            base.Configure(builder);
+
             builder
                 .HasOne(x => x.FileInfo)
                 .WithMany(x => x.PostImages)

@@ -3,10 +3,12 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public class BoardConfiguration : EntityConfigurationTemplate<Board>
+    public class BoardConfiguration : BaseEntityConfiguration<Board>
     {
-        protected override void OnConfiguring(EntityTypeBuilder<Board> builder)
+        public override void Configure(EntityTypeBuilder<Board> builder)
         {
+            base.Configure(builder);
+
             builder
                 .HasMany(x => x.Threads)
                 .WithOne(x => x.Board)

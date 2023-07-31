@@ -4,17 +4,12 @@ using ThreadboxApi.Domain.Common;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Configurations
 {
-    public abstract class EntityConfigurationTemplate<T> : IEntityTypeConfiguration<T>
+    public abstract class BaseEntityConfiguration<T> : IEntityTypeConfiguration<T>
         where T : BaseEntity
     {
-        public void Configure(EntityTypeBuilder<T> builder)
+        public virtual void Configure(EntityTypeBuilder<T> builder)
         {
             builder.HasKey(x => x.Id);
-
-            Configure(builder);
         }
-
-        protected virtual void OnConfiguring(EntityTypeBuilder<T> builder)
-        { }
     }
 }

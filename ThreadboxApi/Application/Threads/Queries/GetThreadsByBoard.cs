@@ -36,6 +36,7 @@ namespace ThreadboxApi.Application.Threads.Queries
         {
             var paginatedThreads = await _dbContext.Threads
                 .AsNoTracking()
+                .AsSplitQuery()
                 .Select(thread => new Domain.Entities.Thread
                 {
                     Id = thread.Id,

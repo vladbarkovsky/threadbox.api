@@ -21,10 +21,5 @@ namespace ThreadboxApi.Web.Startup
                 });
             });
         }
-
-        public static void Configure(IApplicationBuilder app)
-        {
-            app.UseCors();
-        }
     }
 }

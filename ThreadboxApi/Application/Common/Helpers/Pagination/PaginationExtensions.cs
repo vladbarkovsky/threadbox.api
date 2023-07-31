@@ -14,7 +14,11 @@ namespace ThreadboxApi.Application.Common.Helpers.Pagination
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
 
-            return new PaginatedResult<T>(items, pageIndex, items.Count, pageSize);
+            return new PaginatedResult<T>(
+                pageItems: items,
+                pageIndex: pageIndex,
+                totalCount: await query.CountAsync(cancellationToken),
+                pageSize: pageSize);
         }
     }
 }
