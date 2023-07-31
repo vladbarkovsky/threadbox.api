@@ -17,7 +17,6 @@ namespace ThreadboxApi
         public void ConfigureServices(IServiceCollection services)
         {
             DbStartup.ConfigureServices(services, _configuration);
-            services.AddRazorPages();
             DependencyInjectionStartup.ConfigureServices(services);
             services.AddControllers();
             SwaggerStartup.ConfigureServices(services);
@@ -46,7 +45,6 @@ namespace ThreadboxApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapRazorPages();
             });
 
             app.UseHttpsRedirection();

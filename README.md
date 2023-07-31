@@ -23,7 +23,7 @@ If you want to learn more about creating good readme files then refer the follow
 
 ```
 dotnet ef database update 0 -p ThreadboxApi
-dotnet ef migrations add TemplateMigration -p ThreadboxApi
+dotnet ef migrations add TemplateMigration -p ThreadboxApi -o Infrastructure\Persistence\Migrations
 dotnet ef database update -p ThreadboxApi
 dotnet ef database update TemplateMigration -p ThreadboxApi
 dotnet ef migrations remove -p ThreadboxApi
