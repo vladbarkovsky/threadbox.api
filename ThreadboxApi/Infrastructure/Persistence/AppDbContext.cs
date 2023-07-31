@@ -1,17 +1,15 @@
-﻿using Duende.IdentityServer.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Reflection;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Infrastructure.Persistence
 {
-    public class AppDbContext : ApiAuthorizationDbContext<AppUser>
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions)
-            : base(options, operationalStoreOptions)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
         { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
