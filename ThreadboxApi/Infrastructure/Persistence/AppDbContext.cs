@@ -18,7 +18,7 @@ namespace ThreadboxApi.Infrastructure.Persistence
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
-        public DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<Person> Persons { get; set; }
         public DbSet<RegistrationKey> RegistrationKeys { get; set; }
         public DbSet<Domain.Entities.FileInfo> FileInfos { get; set; }
         public DbSet<DbFile> DbFiles { get; set; }

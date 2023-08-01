@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using ThreadboxApi.Application.Common.Helpers.Validation;
+using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Application.Identity.Commands
 {
@@ -21,9 +22,17 @@ namespace ThreadboxApi.Application.Identity.Commands
             }
         }
 
-        public Task<string> Handle(Command request, CancellationToken cancellationToken)
+        private readonly IdentityService _identityService;
+
+        public SignIn(IdentityService identityService)
         {
-            throw new NotImplementedException();
+            _identityService = identityService;
+        }
+
+        public async Task<string> Handle(Command request, CancellationToken cancellationToken)
+        {
+            var accessToken = await _identityService.SignIn(request.UserName, request.Password);
+            return accessToken;
         }
     }
 }

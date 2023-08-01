@@ -8,9 +8,13 @@ namespace ThreadboxApi.Application.Services
     public class IdentityService : IScopedService
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly JwtService _jwtService;
 
-        public IdentityService(UserManager<AppUser> userManager)
-        { }
+        public IdentityService(UserManager<AppUser> userManager, JwtService jwtService)
+        {
+            _userManager = userManager;
+            _jwtService = jwtService;
+        }
 
         public async Task<string> SignIn(string userName, string password)
         {
@@ -25,6 +29,19 @@ namespace ThreadboxApi.Application.Services
             }
 
             return _jwtService.CreateAccessToken(appUser.Id);
+        }
+
+        public async Task<AppUser> SignUp(string userName, string password)
+        {
+            var appUser = new AppUser
+            {
+                UserName = userName
+            };
+
+            // TODO: Handle result errors
+            var result = await _userManager.CreateAsync(appUser, password);
+
+            return await _userManager.FindByNameAsync(appUser.UserName);
         }
     }
 }
