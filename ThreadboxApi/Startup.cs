@@ -30,6 +30,7 @@ namespace ThreadboxApi
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseStaticFiles();
             SwaggerStartup.Configure(app, _webHostEnvironment);
 
             /// IMPORTANT: CORS must be configured before

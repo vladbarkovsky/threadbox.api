@@ -1,5 +1,6 @@
 ﻿using NSwag.Generation.Processors.Security;
 using NSwag;
+using ThreadboxApi.Web.ApiSpecification;
 
 namespace ThreadboxApi.Web.Startup
 {
@@ -7,9 +8,10 @@ namespace ThreadboxApi.Web.Startup
     {
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddSwaggerDocument(settings =>
+            services.AddOpenApiDocument(settings =>
             {
                 settings.Title = "Threadbox API";
+                settings.SchemaNameGenerator = new SchemaNameGenerator();
 
                 // Authorization
                 // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs
@@ -30,12 +32,10 @@ namespace ThreadboxApi.Web.Startup
         {
             if (webHostEnvironment.IsDevelopment())
             {
-                app.UseOpenApi();
-
                 app.UseSwaggerUi3(settings =>
                 {
                     settings.Path = "/api";
-                    //settings.DocumentPath = "/api/specification.json";
+                    settings.DocumentPath = "/api/specification.json";
                 });
             }
         }
