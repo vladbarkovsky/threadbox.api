@@ -16,7 +16,7 @@ namespace ThreadboxApi.Application.Services
             _configuration = configuration;
         }
 
-        public string CreateAccessToken(string appUserId)
+        public string CreateAccessToken(string userId)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[AppSettings.Jwt.SecurityKey]));
             var lifetimeSeconds = Convert.ToInt32(_configuration[AppSettings.Jwt.ExpirationTimeSeconds]);
@@ -27,7 +27,7 @@ namespace ThreadboxApi.Application.Services
                 Issuer = _configuration[AppSettings.Jwt.ValidIssuer],
                 Subject = new ClaimsIdentity(new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, appUserId)
+                    new Claim(ClaimTypes.NameIdentifier, userId)
                 }),
                 Expires = DateTime.UtcNow.AddSeconds(lifetimeSeconds),
                 NotBefore = DateTime.UtcNow,

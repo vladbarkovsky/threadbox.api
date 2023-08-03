@@ -4,7 +4,7 @@ using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {
-    public class AppUser : IdentityUser, IMappedFrom<Person>
+    public class ApplicationUser : IdentityUser, IMappedFrom<Person>
     {
         public Person Person { get; set; }
     }

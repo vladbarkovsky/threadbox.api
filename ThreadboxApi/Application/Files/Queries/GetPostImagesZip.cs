@@ -26,11 +26,11 @@ namespace ThreadboxApi.Application.Files.Queries
             }
         }
 
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
         private readonly ZipService _zipService;
 
-        public GetPostImagesZip(AppDbContext dbContext, IFileStorage fileStorage, ZipService zipService)
+        public GetPostImagesZip(ApplicationDbContext dbContext, IFileStorage fileStorage, ZipService zipService)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;

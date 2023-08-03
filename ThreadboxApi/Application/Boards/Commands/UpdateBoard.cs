@@ -24,9 +24,9 @@ namespace ThreadboxApi.Application.Boards.Commands
             }
         }
 
-        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
+        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
 
-        public UpdateBoard(Infrastructure.Persistence.AppDbContext dbContext)
+        public UpdateBoard(Infrastructure.Persistence.ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }

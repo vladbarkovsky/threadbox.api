@@ -22,9 +22,9 @@ namespace ThreadboxApi.Application.Threads.Models
 
     public class ThreadImageUrlsResolver : IValueResolver<Domain.Entities.Thread, ThreadDto, List<string>>
     {
-        private readonly Services.AppContext _appContext;
+        private readonly Services.ApplicationContext _appContext;
 
-        public ThreadImageUrlsResolver(Services.AppContext appContext)
+        public ThreadImageUrlsResolver(Services.ApplicationContext appContext)
         {
             _appContext = appContext;
         }

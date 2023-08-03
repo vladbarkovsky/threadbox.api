@@ -20,13 +20,13 @@ namespace ThreadboxApi.Application.Identity.Commands
         }
 
         private readonly IdentityService _identityService;
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IDateTimeOffsetService _dateTimeOffsetService;
         private readonly IConfiguration _configuration;
 
         public SignUp(
             IdentityService identityService,
-            AppDbContext dbContext,
+            ApplicationDbContext dbContext,
             IDateTimeOffsetService dateTimeOffsetService,
             IConfiguration configuration)
         {
@@ -39,12 +39,12 @@ namespace ThreadboxApi.Application.Identity.Commands
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
             await UseRegistrationKey(request.RegistrationKeyId, cancellationToken);
-            var appUser = await _identityService.SignUp(request.UserName, request.Password);
+            var user = await _identityService.SignUp(request.UserName, request.Password);
 
             var person = new Person
             {
-                UserName = appUser.UserName,
-                AppUserId = appUser.Id
+                UserName = user.UserName,
+                UserId = user.Id
             };
 
             _dbContext.Persons.Add(person);

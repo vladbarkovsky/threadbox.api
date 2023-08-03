@@ -10,8 +10,8 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -228,16 +228,19 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AppUserId")
+                    b.Property<string>("UserId")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Person");
+                    b.ToTable("Persons");
                 });
 
             modelBuilder.Entity("ThreadboxApi.Domain.Entities.Post", b =>
@@ -342,7 +345,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                     b.ToTable("ThreadImages");
                 });
 
-            modelBuilder.Entity("ThreadboxApi.Infrastructure.Identity.AppUser", b =>
+            modelBuilder.Entity("ThreadboxApi.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -417,7 +420,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ThreadboxApi.Infrastructure.Identity.AppUser", null)
+                    b.HasOne("ThreadboxApi.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -426,7 +429,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ThreadboxApi.Infrastructure.Identity.AppUser", null)
+                    b.HasOne("ThreadboxApi.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -441,7 +444,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ThreadboxApi.Infrastructure.Identity.AppUser", null)
+                    b.HasOne("ThreadboxApi.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -450,7 +453,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ThreadboxApi.Infrastructure.Identity.AppUser", null)
+                    b.HasOne("ThreadboxApi.Infrastructure.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -459,13 +462,13 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ThreadboxApi.Domain.Entities.Person", b =>
                 {
-                    b.HasOne("ThreadboxApi.Infrastructure.Identity.AppUser", "AppUser")
+                    b.HasOne("ThreadboxApi.Infrastructure.Identity.ApplicationUser", "User")
                         .WithOne("Person")
-                        .HasForeignKey("ThreadboxApi.Domain.Entities.Person", "AppUserId")
+                        .HasForeignKey("ThreadboxApi.Domain.Entities.Person", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AppUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ThreadboxApi.Domain.Entities.Post", b =>
@@ -552,7 +555,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                     b.Navigation("ThreadImages");
                 });
 
-            modelBuilder.Entity("ThreadboxApi.Infrastructure.Identity.AppUser", b =>
+            modelBuilder.Entity("ThreadboxApi.Infrastructure.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("Person");
                 });

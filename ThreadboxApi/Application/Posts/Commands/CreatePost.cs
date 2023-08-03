@@ -26,10 +26,10 @@ namespace ThreadboxApi.Application.Posts.Commands
             }
         }
 
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
 
-        public CreatePost(AppDbContext dbContext, IFileStorage fileStorage)
+        public CreatePost(ApplicationDbContext dbContext, IFileStorage fileStorage)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;

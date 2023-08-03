@@ -21,9 +21,9 @@ namespace ThreadboxApi.Application.Boards.Commands
             }
         }
 
-        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
+        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
 
-        public DeleteBoard(Infrastructure.Persistence.AppDbContext dbContext)
+        public DeleteBoard(Infrastructure.Persistence.ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }

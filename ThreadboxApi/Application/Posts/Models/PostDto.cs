@@ -21,9 +21,9 @@ namespace ThreadboxApi.Application.Posts.Models
 
     public class PostImageUrlsResolver : IValueResolver<Post, PostDto, List<string>>
     {
-        private readonly Services.AppContext _appContext;
+        private readonly Services.ApplicationContext _appContext;
 
-        public PostImageUrlsResolver(Services.AppContext appContext)
+        public PostImageUrlsResolver(Services.ApplicationContext appContext)
         {
             _appContext = appContext;
         }

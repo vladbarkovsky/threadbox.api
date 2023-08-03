@@ -7,10 +7,10 @@ namespace ThreadboxApi.Application.Services
 {
     public class IdentityService : IScopedService
     {
-        private readonly UserManager<AppUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtService _jwtService;
 
-        public IdentityService(UserManager<AppUser> userManager, JwtService jwtService)
+        public IdentityService(UserManager<ApplicationUser> userManager, JwtService jwtService)
         {
             _userManager = userManager;
             _jwtService = jwtService;
@@ -18,30 +18,30 @@ namespace ThreadboxApi.Application.Services
 
         public async Task<string> SignIn(string userName, string password)
         {
-            var appUser = await _userManager.FindByNameAsync(userName);
-            HttpResponseException.ThrowNotFoundIfNull(appUser);
+            var user = await _userManager.FindByNameAsync(userName);
+            HttpResponseException.ThrowNotFoundIfNull(user);
 
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(appUser, password);
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, password);
 
             if (!isPasswordCorrect)
             {
                 throw new HttpResponseException("Password is incorrect.");
             }
 
-            return _jwtService.CreateAccessToken(appUser.Id);
+            return _jwtService.CreateAccessToken(user.Id);
         }
 
-        public async Task<AppUser> SignUp(string userName, string password)
+        public async Task<ApplicationUser> SignUp(string userName, string password)
         {
-            var appUser = new AppUser
+            var user = new ApplicationUser
             {
                 UserName = userName
             };
 
             // TODO: Handle result errors
-            var result = await _userManager.CreateAsync(appUser, password);
+            var result = await _userManager.CreateAsync(user, password);
 
-            return await _userManager.FindByNameAsync(appUser.UserName);
+            return await _userManager.FindByNameAsync(user.UserName);
         }
     }
 }

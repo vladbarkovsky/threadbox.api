@@ -10,10 +10,10 @@ namespace ThreadboxApi.Application.Identity.Commands
         public class Command : IRequest<Guid>
         { }
 
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IDateTimeOffsetService _dateTimeOffsetService;
 
-        public CreateRegistrationKey(AppDbContext dbContext, IDateTimeOffsetService dateTimeOffsetService)
+        public CreateRegistrationKey(ApplicationDbContext dbContext, IDateTimeOffsetService dateTimeOffsetService)
         {
             _dbContext = dbContext;
             _dateTimeOffsetService = dateTimeOffsetService;

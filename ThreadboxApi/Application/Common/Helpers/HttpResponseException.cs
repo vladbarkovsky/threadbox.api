@@ -4,6 +4,8 @@
     {
         public static HttpResponseException BadRequest => new("Bad Request", StatusCodes.Status400BadRequest);
         public static HttpResponseException NotFound => new("Not Found", StatusCodes.Status404NotFound);
+        public static HttpResponseException Unauthorized => new("Unauthorized", StatusCodes.Status401Unauthorized);
+
         public int StatusCode { get; set; }
 
         public HttpResponseException(string message, int statusCode = StatusCodes.Status400BadRequest)

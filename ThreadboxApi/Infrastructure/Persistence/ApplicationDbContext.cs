@@ -6,9 +6,9 @@ using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Infrastructure.Persistence
 {
-    public class AppDbContext : IdentityDbContext<AppUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         { }
 

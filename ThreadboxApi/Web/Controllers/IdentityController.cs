@@ -25,5 +25,12 @@ namespace ThreadboxApi.Web.Controllers
         {
             return await Mediator.Send(new CreateRegistrationKey.Command());
         }
+
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<ActionResult<string>> RefreshAccessToken()
+        {
+            return await Mediator.Send(new RefreshAccessToken.Command());
+        }
     }
 }

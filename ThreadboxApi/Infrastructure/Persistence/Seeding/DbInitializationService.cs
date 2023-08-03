@@ -12,19 +12,19 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 {
     public class DbInitializationService : ITransientService
     {
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
-        private readonly UserManager<AppUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
         public DbInitializationService(
-            AppDbContext dbContext,
+            ApplicationDbContext dbContext,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
-            UserManager<AppUser> userManager,
+            UserManager<ApplicationUser> userManager,
             IFileStorage fileStorage)
         {
             _dbContext = dbContext;
@@ -73,7 +73,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedUsersAsync()
         {
             await _userManager.CreateAsync(
-                user: new AppUser
+                user: new ApplicationUser
                 {
                     UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
                 },

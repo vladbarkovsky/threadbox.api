@@ -1,16 +1,18 @@
-﻿using ThreadboxApi.Application.Common.Interfaces;
+﻿using System.Security.Claims;
+using ThreadboxApi.Application.Common.Interfaces;
 
 namespace ThreadboxApi.Application.Services
 {
-    public class AppContext : IScopedService
+    public class ApplicationContext : IScopedService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AppContext(IHttpContextAccessor httpContextAccessor)
+        public ApplicationContext(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
         public string BaseUrl => $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+        public string UserId => _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
     }
 }

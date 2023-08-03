@@ -8,9 +8,9 @@ namespace ThreadboxApi.Application.Services
 {
     public class DbFileStorage : IFileStorage
     {
-        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
+        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
 
-        public DbFileStorage(Infrastructure.Persistence.AppDbContext dbContext)
+        public DbFileStorage(Infrastructure.Persistence.ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }

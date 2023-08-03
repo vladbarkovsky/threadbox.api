@@ -28,10 +28,10 @@ namespace ThreadboxApi.Application.Threads.Commands
             }
         }
 
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
 
-        public CreateThread(AppDbContext dbContext, IFileStorage fileStorage)
+        public CreateThread(ApplicationDbContext dbContext, IFileStorage fileStorage)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;

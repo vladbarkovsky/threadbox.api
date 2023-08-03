@@ -249,6 +249,132 @@
         }
       }
     },
+    "/api/Identity/SignIn": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_SignIn",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "command",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Command3"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/Identity/SignUp": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_SignUp",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "name": "command",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Command4"
+            },
+            "x-nullable": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": true,
+            "description": "",
+            "schema": {
+              "type": "file"
+            }
+          }
+        }
+      }
+    },
+    "/api/Identity/CreateRegistrationKey": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_CreateRegistrationKey",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Identity/RefreshAccessToken": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_RefreshAccessToken",
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Posts/GetPostsByThread": {
       "get": {
         "tags": [
@@ -300,7 +426,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Command3"
+              "$ref": "#/definitions/Command5"
             },
             "x-nullable": false
           }
@@ -371,7 +497,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/Command4"
+              "$ref": "#/definitions/Command6"
             },
             "x-nullable": false
           }
@@ -451,6 +577,38 @@
         }
       }
     },
+    "Command3": {
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "Command4": {
+      "type": "object",
+      "required": [
+        "registrationKeyId"
+      ],
+      "properties": {
+        "userName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "repeatPassword": {
+          "type": "string"
+        },
+        "registrationKeyId": {
+          "type": "string",
+          "format": "guid"
+        }
+      }
+    },
     "PostDto": {
       "type": "object",
       "required": [
@@ -477,7 +635,7 @@
         }
       }
     },
-    "Command3": {
+    "Command5": {
       "type": "object",
       "required": [
         "threadId"
@@ -600,7 +758,7 @@
         }
       }
     },
-    "Command4": {
+    "Command6": {
       "type": "object",
       "required": [
         "boardId"

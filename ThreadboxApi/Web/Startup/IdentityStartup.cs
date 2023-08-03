@@ -13,8 +13,8 @@ namespace ThreadboxApi.Web.Startup
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services
-                .AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services
                 .AddAuthentication(options =>

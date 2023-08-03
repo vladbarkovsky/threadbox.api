@@ -22,10 +22,10 @@ namespace ThreadboxApi.Application.Boards.Queries
             }
         }
 
-        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
+        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
         private IMapper _mapper;
 
-        public GetBoard(Infrastructure.Persistence.AppDbContext dbContext, IMapper mapper)
+        public GetBoard(Infrastructure.Persistence.ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

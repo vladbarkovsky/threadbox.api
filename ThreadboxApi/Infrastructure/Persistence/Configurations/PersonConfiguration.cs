@@ -10,9 +10,9 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
             base.Configure(builder);
 
             builder
-                .HasOne(x => x.AppUser)
+                .HasOne(x => x.User)
                 .WithOne(x => x.Person)
-                .HasForeignKey<Person>(x => x.AppUserId)
+                .HasForeignKey<Person>(x => x.UserId)
                 .IsRequired();
         }
     }

@@ -210,18 +210,19 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Person",
+                name: "Persons",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                    UserName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Person", x => x.Id);
+                    table.PrimaryKey("PK_Persons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Person_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Persons_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -360,9 +361,9 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Person_AppUserId",
-                table: "Person",
-                column: "AppUserId",
+                name: "IX_Persons_UserId",
+                table: "Persons",
+                column: "UserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -418,7 +419,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                 name: "DbFiles");
 
             migrationBuilder.DropTable(
-                name: "Person");
+                name: "Persons");
 
             migrationBuilder.DropTable(
                 name: "PostImages");

@@ -22,10 +22,10 @@ namespace ThreadboxApi.Application.Files.Queries
             }
         }
 
-        private readonly Infrastructure.Persistence.AppDbContext _dbContext;
+        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
 
-        public GetFile(Infrastructure.Persistence.AppDbContext dbContext, IFileStorage fileStorage)
+        public GetFile(Infrastructure.Persistence.ApplicationDbContext dbContext, IFileStorage fileStorage)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;

@@ -23,10 +23,10 @@ namespace ThreadboxApi.Application.Threads.Queries
             }
         }
 
-        private readonly AppDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetThreadsByBoard(AppDbContext dbContext, IMapper mapper)
+        public GetThreadsByBoard(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
