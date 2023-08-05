@@ -21,18 +21,18 @@ namespace ThreadboxApi.Application.Identity.Commands
 
         private readonly IdentityService _identityService;
         private readonly ApplicationDbContext _dbContext;
-        private readonly IDateTimeOffsetService _dateTimeOffsetService;
+        private readonly IDateTimeService _dateTimeService;
         private readonly IConfiguration _configuration;
 
         public SignUp(
             IdentityService identityService,
             ApplicationDbContext dbContext,
-            IDateTimeOffsetService dateTimeOffsetService,
+            IDateTimeService dateTimeService,
             IConfiguration configuration)
         {
             _identityService = identityService;
             _dbContext = dbContext;
-            _dateTimeOffsetService = dateTimeOffsetService;
+            _dateTimeService = dateTimeService;
             _configuration = configuration;
         }
 
@@ -64,7 +64,7 @@ namespace ThreadboxApi.Application.Identity.Commands
                 throw new HttpResponseException("Registration key not found.", StatusCodes.Status400BadRequest);
             }
 
-            var utcNow = _dateTimeOffsetService.UtcNow;
+            var utcNow = _dateTimeService.UtcNow;
             var registrationKeyExpirationTimeSeconds = Convert.ToInt32(_configuration[AppSettings.RegistrationKeyExpirationTimeSeconds]);
 
             _dbContext.RegistrationKeys.Remove(registrationKey);

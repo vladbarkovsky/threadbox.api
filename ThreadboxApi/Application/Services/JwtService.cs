@@ -10,16 +10,19 @@ namespace ThreadboxApi.Application.Services
     public class JwtService : IScopedService
     {
         private readonly IConfiguration _configuration;
+        private readonly IDateTimeService _dateTimeOffsetService;
 
-        public JwtService(IConfiguration configuration)
+        public JwtService(IConfiguration configuration, IDateTimeService dateTimeOffsetService)
         {
             _configuration = configuration;
+            _dateTimeOffsetService = dateTimeOffsetService;
         }
 
         public string CreateAccessToken(string userId)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[AppSettings.Jwt.SecurityKey]));
             var lifetimeSeconds = Convert.ToInt32(_configuration[AppSettings.Jwt.ExpirationTimeSeconds]);
+            var now = _dateTimeOffsetService.UtcNow;
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -29,8 +32,8 @@ namespace ThreadboxApi.Application.Services
                 {
                     new Claim(ClaimTypes.NameIdentifier, userId)
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(lifetimeSeconds),
-                NotBefore = DateTime.UtcNow,
+                Expires = now.AddSeconds(lifetimeSeconds),
+                NotBefore = now,
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
             };
 

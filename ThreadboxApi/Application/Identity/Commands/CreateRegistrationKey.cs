@@ -11,9 +11,9 @@ namespace ThreadboxApi.Application.Identity.Commands
         { }
 
         private readonly ApplicationDbContext _dbContext;
-        private readonly IDateTimeOffsetService _dateTimeOffsetService;
+        private readonly IDateTimeService _dateTimeOffsetService;
 
-        public CreateRegistrationKey(ApplicationDbContext dbContext, IDateTimeOffsetService dateTimeOffsetService)
+        public CreateRegistrationKey(ApplicationDbContext dbContext, IDateTimeService dateTimeOffsetService)
         {
             _dbContext = dbContext;
             _dateTimeOffsetService = dateTimeOffsetService;
