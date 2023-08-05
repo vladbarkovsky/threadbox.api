@@ -19,14 +19,15 @@ namespace ThreadboxApi.Application.Boards.Commands
                 public Validator()
                 {
                     RuleFor(x => x.Id).NotEmpty();
-                    RuleFor(x => x.Title).NotEmpty();
+                    RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
+                    RuleFor(x => x.Description).NotEmpty().MaximumLength(2048);
                 }
             }
         }
 
-        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
-        public UpdateBoard(Infrastructure.Persistence.ApplicationDbContext dbContext)
+        public UpdateBoard(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -37,10 +38,7 @@ namespace ThreadboxApi.Application.Boards.Commands
                 .Where(x => x.Id == request.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (board == null)
-            {
-                throw HttpResponseException.NotFound;
-            }
+            HttpResponseException.ThrowNotFoundIfNull(board);
 
             board.Title = request.Title;
             board.Description = request.Description;
