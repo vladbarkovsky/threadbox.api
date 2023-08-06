@@ -1,32 +1,32 @@
 using Serilog;
-using ThreadboxApi.Services;
+using ThreadboxApi.Infrastructure.Persistence.Seeding;
 
 namespace ThreadboxApi
 {
-	public class Program
-	{
-		private static async Task Main(string[] args)
-		{
-			var host = Host
-				.CreateDefaultBuilder(args)
-				.ConfigureWebHostDefaults(webBuilder =>
-				{
-					webBuilder.UseStartup<Startup>();
-				})
-				.UseSerilog((hostBuilderContext, loggerConfiguration) =>
-				{
-					loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
-				})
-				.Build();
+    public class Program
+    {
+        private static async Task Main(string[] args)
+        {
+            var host = Host
+                .CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .UseSerilog((hostBuilderContext, loggerConfiguration) =>
+                {
+                    loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
+                })
+                .Build();
 
-			using (var scope = host.Services.CreateScope())
-			{
-				var services = scope.ServiceProvider;
-				var dbInitializationService = services.GetRequiredService<DbInitializationService>();
-				await dbInitializationService.EnsureInitializedAsync();
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var dbInitializationService = services.GetRequiredService<DbInitializationService>();
+                await dbInitializationService.EnsureInitializedAsync();
 
-				await host.RunAsync();
-			}
-		}
-	}
+                await host.RunAsync();
+            }
+        }
+    }
 }

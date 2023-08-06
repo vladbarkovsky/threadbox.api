@@ -1,322 +1,132 @@
 {
   "x-generator": "NSwag v13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v10.0.0.0))",
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "Threadbox API",
     "version": "1.0.0"
   },
   "paths": {
-    "/Authentication/Login": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "Authentication_Login",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "loginFormDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/LoginFormDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "/Authentication/RefreshAccessToken": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "Authentication_RefreshAccessToken",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "type": "string"
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Authentication/CreateRegistrationUrl": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "Authentication_CreateRegistrationUrl",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "type": "string"
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Authentication/ValidateRegistrationKey": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "Authentication_ValidateRegistrationKey",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "registrationKeyId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Authentication/Register": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "Authentication_Register",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "parameters": [
-          {
-            "name": "registrationFormDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/RegistrationFormDto"
-            },
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Authentication/CreateRegistrationKey": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "Authentication_CreateRegistrationKey",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": false,
-            "description": "",
-            "schema": {
-              "type": "string"
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Boards/GetBoardsList": {
+    "/api/Boards/GetBoardsList": {
       "get": {
         "tags": [
           "Boards"
         ],
         "operationId": "Boards_GetBoardsList",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ListBoardDto"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BoardListDto"
+                  }
+                }
               }
             }
           }
         }
       }
     },
-    "/Boards/GetBoard": {
+    "/api/Boards/GetBoard": {
       "get": {
         "tags": [
           "Boards"
         ],
         "operationId": "Boards_GetBoard",
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
         "parameters": [
           {
-            "type": "string",
-            "name": "boardId",
+            "name": "BoardId",
             "in": "query",
-            "format": "guid",
-            "x-nullable": false
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
           }
         ],
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "$ref": "#/definitions/BoardDto"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BoardDto"
+                }
+              }
             }
           }
         }
       }
     },
-    "/Boards/CreateBoard": {
+    "/api/Boards/CreateBoard": {
       "post": {
         "tags": [
           "Boards"
         ],
         "operationId": "Boards_CreateBoard",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "boardDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/BoardDto"
-            },
-            "x-nullable": false
-          }
-        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBoardCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "$ref": "#/definitions/ListBoardDto"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     },
-    "/Boards/EditBoard": {
+    "/api/Boards/UpdateBoard": {
       "put": {
         "tags": [
           "Boards"
         ],
-        "operationId": "Boards_EditBoard",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "boardDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/BoardDto"
-            },
-            "x-nullable": false
-          }
-        ],
+        "operationId": "Boards_UpdateBoard",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBoardCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "$ref": "#/definitions/ListBoardDto"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     },
-    "/Boards/DeleteBoard": {
+    "/api/Boards/DeleteBoard": {
       "delete": {
         "tags": [
           "Boards"
@@ -324,478 +134,673 @@
         "operationId": "Boards_DeleteBoard",
         "parameters": [
           {
-            "type": "string",
-            "name": "boardId",
+            "name": "BoardId",
             "in": "query",
-            "format": "guid",
-            "x-nullable": false
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
           }
         ],
         "responses": {
           "200": {
-            "x-nullable": true,
             "description": "",
-            "schema": {
-              "type": "file"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     },
-    "/PostImages/GetPostImage": {
+    "/api/Connection/CheckConnection": {
       "get": {
         "tags": [
-          "PostImages"
+          "Connection"
         ],
-        "operationId": "PostImages_GetPostImage",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "imageId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
+        "operationId": "Connection_CheckConnection",
         "responses": {
           "200": {
-            "x-nullable": true,
             "description": "",
-            "schema": {
-              "type": "file"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     },
-    "/PostImages/GetPostImages": {
+    "/api/Files/GetFile": {
       "get": {
         "tags": [
-          "PostImages"
+          "Files"
         ],
-        "operationId": "PostImages_GetPostImages",
+        "operationId": "Files_GetFile",
         "parameters": [
           {
-            "type": "string",
-            "name": "postId",
+            "name": "FileInfoId",
             "in": "query",
-            "format": "guid",
-            "x-nullable": false
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
           }
         ],
         "responses": {
           "200": {
-            "x-nullable": true,
             "description": "",
-            "schema": {
-              "type": "file"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     },
-    "/Posts/CreatePost": {
+    "/api/Files/GetThreadImagesZip": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "operationId": "Files_GetThreadImagesZip",
+        "parameters": [
+          {
+            "name": "ThreadId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Files/GetPostImagesZip": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "operationId": "Files_GetPostImagesZip",
+        "parameters": [
+          {
+            "name": "PostId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Identity/SignIn": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_SignIn",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Identity/SignUp": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_SignUp",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Identity/CreateRegistrationKey": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_CreateRegistrationKey",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Identity/RefreshAccessToken": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_RefreshAccessToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Posts/GetPostsByThread": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "Posts_GetPostsByThread",
+        "parameters": [
+          {
+            "name": "ThreadId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Posts/CreatePost": {
       "post": {
         "tags": [
           "Posts"
         ],
         "operationId": "Posts_CreatePost",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "name": "postDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PostDto"
-            },
-            "x-nullable": false
-          }
-        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "$ref": "#/definitions/ListPostDto"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     },
-    "/Test/Check": {
-      "get": {
-        "tags": [
-          "Test"
-        ],
-        "operationId": "Test_Check",
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/ThreadImages/GetThreadImage": {
-      "get": {
-        "tags": [
-          "ThreadImages"
-        ],
-        "operationId": "ThreadImages_GetThreadImage",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "imageId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/ThreadImages/GetThreadImages": {
-      "get": {
-        "tags": [
-          "ThreadImages"
-        ],
-        "operationId": "ThreadImages_GetThreadImages",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "threadId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "x-nullable": true,
-            "description": "",
-            "schema": {
-              "type": "file"
-            }
-          }
-        }
-      }
-    },
-    "/Threads/GetThreadsByBoard": {
+    "/api/Threads/GetThreadsByBoard": {
       "post": {
         "tags": [
           "Threads"
         ],
         "operationId": "Threads_GetThreadsByBoard",
-        "consumes": [
-          "application/json",
-          "text/json",
-          "application/*+json"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "boardId",
-            "in": "query",
-            "format": "guid",
-            "x-nullable": false
+        "requestBody": {
+          "x-name": "query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetThreadsByBoardQuery"
+              }
+            }
           },
-          {
-            "name": "paginationParamsDto",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/PaginationParamsDto"
-            },
-            "x-nullable": false
-          }
-        ],
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "$ref": "#/definitions/PaginatedResultOfListThreadDto"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResultOfThreadDto"
+                }
+              }
             }
           }
         }
       }
     },
-    "/Threads/CreateThread": {
+    "/api/Threads/CreateThread": {
       "post": {
         "tags": [
           "Threads"
         ],
         "operationId": "Threads_CreateThread",
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "produces": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "parameters": [
-          {
-            "type": "string",
-            "name": "BoardId",
-            "in": "formData",
-            "format": "guid",
-            "x-nullable": false
-          },
-          {
-            "type": "string",
-            "name": "Title",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "string",
-            "name": "Text",
-            "in": "formData",
-            "x-nullable": true
-          },
-          {
-            "type": "file",
-            "name": "ThreadImages",
-            "in": "formData",
-            "collectionFormat": "multi",
-            "x-nullable": true,
-            "items": {
-              "type": "file"
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateThreadCommand"
+              }
             }
-          }
-        ],
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
-            "x-nullable": false,
             "description": "",
-            "schema": {
-              "$ref": "#/definitions/ListThreadDto"
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           }
         }
       }
     }
   },
-  "definitions": {
-    "LoginFormDto": {
-      "type": "object",
-      "properties": {
-        "userName": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
+  "components": {
+    "schemas": {
+      "BoardListDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
         }
-      }
-    },
-    "RegistrationFormDto": {
-      "type": "object",
-      "required": [
-        "registrationKeyId"
-      ],
-      "properties": {
-        "userName": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        },
-        "confirmPassword": {
-          "type": "string"
-        },
-        "registrationKeyId": {
-          "type": "string",
-          "format": "guid"
+      },
+      "BoardDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
         }
-      }
-    },
-    "ListBoardDto": {
-      "type": "object",
-      "required": [
-        "id"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "title": {
-          "type": "string"
+      },
+      "CreateBoardCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
         }
-      }
-    },
-    "BoardDto": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
+      },
+      "UpdateBoardCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
         }
-      }
-    },
-    "ListPostDto": {
-      "type": "object",
-      "required": [
-        "id",
-        "threadId"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "text": {
-          "type": "string"
-        },
-        "threadId": {
-          "type": "string",
-          "format": "guid"
-        },
-        "postImageUrls": {
-          "type": "array",
-          "items": {
-            "type": "string"
+      },
+      "SignInCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SignUpCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "repeatPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationKeyId": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "PostDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "threadId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "postImageUrls": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreatePostCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "postImages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "threadId": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "PaginatedResultOfThreadDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageItems": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ThreadDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ThreadDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "threadImageUrls": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "posts": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/PostDto"
+            }
+          }
+        }
+      },
+      "GetThreadsByBoardQuery": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedQuery"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "boardId": {
+                "type": "string",
+                "format": "guid"
+              }
+            }
+          }
+        ]
+      },
+      "PaginatedQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateThreadCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "boardId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "threadImages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
           }
         }
       }
     },
-    "PostDto": {
-      "type": "object",
-      "properties": {
-        "text": {
-          "type": "string"
-        },
-        "postImages": {
-          "type": "array",
-          "items": {
-            "type": "file"
-          }
-        }
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "Type into the textbox: Bearer {your JWT token}.",
+        "name": "Authorization",
+        "in": "header"
       }
-    },
-    "PaginatedResultOfListThreadDto": {
-      "type": "object",
-      "required": [
-        "pageIndex",
-        "totalPages",
-        "totalCount",
-        "hasPreviousPage",
-        "hasNextPage"
-      ],
-      "properties": {
-        "pageItems": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ListThreadDto"
-          }
-        },
-        "pageIndex": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "totalPages": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "totalCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "hasPreviousPage": {
-          "type": "boolean"
-        },
-        "hasNextPage": {
-          "type": "boolean"
-        }
-      }
-    },
-    "ListThreadDto": {
-      "type": "object",
-      "required": [
-        "id"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "guid"
-        },
-        "title": {
-          "type": "string"
-        },
-        "text": {
-          "type": "string"
-        },
-        "threadImageUrls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "posts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ListPostDto"
-          }
-        }
-      }
-    },
-    "PaginationParamsDto": {
-      "type": "object",
-      "required": [
-        "pageIndex",
-        "pageSize"
-      ],
-      "properties": {
-        "pageIndex": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "pageSize": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    }
-  },
-  "securityDefinitions": {
-    "JWT": {
-      "type": "apiKey",
-      "description": "Type into the textbox: Bearer {your JWT token}.",
-      "name": "Authorization",
-      "in": "header"
     }
   },
   "security": [

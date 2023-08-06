@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using ThreadboxApi.Configuration;
-using ThreadboxApi.Configuration.Startup;
-using ThreadboxApi.Configuraton.Startup;
+using ThreadboxApi.Web.Startup;
 
 namespace ThreadboxApi
 {
@@ -32,6 +30,7 @@ namespace ThreadboxApi
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseStaticFiles();
             SwaggerStartup.Configure(app, _webHostEnvironment);
 
             /// IMPORTANT: CORS must be configured before
@@ -39,9 +38,8 @@ namespace ThreadboxApi
             /// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
             /// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
 
-            CorsStartup.Configure(app);
-            ExceptionHandlingStartup.Configure(app);
-            app.UseMiddleware<JwtAccessTokenRefreshMiddleware>();
+            app.UseCors();
+            app.UseExceptionHandler();
             app.UseRouting();
             IdentityStartup.Configure(app);
 
