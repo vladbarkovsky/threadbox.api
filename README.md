@@ -14,11 +14,11 @@ API specification is available at link https://localhost:5000/api.
 # Migrations
 
 ```
-dotnet ef database update 0 -p ThreadboxApi
-dotnet ef migrations add TemplateMigration -p ThreadboxApi -o Infrastructure\Persistence\Migrations
-dotnet ef database update -p ThreadboxApi
-dotnet ef database update TemplateMigration -p ThreadboxApi
-dotnet ef migrations remove -p ThreadboxApi
+dotnet ef database update 0 -p ThreadboxApi -c ApplicationDbContext
+dotnet ef migrations add TemplateMigration -p ThreadboxApi -c ApplicationDbContext -o Infrastructure\Persistence\Migrations\ApplicationDbContext
+dotnet ef database update -p ThreadboxApi -c ApplicationDbContext
+dotnet ef database update TemplateMigration -p ThreadboxApi -c ApplicationDbContext
+dotnet ef migrations remove -p ThreadboxApi -c ApplicationDbContext
 ```
 
 # Build and Test

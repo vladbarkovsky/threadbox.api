@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ThreadboxApi.Infrastructure.Persistence.Migrations
+namespace ThreadboxApi.Infrastructure.Persistence.Migrations.Application
 {
     /// <inheritdoc />
     public partial class Initial : Migration

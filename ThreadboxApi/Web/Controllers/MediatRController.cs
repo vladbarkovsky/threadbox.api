@@ -5,7 +5,6 @@ namespace ThreadboxApi.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [ApiExplorerSettings(GroupName = "private")]
     public class MediatRController : ControllerBase
     {
         protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetService<ISender>();

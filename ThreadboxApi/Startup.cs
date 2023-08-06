@@ -19,6 +19,14 @@ namespace ThreadboxApi
             DbStartup.ConfigureServices(services, _configuration);
             DependencyInjectionStartup.ConfigureServices(services);
             services.AddControllers();
+
+            services
+                .AddMvc()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.RootDirectory = "/Web/IdentityServer/Views";
+                });
+
             SwaggerStartup.ConfigureServices(services);
             CorsStartup.ConfigureServices(services, _configuration);
             ExceptionHandlingStartup.ConfigureServices(services);

@@ -9,10 +9,10 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace ThreadboxApi.Infrastructure.Persistence.Migrations
+namespace ThreadboxApi.Infrastructure.Persistence.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230803124441_Initial")]
+    [Migration("20230806134406_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

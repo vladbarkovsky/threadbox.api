@@ -8,7 +8,7 @@ using ThreadboxApi.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace ThreadboxApi.Infrastructure.Persistence.Migrations
+namespace ThreadboxApi.Infrastructure.Persistence.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,7 +13,8 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 {
     public class DbInitializationService : ITransientService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _appDbContext;
+        private readonly PersistedGrantDbContext _persistedGrantDbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -21,13 +23,15 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
         public DbInitializationService(
-            ApplicationDbContext dbContext,
+            ApplicationDbContext appDbContext,
+            PersistedGrantDbContext persistentGrantDbContext,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
             IFileStorage fileStorage)
         {
-            _dbContext = dbContext;
+            _appDbContext = appDbContext;
+            _persistedGrantDbContext = persistentGrantDbContext;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
             _userManager = userManager;
@@ -45,11 +49,12 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         // Therefore don't be surprised that databaseExists == true
         public async Task EnsureInitializedAsync()
         {
-            var databaseExists = await _dbContext.Database.CanConnectAsync();
+            var databaseExists = await _appDbContext.Database.CanConnectAsync();
 
             if (!databaseExists)
             {
-                _dbContext.Database.Migrate();
+                _appDbContext.Database.Migrate();
+                _persistedGrantDbContext.Database.Migrate();
                 await SeedAsync();
             }
         }
@@ -90,34 +95,34 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedBoardsAsync()
         {
             var boards = LoadFromJson<List<Board>>(SeedingConstants.BoardsSeedFile);
-            await _dbContext.AddRangeAsync(boards);
-            await _dbContext.SaveChangesAsync();
+            await _appDbContext.AddRangeAsync(boards);
+            await _appDbContext.SaveChangesAsync();
         }
 
         private async Task SeedThreadsAsync()
         {
-            var boards = await _dbContext.Boards.ToListAsync();
+            var boards = await _appDbContext.Boards.ToListAsync();
             var threads = LoadFromJson<List<Domain.Entities.Thread>>(SeedingConstants.ThreadsSeedFile);
             boards.First().Threads = threads;
-            await _dbContext.SaveChangesAsync();
+            await _appDbContext.SaveChangesAsync();
         }
 
         private async Task SeedThreadImagesAsync()
         {
-            var threads = await _dbContext.Threads.ToListAsync();
+            var threads = await _appDbContext.Threads.ToListAsync();
 
             //threads[0].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(1);
             //threads[1].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(2);
             //threads[2].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(3);
             //threads[3].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(5);
 
-            _dbContext.Threads.UpdateRange(threads);
-            await _dbContext.SaveChangesAsync();
+            _appDbContext.Threads.UpdateRange(threads);
+            await _appDbContext.SaveChangesAsync();
         }
 
         private async Task SeedPostsAsync()
         {
-            var threads = await _dbContext.Threads.ToListAsync();
+            var threads = await _appDbContext.Threads.ToListAsync();
             var posts = LoadFromJson<List<Post>>(SeedingConstants.PostsSeedFile);
 
             threads[0].Posts = posts.GetRange(0, 1);
@@ -125,14 +130,14 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             threads[2].Posts = posts.GetRange(3, 3);
             threads[3].Posts = posts.GetRange(6, 5);
 
-            _dbContext.Threads.UpdateRange(threads);
-            await _dbContext.Posts.AddRangeAsync(posts);
-            await _dbContext.SaveChangesAsync();
+            _appDbContext.Threads.UpdateRange(threads);
+            await _appDbContext.Posts.AddRangeAsync(posts);
+            await _appDbContext.SaveChangesAsync();
         }
 
         private async Task SeedPostImagesAsync()
         {
-            var posts = await _dbContext.Posts.ToListAsync();
+            var posts = await _appDbContext.Posts.ToListAsync();
 
             //posts[0].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
             //posts[1].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
@@ -143,8 +148,8 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             //posts[6].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
             //posts[7].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
 
-            _dbContext.Posts.UpdateRange(posts);
-            await _dbContext.SaveChangesAsync();
+            _appDbContext.Posts.UpdateRange(posts);
+            await _appDbContext.SaveChangesAsync();
         }
 
         private T LoadFromJson<T>(string path)
