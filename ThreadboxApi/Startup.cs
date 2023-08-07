@@ -18,6 +18,15 @@ namespace ThreadboxApi
         {
             DbStartup.ConfigureServices(services, _configuration);
             DependencyInjectionStartup.ConfigureServices(services);
+            CorsStartup.ConfigureServices(services, _configuration);
+            SwaggerStartup.ConfigureServices(services);
+            ExceptionHandlingStartup.ConfigureServices(services);
+            IdentityStartup.ConfigureServices(services, _configuration);
+            IdentityServerStartup.ConfigureServices(services, _configuration);
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            MediatRStartup.ConfigureServices(services);
+            FluentValidationStartup.ConfigureServices(services);
+
             services.AddControllers();
 
             services
@@ -26,30 +35,27 @@ namespace ThreadboxApi
                 {
                     options.RootDirectory = "/Web/IdentityServer/Views";
                 });
-
-            SwaggerStartup.ConfigureServices(services);
-            CorsStartup.ConfigureServices(services, _configuration);
-            ExceptionHandlingStartup.ConfigureServices(services);
-            IdentityStartup.ConfigureServices(services, _configuration);
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            MediatRStartup.ConfigureServices(services);
-            FluentValidationStartup.ConfigureServices(services);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseStaticFiles();
-            SwaggerStartup.Configure(app, _webHostEnvironment);
-
             /// IMPORTANT: CORS must be configured before
             /// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
             /// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
             /// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
+            CorsStartup.Configure(app);
 
-            app.UseCors();
-            app.UseExceptionHandler();
-            app.UseRouting();
+            SwaggerStartup.Configure(app, _webHostEnvironment);
+            ExceptionHandlingStartup.Configure(app);
             IdentityStartup.Configure(app);
+            IdentityServerStartup.Configure(app);
+
+            /// IMPORTANT: CSP must be configured before
+            /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/> 
+            CspStartup.Configure(app, _webHostEnvironment);
+
+            app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
