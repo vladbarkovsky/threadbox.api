@@ -1,5 +1,4 @@
 ﻿using IdentityServer4;
-using IdentityServer4.Configuration;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Common;
