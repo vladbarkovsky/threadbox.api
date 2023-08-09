@@ -39,12 +39,13 @@ namespace ThreadboxApi.Web.Startup
         private static List<IdentityResource> IdentityResources => new()
         {
             new IdentityResources.OpenId(),
-            new IdentityResources.Profile()
+            new IdentityResources.Profile(),
         };
 
         private static List<ApiScope> ApiScopes => new()
         {
             new ApiScope("threadbox_api", "Threadbox API"),
+            new ApiScope(IdentityServerConstants.StandardScopes.OfflineAccess)
         };
 
         private static List<Client> Clients => new()
@@ -59,10 +60,11 @@ namespace ThreadboxApi.Web.Startup
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.OfflineAccess,
                     "threadbox_api"
                 },
 
-                RedirectUris = { "http://localhost:4200" },
+                RedirectUris = { "http://localhost:4200/is4/redirect-uri" },
                 PostLogoutRedirectUris = { "http://localhost:4200" },
                 AllowedCorsOrigins = { "http://localhost:4200" },
                 AllowAccessTokensViaBrowser = false,
@@ -71,9 +73,10 @@ namespace ThreadboxApi.Web.Startup
                 FrontChannelLogoutUri = "https://localhost:5000/signout-oidc",
                 FrontChannelLogoutSessionRequired = true,
                 AllowRememberConsent = false,
-                ClientSecrets = { new Secret("your_client_secret".Sha256()) },
                 RequirePkce = true,
-                AllowPlainTextPkce = false
+                AllowPlainTextPkce = false,
+                AllowOfflineAccess = true,
+                RequireClientSecret = false
             },
         };
     }

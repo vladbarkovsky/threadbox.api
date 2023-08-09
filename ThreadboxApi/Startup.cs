@@ -51,7 +51,7 @@ namespace ThreadboxApi
             IdentityServerStartup.Configure(app);
 
             /// IMPORTANT: CSP must be configured before
-            /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/> 
+            /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
             CspStartup.Configure(app, _webHostEnvironment);
 
             app.UseRouting();
