@@ -45,7 +45,7 @@ namespace ThreadboxApi.Web.Startup
         private static List<ApiScope> ApiScopes => new()
         {
             new ApiScope("threadbox_api", "Threadbox API"),
-            new ApiScope(IdentityServerConstants.StandardScopes.OfflineAccess)
+            //new ApiScope(IdentityServerConstants.StandardScopes.OfflineAccess)
         };
 
         private static List<Client> Clients => new()
@@ -64,7 +64,7 @@ namespace ThreadboxApi.Web.Startup
                     "threadbox_api"
                 },
 
-                RedirectUris = { "http://localhost:4200/is4/redirect-uri" },
+                RedirectUris = { "http://localhost:4200/authorization/sign-in-redirect-callback" },
                 PostLogoutRedirectUris = { "http://localhost:4200" },
                 AllowedCorsOrigins = { "http://localhost:4200" },
                 AllowAccessTokensViaBrowser = false,
