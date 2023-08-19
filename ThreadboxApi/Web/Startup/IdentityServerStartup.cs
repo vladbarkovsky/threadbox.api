@@ -64,7 +64,7 @@ namespace ThreadboxApi.Web.Startup
                     "threadbox_api"
                 },
 
-                RedirectUris = { "http://localhost:4200/authorization/sign-in-redirect-callback" },
+                RedirectUris = { "http://localhost:4200/authorization/sign-in-redirect-callback", "http://localhost:4200/authorization/sign-in-silent-callback" },
                 PostLogoutRedirectUris = { "http://localhost:4200" },
                 AllowedCorsOrigins = { "http://localhost:4200" },
                 AllowAccessTokensViaBrowser = false,
@@ -76,7 +76,7 @@ namespace ThreadboxApi.Web.Startup
                 RequirePkce = true,
                 AllowPlainTextPkce = false,
                 AllowOfflineAccess = true,
-                RequireClientSecret = false
+                RequireClientSecret = false,
             },
         };
     }
