@@ -64,9 +64,9 @@ namespace ThreadboxApi.Web.Startup
                     "threadbox_api"
                 },
 
-                RedirectUris = { "http://localhost:4200/authorization/sign-in-redirect-callback", "http://localhost:4200/authorization/sign-in-silent-callback" },
-                PostLogoutRedirectUris = { "http://localhost:4200" },
-                AllowedCorsOrigins = { "http://localhost:4200" },
+                RedirectUris = { "https://localhost:4200/authorization/sign-in-redirect-callback", "https://localhost:4200/authorization/sign-in-silent-callback" },
+                PostLogoutRedirectUris = { "https://localhost:4200" },
+                AllowedCorsOrigins = { "https://localhost:4200" },
                 AllowAccessTokensViaBrowser = false,
                 AccessTokenLifetime = 3600,
                 BackChannelLogoutUri = "https://localhost:5000/signout-callback-oidc",
