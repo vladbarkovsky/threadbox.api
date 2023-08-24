@@ -1,6 +1,7 @@
 ﻿using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Sockets;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Infrastructure.Identity;
 
@@ -45,7 +46,6 @@ namespace ThreadboxApi.Web.Startup
         private static List<ApiScope> ApiScopes => new()
         {
             new ApiScope("threadbox_api", "Threadbox API"),
-            //new ApiScope(IdentityServerConstants.StandardScopes.OfflineAccess)
         };
 
         private static List<Client> Clients => new()

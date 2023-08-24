@@ -15,6 +15,7 @@
 
                 // Required for authorization silent renew using iframes
                 options.FrameSources(s => s.CustomSources("https://localhost:4200"));
+                options.FrameAncestors(s => s.CustomSources("https://localhost:4200"));
             });
         }
     }
