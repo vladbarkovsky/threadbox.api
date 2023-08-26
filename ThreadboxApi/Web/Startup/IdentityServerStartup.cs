@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Sockets;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Infrastructure.Identity;
+using static System.Net.WebRequestMethods;
 
 namespace ThreadboxApi.Web.Startup
 {
@@ -54,7 +55,11 @@ namespace ThreadboxApi.Web.Startup
             {
                 ClientId = "angular_client",
                 ClientName = "Angular client",
+                AllowedCorsOrigins = { "https://localhost:4200" },
                 AllowedGrantTypes = GrantTypes.Code,
+                RequirePkce = true,
+                RequireClientSecret = false,
+                AllowOfflineAccess = true,
 
                 AllowedScopes =
                 {
@@ -65,11 +70,8 @@ namespace ThreadboxApi.Web.Startup
                 },
 
                 RedirectUris = { "https://localhost:4200/authorization/sign-in-redirect-callback", "https://localhost:4200/authorization/sign-in-silent-callback" },
-                AllowedCorsOrigins = { "https://localhost:4200" },
-                AccessTokenLifetime = 3600,
-                RequirePkce = true,
-                AllowOfflineAccess = true,
-                RequireClientSecret = false,
+                PostLogoutRedirectUris = { "https://localhost:4200/authorization/sign-out-redirect-callback" },
+                AccessTokenLifetime = 30,
             },
         };
     }

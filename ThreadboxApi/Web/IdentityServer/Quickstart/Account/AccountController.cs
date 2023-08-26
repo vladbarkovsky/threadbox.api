@@ -32,13 +32,15 @@ namespace ThreadboxApi.Web.IdentityServer.Quickstart.Account
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
@@ -48,6 +50,7 @@ namespace ThreadboxApi.Web.IdentityServer.Quickstart.Account
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _signInManager = signInManager;
         }
 
         /// <summary>
@@ -188,7 +191,7 @@ namespace ThreadboxApi.Web.IdentityServer.Quickstart.Account
                 return await Logout(vm);
             }
 
-            return View(vm);
+            return View("/Web/IdentityServer/Views/Account/Logout.cshtml", vm);
         }
 
         /// <summary>
@@ -205,6 +208,7 @@ namespace ThreadboxApi.Web.IdentityServer.Quickstart.Account
             {
                 // delete local authentication cookie
                 await HttpContext.SignOutAsync();
+                await _signInManager.SignOutAsync();
 
                 // raise the logout event
                 await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
@@ -222,7 +226,7 @@ namespace ThreadboxApi.Web.IdentityServer.Quickstart.Account
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 
-            return View("LoggedOut", vm);
+            return View("/Web/IdentityServer/Views/Account/LoggedOut.cshtml", vm);
         }
 
         [HttpGet("[action]")]

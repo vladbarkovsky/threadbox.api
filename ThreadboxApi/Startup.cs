@@ -61,6 +61,8 @@ namespace ThreadboxApi
             {
                 endpoints.MapControllers();
             });
+
+            app.UseHttpsRedirection();
         }
     }
 }

@@ -11,11 +11,13 @@
                     // Required for browser HotReload in development
                     // See: https://www.hanselman.com/blog/net-6-hot-reload-and-refused-to-connect-to-ws-because-it-violates-the-content-security-policy-directive-because-web-sockets
                     options.DefaultSources(s => s.Self()).ConnectSources(s => s.CustomSources("wss:"));
+
+                    // This allows browser HotReload in case we use authorization silent renew too
+                    // options.FrameSources(s => s.Self());
                 }
 
                 // Required for authorization silent renew using iframes
                 options.FrameSources(s => s.CustomSources("https://localhost:4200"));
-                options.FrameAncestors(s => s.CustomSources("https://localhost:4200"));
             });
         }
     }

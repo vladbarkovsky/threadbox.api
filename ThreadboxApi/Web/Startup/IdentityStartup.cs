@@ -14,7 +14,7 @@ namespace ThreadboxApi.Web.Startup
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication(x => x.DefaultAuthenticateScheme = IdentityServer4.IdentityServerConstants.DefaultCookieAuthenticationScheme);
+            services.AddAuthentication();
             services.AddAuthorization();
         }
 
