@@ -14,12 +14,16 @@ API specification is available at link https://localhost:5000/api.
 # Migrations
 
 ```
-dotnet ef database update 0 -p ThreadboxApi
-dotnet ef migrations add TemplateMigration -p ThreadboxApi -o Infrastructure\Persistence\Migrations
-dotnet ef database update -p ThreadboxApi
-dotnet ef database update TemplateMigration -p ThreadboxApi
-dotnet ef migrations remove -p ThreadboxApi
+dotnet ef database update 0 -p ThreadboxApi -c ApplicationDbContext
+dotnet ef migrations add TemplateMigration -p ThreadboxApi -c ApplicationDbContext -o Infrastructure\Persistence\Migrations\ApplicationDbContext
+dotnet ef database update -p ThreadboxApi -c ApplicationDbContext
+dotnet ef database update TemplateMigration -p ThreadboxApi -c ApplicationDbContext
+dotnet ef migrations remove -p ThreadboxApi -c ApplicationDbContext
 ```
+
+# IdentityServer4
+
+We use [Quickstart.UI](https://github.com/IdentityServer/IdentityServer4.Quickstart.UI) for IdentityServer4 as start template
 
 # Build and Test
 
@@ -27,4 +31,4 @@ TODO: Describe and show how to build your code and run the tests.
 
 # Contribute
 
-TODO: Explain how other users and developers can contribute to make your code better. 
+TODO: Explain how other users and developers can contribute to make your code better.

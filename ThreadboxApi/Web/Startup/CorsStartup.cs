@@ -11,15 +11,20 @@ namespace ThreadboxApi.Web.Startup
                 options.AddDefaultPolicy(builder =>
                 {
                     builder
-                        .WithOrigins(configuration[AppSettings.Cors.Origins].Split(", "))
+                        .WithOrigins(configuration[AppSettings.ClientBaseUrl])
                         // NOTE: CORS allows simple methods (GET, HEAD, POST) regardless of
                         // Access-Control-Allow-Methods header content
                         // Source: https://stackoverflow.com/a/44385327
-                        .WithMethods(configuration[AppSettings.Cors.Methods].Split(", "))
-                        .WithHeaders(configuration[AppSettings.Cors.Headers].Split(", "))
+                        .WithMethods("PUT", "DELETE")
+                        .WithHeaders("Content-Type", "Authorization")
                         .Build();
                 });
             });
+        }
+
+        public static void Configure(IApplicationBuilder app)
+        {
+            app.UseCors();
         }
     }
 }
