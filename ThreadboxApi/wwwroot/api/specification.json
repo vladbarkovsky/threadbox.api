@@ -6,280 +6,22 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/Home/Home": {
+    "/External/Challenge": {
       "get": {
         "tags": [
-          "Home"
+          "External"
         ],
-        "operationId": "Home_Home",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Home/Error": {
-      "get": {
-        "tags": [
-          "Home"
-        ],
-        "operationId": "Home_Error",
+        "operationId": "External_Challenge",
         "parameters": [
           {
-            "name": "errorId",
+            "name": "scheme",
             "in": "query",
             "schema": {
               "type": "string",
               "nullable": true
             },
             "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Grants/Grants": {
-      "get": {
-        "tags": [
-          "Grants"
-        ],
-        "operationId": "Grants_Grants",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Grants/Revoke": {
-      "post": {
-        "tags": [
-          "Grants"
-        ],
-        "operationId": "Grants_Revoke",
-        "parameters": [
-          {
-            "name": "clientId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Diagnostics/Diagnostics": {
-      "get": {
-        "tags": [
-          "Diagnostics"
-        ],
-        "operationId": "Diagnostics_Diagnostics",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Device/Device": {
-      "get": {
-        "tags": [
-          "Device"
-        ],
-        "operationId": "Device_Device",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Device/UserCodeCapture": {
-      "post": {
-        "tags": [
-          "Device"
-        ],
-        "operationId": "Device_UserCodeCapture",
-        "parameters": [
-          {
-            "name": "userCode",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Device/Callback": {
-      "post": {
-        "tags": [
-          "Device"
-        ],
-        "operationId": "Device_Callback",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "properties": {
-                  "UserCode": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "Button": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ScopesConsented": {
-                    "type": "array",
-                    "nullable": true,
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "RememberConsent": {
-                    "type": "boolean"
-                  },
-                  "ReturnUrl": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "Description": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/Consent/Consent": {
-      "get": {
-        "tags": [
-          "Consent"
-        ],
-        "operationId": "Consent_ConsentGET",
-        "parameters": [
+          },
           {
             "name": "returnUrl",
             "in": "query",
@@ -287,7 +29,7 @@
               "type": "string",
               "nullable": true
             },
-            "x-position": 1
+            "x-position": 2
           }
         ],
         "responses": {
@@ -302,50 +44,15 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      },
-      "post": {
+        }
+      }
+    },
+    "/External/Callback": {
+      "get": {
         "tags": [
-          "Consent"
+          "External"
         ],
-        "operationId": "Consent_ConsentPOST",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "properties": {
-                  "Button": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ScopesConsented": {
-                    "type": "array",
-                    "nullable": true,
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "RememberConsent": {
-                    "type": "boolean"
-                  },
-                  "ReturnUrl": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "Description": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
+        "operationId": "External_Callback",
         "responses": {
           "200": {
             "description": "",
@@ -358,12 +65,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
+        }
       }
     },
     "/Account/Login": {
@@ -515,68 +217,6 @@
           "Account"
         ],
         "operationId": "Account_AccessDenied",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/External/Challenge": {
-      "get": {
-        "tags": [
-          "External"
-        ],
-        "operationId": "External_Challenge",
-        "parameters": [
-          {
-            "name": "scheme",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "returnUrl",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/External/Callback": {
-      "get": {
-        "tags": [
-          "External"
-        ],
-        "operationId": "External_Callback",
         "responses": {
           "200": {
             "description": "",
@@ -842,6 +482,38 @@
             "schema": {
               "type": "string",
               "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Home/Error": {
+      "get": {
+        "tags": [
+          "Home"
+        ],
+        "operationId": "Home_Error",
+        "parameters": [
+          {
+            "name": "errorId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
             },
             "x-position": 1
           }

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
+using System.Reflection;
 using ThreadboxApi.Web.Startup;
 
 namespace ThreadboxApi
@@ -28,13 +29,14 @@ namespace ThreadboxApi
             FluentValidationStartup.ConfigureServices(services);
 
             services.AddControllers();
+            services.AddMvc();
 
-            services
-                .AddMvc()
-                .AddRazorPagesOptions(options =>
-                {
-                    options.RootDirectory = "/Web/IdentityServer/Views";
-                });
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationFormats.Clear();
+                options.ViewLocationFormats.Add("/Web/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
+                options.ViewLocationFormats.Add("/Web/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
+            });
         }
 
         public void Configure(IApplicationBuilder app)
