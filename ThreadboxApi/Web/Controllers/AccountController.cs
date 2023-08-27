@@ -27,11 +27,11 @@ namespace ThreadboxApi.Web.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -41,15 +41,12 @@ namespace ThreadboxApi.Web.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
         {
-            // if the TestUserStore is not in DI, then we'll just use the global users collection
-            // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
             _userManager = userManager;
-
+            _signInManager = signInManager;
             _interaction = interaction;
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
-            _signInManager = signInManager;
         }
 
         /// <summary>
@@ -58,12 +55,12 @@ namespace ThreadboxApi.Web.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Login(string returnUrl)
         {
-            // build a model so we know what to show on the login page
+            // Build a model so we know what to show on the login page
             var vm = await BuildLoginViewModelAsync(returnUrl);
 
             if (vm.IsExternalLoginOnly)
             {
-                // we only have one option for logging in and it's an external provider
+                // We only have one option for logging in and it's an external provider
                 return RedirectToAction("Challenge", "External", new { scheme = vm.ExternalLoginScheme, returnUrl });
             }
 
@@ -77,20 +74,20 @@ namespace ThreadboxApi.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([FromForm] LoginInputModel model, [FromForm] string button)
         {
-            // check if we are in the context of an authorization request
+            // Check if we are in the context of an authorization request
             var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
 
-            // the user clicked the "cancel" button
+            // The user clicked the "Cancel" button
             if (button != "login")
             {
                 if (context != null)
                 {
-                    // if the user cancels, send a result back into IdentityServer as if they
+                    // If the user cancels, send a result back into IdentityServer as if they
                     // denied the consent (even if this client does not require consent).
-                    // this will send back an access denied OIDC error response to the client.
+                    // This will send back an access denied OIDC error response to the client.
                     await _interaction.DenyAuthorizationAsync(context, AuthorizationError.AccessDenied);
 
-                    // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                    /// We can trust model.ReturnUrl since <see cref="IIdentityServerInteractionService.GetAuthorizationContextAsync"/> returned non-null
                     if (context.IsNativeClient())
                     {
                         // The client is native, so this change in how to
@@ -102,7 +99,7 @@ namespace ThreadboxApi.Web.Controllers
                 }
                 else
                 {
-                    // since we don't have a valid context, then we just go back to the home page
+                    // Since we don't have a valid context, then we just go back to the home page
                     return Redirect("~/");
                 }
             }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using System.Reflection;
 using ThreadboxApi.Web.Startup;
 
@@ -31,6 +32,7 @@ namespace ThreadboxApi
             services.AddControllers();
             services.AddMvc();
 
+            // Override default Razor views location
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.ViewLocationFormats.Clear();
