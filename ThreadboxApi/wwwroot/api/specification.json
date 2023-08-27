@@ -861,71 +861,6 @@
         }
       }
     },
-    "/api/Identity/SignIn": {
-      "post": {
-        "tags": [
-          "Identity"
-        ],
-        "operationId": "Identity_SignIn",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignInCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Identity/SignUp": {
-      "post": {
-        "tags": [
-          "Identity"
-        ],
-        "operationId": "Identity_SignUp",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignUpCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Identity/CreateRegistrationKey": {
       "get": {
         "tags": [
@@ -940,31 +875,6 @@
                 "schema": {
                   "type": "string",
                   "format": "guid"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
-    "/api/Identity/RefreshAccessToken": {
-      "get": {
-        "tags": [
-          "Identity"
-        ],
-        "operationId": "Identity_RefreshAccessToken",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -1183,42 +1093,6 @@
           "description": {
             "type": "string",
             "nullable": true
-          }
-        }
-      },
-      "SignInCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "userName": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "SignUpCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "userName": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
-          },
-          "repeatPassword": {
-            "type": "string",
-            "nullable": true
-          },
-          "registrationKeyId": {
-            "type": "string",
-            "format": "guid"
           }
         }
       },

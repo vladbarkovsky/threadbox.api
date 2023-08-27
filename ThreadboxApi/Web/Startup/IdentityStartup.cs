@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
 

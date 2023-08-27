@@ -11,7 +11,7 @@ namespace ThreadboxApi.Web.Startup
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(configuration.GetConnectionString(AppSettings.ConnectionStrings.Dev));
+                options.UseNpgsql(configuration.GetConnectionString(AppSettings.ConnectionStrings.Development));
 
                 // Throw exceptions in case of performance issues with single queries
                 // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries

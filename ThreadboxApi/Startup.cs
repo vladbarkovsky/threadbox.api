@@ -22,7 +22,7 @@ namespace ThreadboxApi
             SwaggerStartup.ConfigureServices(services);
             ExceptionHandlingStartup.ConfigureServices(services);
             IdentityStartup.ConfigureServices(services, _configuration);
-            IdentityServerStartup.ConfigureServices(services, _configuration);
+            IdentityServerStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             MediatRStartup.ConfigureServices(services);
             FluentValidationStartup.ConfigureServices(services);
@@ -52,7 +52,7 @@ namespace ThreadboxApi
 
             /// IMPORTANT: CSP must be configured before
             /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
-            CspStartup.Configure(app, _webHostEnvironment);
+            CspStartup.Configure(app, _configuration, _webHostEnvironment);
 
             app.UseRouting();
             app.UseStaticFiles();
