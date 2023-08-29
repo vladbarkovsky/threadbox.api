@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Reflection;
 using ThreadboxApi.Web.Startup;
 
 namespace ThreadboxApi
@@ -28,6 +29,17 @@ namespace ThreadboxApi
             FluentValidationStartup.ConfigureServices(services);
 
             services.AddMvc();
+
+            // Fix problem with redirecting unauthorized HTTP requests to login page instead of returning 401
+            // Source: https://stackoverflow.com/a/45271981/19232404
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+            });
         }
 
         public void Configure(IApplicationBuilder app)
