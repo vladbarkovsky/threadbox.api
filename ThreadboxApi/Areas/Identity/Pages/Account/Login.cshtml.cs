@@ -7,23 +7,24 @@ using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Areas.Identity.Pages.Account
 {
-    public class LoginModel : PageModel
+    public class LoginPageModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager)
+        public LoginPageModel(SignInManager<ApplicationUser> signInManager)
         {
             _signInManager = signInManager;
         }
 
         [BindProperty]
+        [Required]
         public InputModel Input { get; set; }
 
         public class InputModel
         {
+            [Required]
             [MinLength(5)]
             [MaxLength(20)]
-            [Required]
             public string UserName { get; set; }
 
             [Required]
@@ -31,13 +32,9 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
             [MaxLength(30)]
             public string Password { get; set; }
 
+            [Required]
             public bool OfflineAccess { get; set; }
         }
-
-        public string ReturnUrl { get; set; }
-
-        [TempData]
-        public string ErrorMessage { get; set; }
 
         public void OnGet([FromQuery] string returnUrl)
         {
@@ -50,40 +47,23 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
             {
                 throw HttpResponseException.BadRequest;
             }
-
-            if (!string.IsNullOrEmpty(ErrorMessage))
-            {
-                ModelState.AddModelError(string.Empty, ErrorMessage);
-            }
-
-            ReturnUrl = returnUrl;
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl)
+        public async Task<ActionResult> OnPostAsync([FromQuery] string returnUrl)
         {
-            returnUrl ??= Url.Content("~/");
+            var result = await _signInManager.PasswordSignInAsync(
+                userName: Input.UserName,
+                password: Input.Password,
+                isPersistent: Input.OfflineAccess,
+                lockoutOnFailure: false);
 
-            if (ModelState.IsValid)
+            if (!result.Succeeded)
             {
-                var result = await _signInManager.PasswordSignInAsync(
-                    userName: Input.UserName,
-                    password: Input.Password,
-                    isPersistent: Input.OfflineAccess,
-                    lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    return LocalRedirect(returnUrl);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
+                ModelState.AddModelError(string.Empty, "Invalid user name or password.");
+                return Page();
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            return LocalRedirect(returnUrl);
         }
     }
 }
