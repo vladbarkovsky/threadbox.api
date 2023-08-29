@@ -28,6 +28,7 @@ namespace ThreadboxApi.Web.Startup
                     {
                         builder.UseNpgsql(
                             configuration.GetConnectionString(AppSettings.ConnectionStrings.Development),
+                            // TODO: Assembly name should not be hardcoded
                             options => options.MigrationsAssembly("ThreadboxApi"));
                     };
 

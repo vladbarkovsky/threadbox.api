@@ -9,9 +9,9 @@ namespace ThreadboxApi.Web.Startup
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services
-                .AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultIdentity<ApplicationUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication();
             services.AddAuthorization();
@@ -20,6 +20,10 @@ namespace ThreadboxApi.Web.Startup
         public static void Configure(IApplicationBuilder app)
         {
             app.UseAuthentication();
+
+            /// IMPORTANT: This method must be called between
+            /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseRouting(IApplicationBuilder)"/> and
+            /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
             app.UseAuthorization();
         }
     }

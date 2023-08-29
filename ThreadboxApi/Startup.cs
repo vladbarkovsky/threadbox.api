@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 using System.Reflection;
 using ThreadboxApi.Web.Startup;
 
@@ -29,15 +28,14 @@ namespace ThreadboxApi
             MediatRStartup.ConfigureServices(services);
             FluentValidationStartup.ConfigureServices(services);
 
-            services.AddControllers();
             services.AddMvc();
 
             // Override default Razor views location
             services.Configure<RazorViewEngineOptions>(options =>
             {
-                options.ViewLocationFormats.Clear();
-                options.ViewLocationFormats.Add("/Web/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
-                options.ViewLocationFormats.Add("/Web/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
+                //options.ViewLocationFormats.Clear();
+                //options.ViewLocationFormats.Add("/Web/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
+                //options.ViewLocationFormats.Add("/Web/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
             });
         }
 
@@ -51,6 +49,9 @@ namespace ThreadboxApi
 
             SwaggerStartup.Configure(app, _webHostEnvironment);
             ExceptionHandlingStartup.Configure(app);
+
+            app.UseRouting();
+
             IdentityStartup.Configure(app);
             IdentityServerStartup.Configure(app);
 
@@ -58,15 +59,13 @@ namespace ThreadboxApi
             /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
             CspStartup.Configure(app, _configuration, _webHostEnvironment);
 
-            app.UseRouting();
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
-
-            app.UseHttpsRedirection();
         }
     }
 }
