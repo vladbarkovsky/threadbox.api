@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using System.Reflection;
+﻿using System.Reflection;
 using ThreadboxApi.Web.Startup;
 
 namespace ThreadboxApi
@@ -29,14 +28,6 @@ namespace ThreadboxApi
             FluentValidationStartup.ConfigureServices(services);
 
             services.AddMvc();
-
-            // Override default Razor views location
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                //options.ViewLocationFormats.Clear();
-                //options.ViewLocationFormats.Add("/Web/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
-                //options.ViewLocationFormats.Add("/Web/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
-            });
         }
 
         public void Configure(IApplicationBuilder app)
@@ -50,6 +41,7 @@ namespace ThreadboxApi
             SwaggerStartup.Configure(app, _webHostEnvironment);
             ExceptionHandlingStartup.Configure(app);
 
+            // Enable HTTP routing
             app.UseRouting();
 
             IdentityStartup.Configure(app);
@@ -59,8 +51,10 @@ namespace ThreadboxApi
             /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
             CspStartup.Configure(app, _configuration, _webHostEnvironment);
 
+            // Allow internet access to wwwroot
             app.UseStaticFiles();
 
+            // Configure HTTP endpoints for controllers and Razor pages
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -13,6 +13,7 @@ namespace ThreadboxApi.Web.Startup
                 settings.Title = "Threadbox API";
                 settings.SchemaNameGenerator = new SchemaNameGenerator();
 
+                // TODO: IdentityServer4 authorization
                 // Authorization
                 // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs
 

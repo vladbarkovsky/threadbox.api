@@ -7,11 +7,11 @@ using ThreadboxApi.Infrastructure.Identity;
 
 namespace ThreadboxApi.Areas.Identity.Pages.Account
 {
-    public class LoginPageModel : PageModel
+    public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public LoginPageModel(SignInManager<ApplicationUser> signInManager)
+        public LoginModel(SignInManager<ApplicationUser> signInManager)
         {
             _signInManager = signInManager;
         }
@@ -51,6 +51,16 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
 
         public async Task<ActionResult> OnPostAsync([FromQuery] string returnUrl)
         {
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                throw HttpResponseException.BadRequest;
+            }
+
+            if (_signInManager.IsSignedIn(User))
+            {
+                throw HttpResponseException.BadRequest;
+            }
+
             var result = await _signInManager.PasswordSignInAsync(
                 userName: Input.UserName,
                 password: Input.Password,
@@ -63,7 +73,7 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            return LocalRedirect(returnUrl);
+            return Redirect(returnUrl);
         }
     }
 }
