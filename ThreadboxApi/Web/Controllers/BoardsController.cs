@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Boards.Commands;
 using ThreadboxApi.Application.Boards.Models;
@@ -7,6 +8,7 @@ namespace ThreadboxApi.Web.Controllers
 {
     public class BoardsController : MediatRController
     {
+        [Authorize]
         [HttpGet("[action]")]
         public async Task<ActionResult<List<BoardListDto>>> GetBoardsList()
         {
