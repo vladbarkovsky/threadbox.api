@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
 
@@ -14,10 +13,7 @@ namespace ThreadboxApi.Web.Startup
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services
-                .AddAuthentication()
-                .AddIdentityServerJwt();
-
+            services.AddAuthentication();
             services.AddAuthorization();
         }
 

@@ -1,5 +1,5 @@
-﻿using Duende.IdentityServer;
-using Duende.IdentityServer.Models;
+﻿using IdentityServer4;
+using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Infrastructure.Identity;
