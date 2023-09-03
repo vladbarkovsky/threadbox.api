@@ -21,8 +21,7 @@ namespace ThreadboxApi
             CorsStartup.ConfigureServices(services, _configuration);
             SwaggerStartup.ConfigureServices(services);
             ExceptionHandlingStartup.ConfigureServices(services);
-            IdentityStartup.ConfigureServices(services, _configuration);
-            IdentityServerStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
+            IdentityStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             MediatRStartup.ConfigureServices(services);
             FluentValidationStartup.ConfigureServices(services);
@@ -31,22 +30,22 @@ namespace ThreadboxApi
 
             // Disable redirecting for unauthorized HTTP requests
             // Source: https://stackoverflow.com/a/45271981/19232404
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Events.OnRedirectToLogin = context =>
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return Task.CompletedTask;
-                };
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.Events.OnRedirectToLogin = context =>
+            //    {
+            //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            //        return Task.CompletedTask;
+            //    };
 
-                // May be required soon
+            //    // May be required soon
 
-                //options.Events.OnRedirectToAccessDenied = context =>
-                //{
-                //    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                //    return Task.CompletedTask;
-                //};
-            });
+            //    //options.Events.OnRedirectToAccessDenied = context =>
+            //    //{
+            //    //    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            //    //    return Task.CompletedTask;
+            //    //};
+            //});
         }
 
         public void Configure(IApplicationBuilder app)
@@ -64,7 +63,6 @@ namespace ThreadboxApi
             app.UseRouting();
 
             IdentityStartup.Configure(app);
-            IdentityServerStartup.Configure(app);
 
             /// IMPORTANT: CSP must be configured before
             /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
