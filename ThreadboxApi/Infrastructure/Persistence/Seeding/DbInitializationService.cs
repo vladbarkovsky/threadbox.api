@@ -1,11 +1,13 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Application.Files.Interfaces;
+using ThreadboxApi.Application.Identity;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
@@ -19,6 +21,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
@@ -28,7 +31,8 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
-            IFileStorage fileStorage)
+            IFileStorage fileStorage,
+            RoleManager<IdentityRole> roleManager)
         {
             _appDbContext = appDbContext;
             _persistedGrantDbContext = persistentGrantDbContext;
@@ -36,6 +40,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             _configuration = configuration;
             _userManager = userManager;
             _fileStorage = fileStorage;
+            _roleManager = roleManager;
 
             JsonSerializerOptions = new JsonSerializerOptions
             {
@@ -61,6 +66,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
         private async Task SeedAsync()
         {
+            await SeedRolesAsync();
             await SeedUsersAsync();
 
             if (_webHostEnvironment.IsDevelopment())
@@ -75,14 +81,31 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             System.Diagnostics.Debug.WriteLine("Database initialized and seeded.");
         }
 
+        public async Task SeedRolesAsync()
+        {
+            var typeof(Roles).GetFields().Select(x => x.GetRawConstantValue());
+
+            foreach (FieldInfo field in fields)
+            {
+                if (field.IsLiteral && !field.IsInitOnly)
+                {
+                    object value = field.GetValue(null);
+                    Console.WriteLine($"Имя константы: {field.Name}, Значение: {value}");
+                }
+            }
+
+            await _roleManager.AddClaimAsync()
+        }
+
         private async Task SeedUsersAsync()
         {
-            await _userManager.CreateAsync(
-                user: new ApplicationUser
-                {
-                    UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
-                },
-                password: _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            var admin = new ApplicationUser
+            {
+                UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
+            };
+
+            await _userManager.CreateAsync(admin, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.AddToRoleAsync(admin, "Admin");
 
             if (_webHostEnvironment.IsProduction())
             {
