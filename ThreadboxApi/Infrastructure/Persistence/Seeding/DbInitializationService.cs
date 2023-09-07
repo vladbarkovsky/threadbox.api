@@ -1,13 +1,17 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using System.Data;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Application.Files.Interfaces;
 using ThreadboxApi.Application.Identity;
+using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
@@ -72,29 +76,53 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             if (_webHostEnvironment.IsDevelopment())
             {
                 await SeedBoardsAsync();
+                await SeedPermissionsAsync();
                 await SeedThreadsAsync();
                 await SeedThreadImagesAsync();
                 await SeedPostsAsync();
                 await SeedPostImagesAsync();
             }
 
-            System.Diagnostics.Debug.WriteLine("Database initialized and seeded.");
+            Log.Information("Database initialized and seeded.");
         }
 
         public async Task SeedRolesAsync()
         {
-            var typeof(Roles).GetFields().Select(x => x.GetRawConstantValue());
+            var roleConstants = typeof(Roles).GetFields();
 
-            foreach (FieldInfo field in fields)
+            foreach (var constant in roleConstants)
             {
-                if (field.IsLiteral && !field.IsInitOnly)
-                {
-                    object value = field.GetValue(null);
-                    Console.WriteLine($"Имя константы: {field.Name}, Значение: {value}");
-                }
+                await _roleManager.CreateAsync(new IdentityRole(constant.GetRawConstantValue().ToString()));
+            }
+        }
+
+        public async Task SeedPermissionsAsync()
+        {
+            var adminPermissions = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.IsAssignableFrom(typeof(IPermissionSet)))
+                .SelectMany(x => x.GetFields(BindingFlags.Public))
+                .Select(x => x.GetRawConstantValue().ToString());
+
+            var adminRole = await _roleManager.FindByNameAsync(Roles.Admin);
+
+            foreach (var permission in adminPermissions)
+            {
+                await _roleManager.AddClaimAsync(adminRole, new Claim(PermissionContants.ClaimType, permission));
             }
 
-            await _roleManager.AddClaimAsync()
+            var moderatorPermissions = new List<string>
+            {
+                // Default permissions for moderator
+            };
+
+            var moderatorRole = await _roleManager.FindByNameAsync(Roles.Moderator);
+
+            foreach (var permission in moderatorPermissions)
+            {
+                await _roleManager.AddClaimAsync(moderatorRole, new Claim(PermissionContants.ClaimType, permission));
+            }
         }
 
         private async Task SeedUsersAsync()
@@ -105,14 +133,20 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             };
 
             await _userManager.CreateAsync(admin, _configuration[AppSettings.DefaultAdminCredentials.Password]);
-            await _userManager.AddToRoleAsync(admin, "Admin");
+            await _userManager.AddToRoleAsync(admin, Roles.Admin);
 
-            if (_webHostEnvironment.IsProduction())
+            if (!_webHostEnvironment.IsDevelopment())
             {
                 return;
             }
 
-            // Seed other users for development purposes
+            var moderator = new ApplicationUser
+            {
+                UserName = "moderator"
+            };
+
+            await _userManager.CreateAsync(moderator, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.AddToRoleAsync(admin, Roles.Moderator);
         }
 
         private async Task SeedBoardsAsync()

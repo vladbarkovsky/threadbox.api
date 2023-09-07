@@ -2,9 +2,6 @@
 using FluentValidation.AspNetCore;
 using IdentityServer4;
 using IdentityServer4.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,9 +39,9 @@ namespace ThreadboxApi
                 }
                 else
                 {
-                    // Database for production 
+                    // Database for production
                 }
-                
+
                 // Throw exceptions in case of performance issues with single queries
                 // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
                 options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
@@ -220,7 +217,6 @@ namespace ThreadboxApi
                     options.Audience = "threadbox_api";
                 });
 
-
             services.AddAuthorization();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
@@ -235,18 +231,16 @@ namespace ThreadboxApi
 
             services.AddMvc();
 
-            // Disable redirecting for unauthorized HTTP requests
-            // Source: https://stackoverflow.com/a/45271981/19232404
             services.ConfigureApplicationCookie(options =>
             {
-                options.Events.OnRedirectToLogin = context =>
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return Task.CompletedTask;
-                };
+                //// Disable redirecting for unauthorized HTTP requests
+                //options.Events.OnRedirectToLogin = context =>
+                //{
+                //    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                //    return Task.CompletedTask;
+                //};
 
-                // May be required soon
-
+                //// Disable redirecting for forbidden HTTP requests
                 //options.Events.OnRedirectToAccessDenied = context =>
                 //{
                 //    context.Response.StatusCode = StatusCodes.Status403Forbidden;
@@ -286,7 +280,7 @@ namespace ThreadboxApi
                     options.DefaultSources(s => s.Self()).ConnectSources(s => s.CustomSources("wss:"));
                 }
 
-                // Required for IdentityServer4 iframes (silent renew)
+                // Required for IdentityServer4 iframes
                 options.FrameSources(s => s.Self());
                 options.FrameSources(s => s.CustomSources(_configuration[AppSettings.ClientBaseUrl]));
             });
