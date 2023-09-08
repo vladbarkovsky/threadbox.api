@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Security.Claims;
 
 namespace ThreadboxApi.Web
 {
@@ -16,12 +16,7 @@ namespace ThreadboxApi.Web
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var hasPermission = context.HttpContext.User.Claims.Any(x => x.Value == Permission);
-
-            if (!hasPermission)
-            {
-                context.Result = new ForbidResult();
-            }
+            var role = context.HttpContext.User.FindFirstValue(ClaimTypes.Role);
         }
     }
 }

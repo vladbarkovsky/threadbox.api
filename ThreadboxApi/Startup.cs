@@ -14,6 +14,7 @@ using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Web;
 using ThreadboxApi.Web.ApiSpecification;
 
 namespace ThreadboxApi
@@ -139,6 +140,7 @@ namespace ThreadboxApi
 
             identityServerBuilder
                 .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<ProfileService>()
                 .AddOperationalStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
@@ -233,19 +235,19 @@ namespace ThreadboxApi
 
             services.ConfigureApplicationCookie(options =>
             {
-                //// Disable redirecting for unauthorized HTTP requests
-                //options.Events.OnRedirectToLogin = context =>
-                //{
-                //    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                //    return Task.CompletedTask;
-                //};
+                // Disable redirecting for unauthorized HTTP requests
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
 
-                //// Disable redirecting for forbidden HTTP requests
-                //options.Events.OnRedirectToAccessDenied = context =>
-                //{
-                //    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                //    return Task.CompletedTask;
-                //};
+                // Disable redirecting for forbidden HTTP requests
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.CompletedTask;
+                };
             });
         }
 
