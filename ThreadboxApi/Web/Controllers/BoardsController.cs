@@ -8,7 +8,7 @@ namespace ThreadboxApi.Web.Controllers
 {
     public class BoardsController : MediatRController
     {
-        [JwtAuthorize(Permission = BoardsPermissions.Read)]
+        [JwtAuthorize(BoardsPermissions.Read)]
         [HttpGet("[action]")]
         public async Task<ActionResult<List<BoardListDto>>> GetBoardsList()
         {

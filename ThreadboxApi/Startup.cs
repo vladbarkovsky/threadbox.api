@@ -2,8 +2,10 @@
 using FluentValidation.AspNetCore;
 using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using NSwag;
@@ -140,7 +142,6 @@ namespace ThreadboxApi
 
             identityServerBuilder
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddProfileService<ProfileService>()
                 .AddOperationalStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
@@ -221,6 +222,9 @@ namespace ThreadboxApi
 
             services.AddAuthorization();
 
+            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddMediatR(configuration =>
@@ -269,8 +273,10 @@ namespace ThreadboxApi
             // Enable HTTP routing
             app.UseRouting();
 
-            app.UseIdentityServer();
+            app.UseAuthentication();
 
+            app.UseMiddleware<PermissionsMiddleware>();
+            app.UseIdentityServer();
             app.UseAuthorization();
 
             app.UseCsp(options =>

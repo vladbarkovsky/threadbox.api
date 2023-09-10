@@ -5,5 +5,6 @@
         private const string Prefix = "Boards";
 
         public const string Read = $"{Prefix}.Read";
+        public const string Create = $"{Prefix}.Create";
     }
 }

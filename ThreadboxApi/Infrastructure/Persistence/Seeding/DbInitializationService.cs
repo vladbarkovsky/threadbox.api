@@ -76,6 +76,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             if (_webHostEnvironment.IsDevelopment())
             {
                 await SeedBoardsAsync();
+                await SeedRolesAsync();
                 await SeedPermissionsAsync();
                 await SeedThreadsAsync();
                 await SeedThreadImagesAsync();
@@ -101,8 +102,8 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             var adminPermissions = Assembly
                 .GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => x.IsAssignableFrom(typeof(IPermissionSet)))
-                .SelectMany(x => x.GetFields(BindingFlags.Public))
+                .Where(x => x.IsAssignableTo(typeof(IPermissionSet)) && x.IsClass)
+                .SelectMany(x => x.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
                 .Select(x => x.GetRawConstantValue().ToString());
 
             var adminRole = await _roleManager.FindByNameAsync(Roles.Admin);
@@ -146,7 +147,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             };
 
             await _userManager.CreateAsync(moderator, _configuration[AppSettings.DefaultAdminCredentials.Password]);
-            await _userManager.AddToRoleAsync(admin, Roles.Moderator);
+            await _userManager.AddToRoleAsync(moderator, Roles.Moderator);
         }
 
         private async Task SeedBoardsAsync()
