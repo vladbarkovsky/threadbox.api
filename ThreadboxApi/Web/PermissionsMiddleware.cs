@@ -15,7 +15,7 @@ namespace ThreadboxApi.Web
 
         public async Task InvokeAsync(HttpContext context, IdentityService identityService)
         {
-            if (context.User.Identity.AuthenticationType == "AuthenticationTypes.Federation")
+            if (context.Request.Path == "/api/Boards/GetBoardsList")
             {
                 var x = context.User.Identity.AuthenticationType;
             }
