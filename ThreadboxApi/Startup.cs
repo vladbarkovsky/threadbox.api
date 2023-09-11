@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using IdentityServer4;
-using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,7 +16,6 @@ using System.Reflection;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Common.Interfaces;
-using ThreadboxApi.Application.Services;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
 using ThreadboxApi.Web;
@@ -160,21 +157,28 @@ namespace ThreadboxApi
             //{
             //});
 
-            //services.Configure<ApiAuthorizationOptions>(options =>
-            //{
-            //    options.Clients.AddSPA("angular_client", builder =>
-            //    {
-            //        builder
-            //            .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback")
-            //            .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback")
-            //            //.WithLogoutRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback")
-            //            //.WithScopes(
-            //            //    IdentityServerConstants.StandardScopes.OpenId,
-            //            //    IdentityServerConstants.StandardScopes.Profile)
-            //            //.WithoutClientSecrets()
-            //            ;
-            //    });
-            //});
+            services.Configure<ApiAuthorizationOptions>(options =>
+            {
+                options.Clients.AddSPA("angular_client", builder =>
+                {
+                    builder
+                        .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback")
+                        .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback")
+                        .WithLogoutRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback");
+                    //.WithScopes(
+                    //    IdentityServerConstants.StandardScopes.OpenId,
+                    //    IdentityServerConstants.StandardScopes.Profile)
+                    //.WithoutClientSecrets()
+                    //;
+                });
+
+                options.ApiResources.AddIdentityServerJwt("threadbox_api", builder =>
+                {
+                    builder
+                        //.WithScopes("threadbox_api.access")
+                        .AllowAllClients();
+                });
+            });
 
             //.AddInMemoryClients(new List<Client>
             //{
