@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Application.Services;
+﻿using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Web
 {

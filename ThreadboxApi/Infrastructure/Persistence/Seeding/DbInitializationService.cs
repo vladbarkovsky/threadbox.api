@@ -20,7 +20,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
     public class DbInitializationService : ITransientService
     {
         private readonly ApplicationDbContext _appDbContext;
-        private readonly PersistedGrantDbContext _persistedGrantDbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -31,7 +30,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
         public DbInitializationService(
             ApplicationDbContext appDbContext,
-            PersistedGrantDbContext persistentGrantDbContext,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
@@ -39,7 +37,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             RoleManager<IdentityRole> roleManager)
         {
             _appDbContext = appDbContext;
-            _persistedGrantDbContext = persistentGrantDbContext;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
             _userManager = userManager;
@@ -63,7 +60,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             if (!databaseExists)
             {
                 _appDbContext.Database.Migrate();
-                _persistedGrantDbContext.Database.Migrate();
                 await SeedAsync();
             }
         }

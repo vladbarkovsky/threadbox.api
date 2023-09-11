@@ -2,17 +2,23 @@
 using FluentValidation.AspNetCore;
 using IdentityServer4;
 using IdentityServer4.Models;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Common.Interfaces;
+using ThreadboxApi.Application.Services;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
 using ThreadboxApi.Web;
@@ -128,7 +134,18 @@ namespace ThreadboxApi
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var identityServerBuilder = services.AddIdentityServer();
+            var identityServerBuilder = services
+                .AddIdentityServer()
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddApiResources()
+                .AddIdentityResources()
+                .AddClients()
+                .AddOperationalStore<ApplicationDbContext>(options =>
+                {
+                    options.EnableTokenCleanup = true;
+                })
+                .AddClientStore<InMemoryClientStore>()
+                .AddResourceStore<InMemoryResourcesStore>();
 
             if (_webHostEnvironment.IsDevelopment())
             {
@@ -139,84 +156,77 @@ namespace ThreadboxApi
                 // Use SSL certificate
             }
 
-            identityServerBuilder
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = builder =>
-                    {
-                        builder.UseNpgsql(
-                            _configuration.GetConnectionString(AppSettings.ConnectionStrings.Development),
-                            // TODO: Assembly name should not be hardcoded
-                            options => options.MigrationsAssembly("ThreadboxApi"));
-                    };
+            //identityServerBuilder.AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+            //{
+            //});
 
-                    options.EnableTokenCleanup = true;
-                })
-                .AddInMemoryIdentityResources(new List<IdentityResource>
-                {
-                    new IdentityResources.OpenId(),
-                    new IdentityResources.Profile()
-                })
-                .AddInMemoryApiScopes(new List<ApiScope>
-                {
-                    new ApiScope("threadbox_api.access", "Threadbox API"),
-                })
-                .AddInMemoryApiResources(new List<ApiResource>
-                {
-                    new ApiResource
-                    {
-                        Name = "threadbox_api",
-                        Scopes = { "threadbox_api.access" }
-                    }
-                })
-                .AddInMemoryClients(new List<Client>
-                {
-                    new Client
-                    {
-                        ClientId = "angular_client",
-                        ClientName = "Threadbox",
+            //services.Configure<ApiAuthorizationOptions>(options =>
+            //{
+            //    options.Clients.AddSPA("angular_client", builder =>
+            //    {
+            //        builder
+            //            .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback")
+            //            .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback")
+            //            //.WithLogoutRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback")
+            //            //.WithScopes(
+            //            //    IdentityServerConstants.StandardScopes.OpenId,
+            //            //    IdentityServerConstants.StandardScopes.Profile)
+            //            //.WithoutClientSecrets()
+            //            ;
+            //    });
+            //});
 
-                        AllowedCorsOrigins =
-                        {
-                            _configuration[AppSettings.ClientBaseUrl]
-                        },
+            //.AddInMemoryClients(new List<Client>
+            //{
+            //    new Client
+            //    {
+            //        ClientId = "angular_client",
+            //        ClientName = "Threadbox",
 
-                        AllowedGrantTypes = GrantTypes.Code,
-                        RequirePkce = true,
-                        RequireClientSecret = false,
-                        AllowOfflineAccess = true,
+            //        AllowedCorsOrigins =
+            //        {
+            //            _configuration[AppSettings.ClientBaseUrl]
+            //        },
 
-                        AllowedScopes =
-                        {
-                            IdentityServerConstants.StandardScopes.OpenId,
-                            IdentityServerConstants.StandardScopes.Profile,
-                            IdentityServerConstants.StandardScopes.OfflineAccess,
-                            "threadbox_api.access"
-                        },
+            //        AllowedGrantTypes = GrantTypes.Code,
+            //        RequirePkce = true,
+            //        RequireClientSecret = false,
+            //        AllowOfflineAccess = true,
 
-                        RedirectUris =
-                        {
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
-                        },
+            //        AllowedScopes =
+            //        {
+            //            IdentityServerConstants.StandardScopes.OpenId,
+            //            IdentityServerConstants.StandardScopes.Profile,
+            //            IdentityServerConstants.StandardScopes.OfflineAccess,
+            //            "threadbox_api.access"
+            //        },
 
-                        PostLogoutRedirectUris =
-                        {
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
-                        },
-                    },
-                });
+            //        RedirectUris =
+            //        {
+            //            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
+            //            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
+            //        },
+
+            //        PostLogoutRedirectUris =
+            //        {
+            //            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
+            //        },
+            //    },
+            //});
+
+            // https://stackoverflow.com/a/61900842/4152883
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddAuthentication()
-                .AddJwtBearer(options =>
-                {
-                    // Authorization server base URL
-                    // We can't get the base URL during services configuration, so it is hardcoded
-                    options.Authority = _webHostEnvironment.IsDevelopment() ? "https://localhost:5000" : "https://threadbox.prod";
-                    // API resource
-                    options.Audience = "threadbox_api";
-                });
+                //.AddJwtBearer(options =>
+                //{
+                //    // Authorization server base URL
+                //    // We can't get the base URL during services configuration, so it is hardcoded
+                //    options.Authority = _webHostEnvironment.IsDevelopment() ? "https://localhost:5000" : "https://threadbox.prod";
+                //    // API resource
+                //    options.Audience = "threadbox_api";
+                //});
+                .AddIdentityServerJwt();
 
             services.AddAuthorization();
 
@@ -233,24 +243,24 @@ namespace ThreadboxApi
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddFluentValidationAutoValidation();
 
-            services.AddMvc();
+            //services.AddMvc();
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Disable redirecting for unauthorized HTTP requests
-                options.Events.OnRedirectToLogin = context =>
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return Task.CompletedTask;
-                };
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    // Disable redirecting for unauthorized HTTP requests
+            //    options.Events.OnRedirectToLogin = context =>
+            //    {
+            //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            //        return Task.CompletedTask;
+            //    };
 
-                // Disable redirecting for forbidden HTTP requests
-                options.Events.OnRedirectToAccessDenied = context =>
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    return Task.CompletedTask;
-                };
-            });
+            //    // Disable redirecting for forbidden HTTP requests
+            //    options.Events.OnRedirectToAccessDenied = context =>
+            //    {
+            //        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            //        return Task.CompletedTask;
+            //    };
+            //});
         }
 
         public void Configure(IApplicationBuilder app)

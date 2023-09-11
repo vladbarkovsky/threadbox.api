@@ -7,7 +7,7 @@ namespace ThreadboxApi.Web
     {
         public JwtAuthorizeAttribute(string permission)
         {
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme;
+            //AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme;
 
             Policy = $"Permission.{permission}";
         }
