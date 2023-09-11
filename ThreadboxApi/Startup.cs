@@ -5,7 +5,6 @@ using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using NSwag;
@@ -210,7 +209,6 @@ namespace ThreadboxApi
                 });
 
             services.AddAuthentication()
-                .AddCookie()
                 .AddJwtBearer(options =>
                 {
                     // Authorization server base URL

@@ -20,7 +20,7 @@ namespace ThreadboxApi.Web
                 var x = context.User.Identity.AuthenticationType;
             }
 
-            if (context.User.Identity == null || !context.User.Identity.IsAuthenticated)
+            if (context.User.Identity.AuthenticationType == "Identity.Application" || context.User.Identity.AuthenticationType == null)
             {
                 await _next(context);
                 return;
