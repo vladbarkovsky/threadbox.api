@@ -172,12 +172,12 @@ namespace ThreadboxApi
                     //;
                 });
 
-                options.ApiResources.AddIdentityServerJwt("threadbox_api", builder =>
-                {
-                    builder
-                        //.WithScopes("threadbox_api.access")
-                        .AllowAllClients();
-                });
+                //options.ApiResources.AddIdentityServerJwt("threadbox_api", builder =>
+                //{
+                //    builder
+                //        //.WithScopes("threadbox_api.access")
+                //        .AllowAllClients();
+                //});
             });
 
             //.AddInMemoryClients(new List<Client>
