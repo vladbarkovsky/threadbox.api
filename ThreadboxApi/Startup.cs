@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using IdentityServer4;
+using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
@@ -134,15 +135,49 @@ namespace ThreadboxApi
             var identityServerBuilder = services
                 .AddIdentityServer()
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddApiResources()
-                .AddIdentityResources()
-                .AddClients()
                 .AddOperationalStore<ApplicationDbContext>(options =>
                 {
                     options.EnableTokenCleanup = true;
                 })
-                .AddClientStore<InMemoryClientStore>()
-                .AddResourceStore<InMemoryResourcesStore>();
+                .AddInMemoryClients(new List<Client>
+                {
+                    new Client
+                    {
+                        AllowAccessTokensViaBrowser = true,
+                        AllowOfflineAccess = true,
+
+                        ClientId = "angular_client",
+                        ClientName = "Angular Client",
+
+                        AllowedCorsOrigins =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl]
+                        },
+
+                        AllowedGrantTypes = GrantTypes.Code,
+                        RequirePkce = true,
+                        RequireClientSecret = false,
+
+                        AllowedScopes =
+                        {
+                            IdentityServerConstants.StandardScopes.OpenId,
+                            IdentityServerConstants.StandardScopes.Profile,
+                            IdentityServerConstants.StandardScopes.OfflineAccess,
+                            "threadbox_api.access"
+                        },
+
+                        RedirectUris =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
+                        },
+
+                        PostLogoutRedirectUris =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
+                        },
+                    },
+                });
 
             if (_webHostEnvironment.IsDevelopment())
             {
@@ -152,71 +187,6 @@ namespace ThreadboxApi
             {
                 // Use SSL certificate
             }
-
-            //identityServerBuilder.AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
-            //{
-            //});
-
-            services.Configure<ApiAuthorizationOptions>(options =>
-            {
-                options.Clients.AddSPA("angular_client", builder =>
-                {
-                    builder
-                        .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback")
-                        .WithRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback")
-                        .WithLogoutRedirectUri(_configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback");
-                    //.WithScopes(
-                    //    IdentityServerConstants.StandardScopes.OpenId,
-                    //    IdentityServerConstants.StandardScopes.Profile)
-                    //.WithoutClientSecrets()
-                    //;
-                });
-
-                //options.ApiResources.AddIdentityServerJwt("threadbox_api", builder =>
-                //{
-                //    builder
-                //        //.WithScopes("threadbox_api.access")
-                //        .AllowAllClients();
-                //});
-            });
-
-            //.AddInMemoryClients(new List<Client>
-            //{
-            //    new Client
-            //    {
-            //        ClientId = "angular_client",
-            //        ClientName = "Threadbox",
-
-            //        AllowedCorsOrigins =
-            //        {
-            //            _configuration[AppSettings.ClientBaseUrl]
-            //        },
-
-            //        AllowedGrantTypes = GrantTypes.Code,
-            //        RequirePkce = true,
-            //        RequireClientSecret = false,
-            //        AllowOfflineAccess = true,
-
-            //        AllowedScopes =
-            //        {
-            //            IdentityServerConstants.StandardScopes.OpenId,
-            //            IdentityServerConstants.StandardScopes.Profile,
-            //            IdentityServerConstants.StandardScopes.OfflineAccess,
-            //            "threadbox_api.access"
-            //        },
-
-            //        RedirectUris =
-            //        {
-            //            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
-            //            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
-            //        },
-
-            //        PostLogoutRedirectUris =
-            //        {
-            //            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
-            //        },
-            //    },
-            //});
 
             // https://stackoverflow.com/a/61900842/4152883
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
