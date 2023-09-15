@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace ThreadboxApi.Web
+namespace ThreadboxApi.Web.PermissionHandling
 {
     public class PermissionRequirement : IAuthorizationRequirement
     {

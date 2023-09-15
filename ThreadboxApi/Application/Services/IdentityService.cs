@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Infrastructure.Identity;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Application.Services
 {
@@ -17,23 +17,24 @@ namespace ThreadboxApi.Application.Services
             _roleManager = roleManager;
         }
 
-        public async ValueTask<ClaimsIdentity> GetUserPermissionsIdentity(string userId)
+        public async Task<ClaimsIdentity> GetPermissionsIdentity(string userId)
         {
+            var permissionsIdentity = new ClaimsIdentity(nameof(PermissionsMiddleware), "name", "role");
+
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
 
             if (!roles.Any())
             {
-                return null;
+                return permissionsIdentity;
             }
 
             var role = await _roleManager.FindByNameAsync(roles.First());
             var claims = await _roleManager.GetClaimsAsync(role);
-            var permissionsIdentity = new ClaimsIdentity(nameof(PermissionsMiddleware), "name", "role");
 
             if (!claims.Any())
             {
-                return null;
+                return permissionsIdentity;
             }
 
             permissionsIdentity.AddClaims(claims);
