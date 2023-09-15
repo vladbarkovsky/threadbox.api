@@ -19,8 +19,8 @@ using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
-using ThreadboxApi.Web;
 using ThreadboxApi.Web.ApiSpecification;
+using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi
 {
@@ -135,49 +135,15 @@ namespace ThreadboxApi
             var identityServerBuilder = services
                 .AddIdentityServer()
                 .AddAspNetIdentity<ApplicationUser>()
+                .AddApiResources()
+                .AddIdentityResources()
+                .AddClients()
                 .AddOperationalStore<ApplicationDbContext>(options =>
                 {
                     options.EnableTokenCleanup = true;
                 })
-                .AddInMemoryClients(new List<Client>
-                {
-                    new Client
-                    {
-                        AllowAccessTokensViaBrowser = true,
-                        AllowOfflineAccess = true,
-
-                        ClientId = "angular_client",
-                        ClientName = "Angular Client",
-
-                        AllowedCorsOrigins =
-                        {
-                            _configuration[AppSettings.ClientBaseUrl]
-                        },
-
-                        AllowedGrantTypes = GrantTypes.Code,
-                        RequirePkce = true,
-                        RequireClientSecret = false,
-
-                        AllowedScopes =
-                        {
-                            IdentityServerConstants.StandardScopes.OpenId,
-                            IdentityServerConstants.StandardScopes.Profile,
-                            IdentityServerConstants.StandardScopes.OfflineAccess,
-                            "threadbox_api.access"
-                        },
-
-                        RedirectUris =
-                        {
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
-                        },
-
-                        PostLogoutRedirectUris =
-                        {
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
-                        },
-                    },
-                });
+                .AddClientStore<InMemoryClientStore>()
+                .AddResourceStore<InMemoryResourcesStore>();
 
             if (_webHostEnvironment.IsDevelopment())
             {
@@ -188,20 +154,84 @@ namespace ThreadboxApi
                 // Use SSL certificate
             }
 
-            // https://stackoverflow.com/a/61900842/4152883
+            // NOTE: Configuration is based on ApiAuthorizationOptions methods
+            services.Configure<ApiAuthorizationOptions>(options =>
+            {
+                options.ApiScopes = new ApiScopeCollection(new List<ApiScope>
+                {
+                    new ApiScope("threadbox_api.access", "Threadbox API access"),
+                });
+
+                options.ApiResources = new ApiResourceCollection(new List<ApiResource>
+                {
+                    new ApiResource
+                    {
+                        /// Required for <see cref="AuthenticationBuilderExtensions.AddIdentityServerJwt(AuthenticationBuilder)"/>
+                        Name = _webHostEnvironment.ApplicationName + "API",
+
+                        DisplayName = "Threadbox API",
+                        Scopes = { "threadbox_api.access" },
+
+                        Properties =
+                        {
+                            { "Clients", "angular_client" },
+                        },
+                    }
+                });
+
+                options.IdentityResources = new IdentityResourceCollection(new List<IdentityResource>
+                {
+                    new IdentityResources.OpenId(),
+                    new IdentityResources.Profile()
+                });
+
+                /// Based on <see cref="ClientCollection.AddSPA(string, Action{ClientBuilder})"/>
+                options.Clients = new ClientCollection(new List<Client>
+                {
+                    new Client
+                    {
+                        ClientId = "angular_client",
+                        ClientName = "Angular client",
+                        AllowedGrantTypes = GrantTypes.Code,
+
+                        AllowedScopes =
+                        {
+                            IdentityServerConstants.StandardScopes.OpenId,
+                            IdentityServerConstants.StandardScopes.Profile,
+                            "threadbox_api.access"
+                        },
+
+                        AllowOfflineAccess = true,
+
+                        PostLogoutRedirectUris =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
+                        },
+
+                        RedirectUris =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
+                        },
+
+                        Properties =
+                        {
+                            { "Profile", "SPA" }
+                        },
+
+                        AllowAccessTokensViaBrowser = true,
+                        ProtocolType = IdentityServerConstants.ProtocolTypes.OpenIdConnect,
+                        RefreshTokenExpiration = TokenExpiration.Absolute,
+                        RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                        RequireClientSecret = false,
+                    }
+                });
+            });
+
+            // Disable JWT token claims mapping by Identity
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            services.AddAuthentication()
-                //.AddJwtBearer(options =>
-                //{
-                //    // Authorization server base URL
-                //    // We can't get the base URL during services configuration, so it is hardcoded
-                //    options.Authority = _webHostEnvironment.IsDevelopment() ? "https://localhost:5000" : "https://threadbox.prod";
-                //    // API resource
-                //    options.Audience = "threadbox_api";
-                //});
-                .AddIdentityServerJwt();
-
+            services.AddAuthentication().AddIdentityServerJwt();
             services.AddAuthorization();
 
             services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
@@ -216,25 +246,6 @@ namespace ThreadboxApi
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddFluentValidationAutoValidation();
-
-            //services.AddMvc();
-
-            //services.ConfigureApplicationCookie(options =>
-            //{
-            //    // Disable redirecting for unauthorized HTTP requests
-            //    options.Events.OnRedirectToLogin = context =>
-            //    {
-            //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            //        return Task.CompletedTask;
-            //    };
-
-            //    // Disable redirecting for forbidden HTTP requests
-            //    options.Events.OnRedirectToAccessDenied = context =>
-            //    {
-            //        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            //        return Task.CompletedTask;
-            //    };
-            //});
         }
 
         public void Configure(IApplicationBuilder app)
@@ -256,24 +267,9 @@ namespace ThreadboxApi
             app.UseRouting();
 
             app.UseAuthentication();
-
             app.UseMiddleware<PermissionsMiddleware>();
             app.UseIdentityServer();
             app.UseAuthorization();
-
-            app.UseCsp(options =>
-            {
-                if (_webHostEnvironment.IsDevelopment())
-                {
-                    // Required for Identity UI Razor pages that use browser hot reload in development
-                    // See: https://www.hanselman.com/blog/net-6-hot-reload-and-refused-to-connect-to-ws-because-it-violates-the-content-security-policy-directive-because-web-sockets
-                    options.DefaultSources(s => s.Self()).ConnectSources(s => s.CustomSources("wss:"));
-                }
-
-                // Required for IdentityServer4 iframes
-                options.FrameSources(s => s.Self());
-                options.FrameSources(s => s.CustomSources(_configuration[AppSettings.ClientBaseUrl]));
-            });
 
             // Enable internet access to wwwroot
             app.UseStaticFiles();

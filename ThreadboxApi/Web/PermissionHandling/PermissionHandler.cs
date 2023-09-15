@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using ThreadboxApi.Application.Identity.Permissions;
 
-namespace ThreadboxApi.Web
+namespace ThreadboxApi.Web.PermissionHandling
 {
     public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {
-        public PermissionHandler()
-        { }
-
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
             var hasPermission = context.User.HasClaim(PermissionContants.ClaimType, requirement.Permission);
 
-            if (!hasPermission)
+            if (hasPermission)
+            {
+                context.Succeed(requirement);
+            }
+            else
             {
                 context.Fail();
-                return Task.CompletedTask;
             }
 
-            context.Succeed(requirement);
             return Task.CompletedTask;
         }
     }
