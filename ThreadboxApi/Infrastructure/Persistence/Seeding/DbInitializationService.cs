@@ -1,11 +1,17 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using System.Data;
+using System.Reflection;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Application.Files.Interfaces;
+using ThreadboxApi.Application.Identity;
+using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Domain.Entities;
 using ThreadboxApi.Infrastructure.Identity;
 
@@ -14,28 +20,28 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
     public class DbInitializationService : ITransientService
     {
         private readonly ApplicationDbContext _appDbContext;
-        private readonly PersistedGrantDbContext _persistedGrantDbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
         public DbInitializationService(
             ApplicationDbContext appDbContext,
-            PersistedGrantDbContext persistentGrantDbContext,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
-            IFileStorage fileStorage)
+            IFileStorage fileStorage,
+            RoleManager<IdentityRole> roleManager)
         {
             _appDbContext = appDbContext;
-            _persistedGrantDbContext = persistentGrantDbContext;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
             _userManager = userManager;
             _fileStorage = fileStorage;
+            _roleManager = roleManager;
 
             JsonSerializerOptions = new JsonSerializerOptions
             {
@@ -54,42 +60,90 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             if (!databaseExists)
             {
                 _appDbContext.Database.Migrate();
-                _persistedGrantDbContext.Database.Migrate();
                 await SeedAsync();
             }
         }
 
         private async Task SeedAsync()
         {
+            await SeedRolesAsync();
             await SeedUsersAsync();
 
             if (_webHostEnvironment.IsDevelopment())
             {
                 await SeedBoardsAsync();
+                await SeedRolesAsync();
+                await SeedPermissionsAsync();
                 await SeedThreadsAsync();
                 await SeedThreadImagesAsync();
                 await SeedPostsAsync();
                 await SeedPostImagesAsync();
             }
 
-            System.Diagnostics.Debug.WriteLine("Database initialized and seeded.");
+            Log.Information("Database initialized and seeded.");
+        }
+
+        public async Task SeedRolesAsync()
+        {
+            var roleConstants = typeof(Roles).GetFields();
+
+            foreach (var constant in roleConstants)
+            {
+                await _roleManager.CreateAsync(new IdentityRole(constant.GetRawConstantValue().ToString()));
+            }
+        }
+
+        public async Task SeedPermissionsAsync()
+        {
+            var adminPermissions = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.IsAssignableTo(typeof(IPermissionSet)) && x.IsClass)
+                .SelectMany(x => x.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+                .Select(x => x.GetRawConstantValue().ToString());
+
+            var adminRole = await _roleManager.FindByNameAsync(Roles.Admin);
+
+            foreach (var permission in adminPermissions)
+            {
+                await _roleManager.AddClaimAsync(adminRole, new Claim(PermissionContants.ClaimType, permission));
+            }
+
+            var moderatorPermissions = new List<string>
+            {
+                // Default permissions for moderator
+            };
+
+            var moderatorRole = await _roleManager.FindByNameAsync(Roles.Moderator);
+
+            foreach (var permission in moderatorPermissions)
+            {
+                await _roleManager.AddClaimAsync(moderatorRole, new Claim(PermissionContants.ClaimType, permission));
+            }
         }
 
         private async Task SeedUsersAsync()
         {
-            await _userManager.CreateAsync(
-                user: new ApplicationUser
-                {
-                    UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
-                },
-                password: _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            var admin = new ApplicationUser
+            {
+                UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
+            };
 
-            if (_webHostEnvironment.IsProduction())
+            await _userManager.CreateAsync(admin, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.AddToRoleAsync(admin, Roles.Admin);
+
+            if (!_webHostEnvironment.IsDevelopment())
             {
                 return;
             }
 
-            // Seed other users for development purposes
+            var moderator = new ApplicationUser
+            {
+                UserName = "moderator"
+            };
+
+            await _userManager.CreateAsync(moderator, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.AddToRoleAsync(moderator, Roles.Moderator);
         }
 
         private async Task SeedBoardsAsync()

@@ -1,4 +1,6 @@
 using Serilog;
+using Serilog.Formatting.Display;
+using Serilog.Events;
 using ThreadboxApi.Infrastructure.Persistence.Seeding;
 
 namespace ThreadboxApi
@@ -15,7 +17,15 @@ namespace ThreadboxApi
                 })
                 .UseSerilog((hostBuilderContext, loggerConfiguration) =>
                 {
-                    loggerConfiguration.ReadFrom.Configuration(hostBuilderContext.Configuration);
+                    loggerConfiguration
+                        .WriteTo.File(
+                            restrictedToMinimumLevel: LogEventLevel.Warning,
+                            path: "Logs/.log",
+                            formatter: new MessageTemplateTextFormatter("[{Timestamp:HH:mm:ss.fff} {Level:u3}] {SourceContext}: {Message}{NewLine}{Exception}"),
+                            rollingInterval: RollingInterval.Day,
+                            retainedFileCountLimit: 7)
+                        .WriteTo.Console()
+                        .Enrich.FromLogContext();
                 })
                 .Build();
 

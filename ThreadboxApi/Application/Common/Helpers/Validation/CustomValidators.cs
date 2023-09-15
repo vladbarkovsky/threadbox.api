@@ -5,22 +5,6 @@ namespace ThreadboxApi.Application.Common.Helpers.Validation
 {
     public static class CustomValidators
     {
-        public static IRuleBuilderOptions<T, string> ValidateUserName<T>(this IRuleBuilder<T, string> builder)
-        {
-            return builder
-                .NotEmpty()
-                .MinimumLength(5)
-                .MaximumLength(20);
-        }
-
-        public static IRuleBuilderOptions<T, string> ValidatePassword<T>(this IRuleBuilder<T, string> builder)
-        {
-            return builder
-                .NotEmpty()
-                .MinimumLength(8)
-                .MaximumLength(30);
-        }
-
         public static IRuleBuilderOptions<T, IFormFile> ValidateImage<T>(this IRuleBuilder<T, IFormFile> builder)
         {
             return builder

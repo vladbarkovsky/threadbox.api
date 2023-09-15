@@ -1,7 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using IdentityServer4;
+using IdentityServer4.Models;
+using IdentityServer4.Stores;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using NSwag;
+using NSwag.Generation.Processors.Security;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using ThreadboxApi.Web.Startup;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Common.Helpers;
+using ThreadboxApi.Application.Common.Interfaces;
+using ThreadboxApi.Infrastructure.Identity;
+using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Web.ApiSpecification;
+using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi
 {
@@ -18,55 +37,249 @@ namespace ThreadboxApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            DbStartup.ConfigureServices(services, _configuration);
-            DependencyInjectionStartup.ConfigureServices(services);
-            CorsStartup.ConfigureServices(services, _configuration);
-            SwaggerStartup.ConfigureServices(services);
-            ExceptionHandlingStartup.ConfigureServices(services);
-            IdentityStartup.ConfigureServices(services, _configuration);
-            IdentityServerStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            MediatRStartup.ConfigureServices(services);
-            FluentValidationStartup.ConfigureServices(services);
-
-            services.AddControllers();
-            services.AddMvc();
-
-            // Override default Razor views location
-            services.Configure<RazorViewEngineOptions>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.ViewLocationFormats.Clear();
-                options.ViewLocationFormats.Add("/Web/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
-                options.ViewLocationFormats.Add("/Web/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
+                if (_webHostEnvironment.IsDevelopment())
+                {
+                    options.UseNpgsql(_configuration.GetConnectionString(AppSettings.ConnectionStrings.Development));
+                }
+                else
+                {
+                    // Database for production
+                }
+
+                // Throw exceptions in case of performance issues with single queries
+                // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
+                options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             });
+
+            services.Scan(scan => scan.FromAssemblyOf<Program>()
+                .AddClasses(x => x.AssignableTo<ISingletonService>())
+                .AsSelfWithInterfaces()
+                .WithSingletonLifetime()
+                .AddClasses(x => x.AssignableTo<IScopedService>())
+                .AsSelfWithInterfaces()
+                .WithScopedLifetime()
+                .AddClasses(x => x.AssignableTo<ITransientService>())
+                .AsSelfWithInterfaces()
+                .WithTransientLifetime());
+
+            services.AddHttpContextAccessor();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .WithOrigins(_configuration[AppSettings.ClientBaseUrl])
+                        // NOTE: CORS allows simple methods (GET, HEAD, POST) regardless of
+                        // Access-Control-Allow-Methods header content
+                        // Source: https://stackoverflow.com/a/44385327
+                        .WithMethods("PUT", "DELETE")
+                        .WithHeaders("Authorization", "Content-Type")
+                        .Build();
+                });
+            });
+
+            if (_webHostEnvironment.IsDevelopment())
+            {
+                services.AddOpenApiDocument(settings =>
+                {
+                    settings.Title = "Threadbox API specification";
+
+                    // Overrride default name generation patterns
+                    settings.SchemaNameGenerator = new SchemaNameGenerator();
+
+                    // JWT authorization (used for Swagger UI)
+                    // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs
+
+                    settings.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                    {
+                        Type = OpenApiSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Description = "Type into the textbox: Bearer {your JWT token}."
+                    });
+
+                    settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+                });
+            }
+
+            services.AddExceptionHandler(options =>
+            {
+                options.AllowStatusCode404Response = true;
+
+                // NOTE: Must be declared through options.ExceptionHandler - otherwise it won't work
+                options.ExceptionHandler = httpContext =>
+                {
+                    var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
+
+                    if (exception is HttpResponseException)
+                    {
+                        var httpResponseException = exception as HttpResponseException;
+                        httpContext.Response.StatusCode = httpResponseException.StatusCode;
+                    }
+
+                    return Task.CompletedTask;
+                };
+            });
+
+            services
+                .AddDefaultIdentity<ApplicationUser>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            var identityServerBuilder = services
+                .AddIdentityServer()
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddApiResources()
+                .AddIdentityResources()
+                .AddClients()
+                .AddOperationalStore<ApplicationDbContext>(options =>
+                {
+                    options.EnableTokenCleanup = true;
+                })
+                .AddClientStore<InMemoryClientStore>()
+                .AddResourceStore<InMemoryResourcesStore>();
+
+            if (_webHostEnvironment.IsDevelopment())
+            {
+                identityServerBuilder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                // Use SSL certificate
+            }
+
+            // NOTE: Configuration is based on ApiAuthorizationOptions methods
+            services.Configure<ApiAuthorizationOptions>(options =>
+            {
+                options.ApiScopes = new ApiScopeCollection(new List<ApiScope>
+                {
+                    new ApiScope("threadbox_api.access", "Threadbox API access"),
+                });
+
+                options.ApiResources = new ApiResourceCollection(new List<ApiResource>
+                {
+                    new ApiResource
+                    {
+                        /// Required for <see cref="AuthenticationBuilderExtensions.AddIdentityServerJwt(AuthenticationBuilder)"/>
+                        Name = _webHostEnvironment.ApplicationName + "API",
+
+                        DisplayName = "Threadbox API",
+                        Scopes = { "threadbox_api.access" },
+
+                        Properties =
+                        {
+                            { "Clients", "angular_client" },
+                        },
+                    }
+                });
+
+                options.IdentityResources = new IdentityResourceCollection(new List<IdentityResource>
+                {
+                    new IdentityResources.OpenId(),
+                    new IdentityResources.Profile()
+                });
+
+                /// Based on <see cref="ClientCollection.AddSPA(string, Action{ClientBuilder})"/>
+                options.Clients = new ClientCollection(new List<Client>
+                {
+                    new Client
+                    {
+                        ClientId = "angular_client",
+                        ClientName = "Angular client",
+                        AllowedGrantTypes = GrantTypes.Code,
+
+                        AllowedScopes =
+                        {
+                            IdentityServerConstants.StandardScopes.OpenId,
+                            IdentityServerConstants.StandardScopes.Profile,
+                            "threadbox_api.access"
+                        },
+
+                        AllowOfflineAccess = true,
+
+                        PostLogoutRedirectUris =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
+                        },
+
+                        RedirectUris =
+                        {
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
+                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
+                        },
+
+                        Properties =
+                        {
+                            { "Profile", "SPA" }
+                        },
+
+                        AllowAccessTokensViaBrowser = true,
+                        ProtocolType = IdentityServerConstants.ProtocolTypes.OpenIdConnect,
+                        RefreshTokenExpiration = TokenExpiration.Absolute,
+                        RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                        RequireClientSecret = false,
+                    }
+                });
+            });
+
+            // Disable JWT token claims mapping by Identity
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            services.AddAuthentication().AddIdentityServerJwt();
+            services.AddAuthorization();
+
+            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+            services.AddMediatR(configuration =>
+            {
+                configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
+
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddFluentValidationAutoValidation();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            /// IMPORTANT: CORS must be configured before
-            /// <see cref="ControllerEndpointRouteBuilderExtensions.MapControllers"/>,
-            /// <see cref="AuthorizationAppBuilderExtensions.UseAuthorization"/>,
-            /// <see cref="HttpsPolicyBuilderExtensions.UseHttpsRedirection"/>,
-            CorsStartup.Configure(app);
+            app.UseCors();
 
-            SwaggerStartup.Configure(app, _webHostEnvironment);
-            ExceptionHandlingStartup.Configure(app);
-            IdentityStartup.Configure(app);
-            IdentityServerStartup.Configure(app);
+            if (_webHostEnvironment.IsDevelopment())
+            {
+                app.UseSwaggerUi3(settings =>
+                {
+                    settings.Path = "/api";
+                    settings.DocumentPath = "/api/specification.json";
+                });
+            }
 
-            /// IMPORTANT: CSP must be configured before
-            /// <see cref="EndpointRoutingApplicationBuilderExtensions.UseEndpoints(IApplicationBuilder, Action{IEndpointRouteBuilder})"/>
-            CspStartup.Configure(app, _configuration, _webHostEnvironment);
+            app.UseExceptionHandler();
 
+            // Enable HTTP routing
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseMiddleware<PermissionsMiddleware>();
+            app.UseIdentityServer();
+            app.UseAuthorization();
+
+            // Enable internet access to wwwroot
             app.UseStaticFiles();
 
+            // Configure HTTP endpoints for controllers and Razor pages
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
-
-            app.UseHttpsRedirection();
         }
     }
 }
