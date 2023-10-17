@@ -142,8 +142,8 @@ namespace ThreadboxApi
                 {
                     options.EnableTokenCleanup = true;
                 })
-                .AddClientStore<InMemoryClientStore>()
-                .AddResourceStore<InMemoryResourcesStore>();
+                .AddResourceStore<InMemoryResourcesStore>()
+                .AddClientStore<InMemoryClientStore>();
 
             if (_webHostEnvironment.IsDevelopment())
             {
@@ -175,7 +175,7 @@ namespace ThreadboxApi
                         Properties =
                         {
                             { "Clients", "angular_client" },
-                        },
+                        }
                     }
                 });
 
@@ -192,6 +192,7 @@ namespace ThreadboxApi
                     {
                         ClientId = "angular_client",
                         ClientName = "Angular client",
+                        AllowedCorsOrigins = { _configuration[AppSettings.ClientBaseUrl] },
                         AllowedGrantTypes = GrantTypes.Code,
 
                         AllowedScopes =
