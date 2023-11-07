@@ -260,6 +260,8 @@ namespace ThreadboxApi
                     settings.Path = "/api";
                     settings.DocumentPath = "/api/specification.json";
                 });
+
+                app.UseHttpsRedirection();
             }
 
             app.UseExceptionHandler();
