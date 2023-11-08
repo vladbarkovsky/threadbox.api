@@ -23,13 +23,9 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [MinLength(5)]
-            [MaxLength(20)]
             public string UserName { get; set; }
 
             [Required]
-            [MinLength(8)]
-            [MaxLength(30)]
             public string Password { get; set; }
 
             [Required]
