@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Data;
@@ -26,7 +25,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IContentTypeProvider _contentTypeProvider;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
@@ -36,8 +34,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
             IFileStorage fileStorage,
-            RoleManager<IdentityRole> roleManager,
-            IContentTypeProvider contentTypeProvider)
+            RoleManager<IdentityRole> roleManager)
         {
             _appDbContext = appDbContext;
             _webHostEnvironment = webHostEnvironment;
@@ -45,7 +42,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             _userManager = userManager;
             _fileStorage = fileStorage;
             _roleManager = roleManager;
-            _contentTypeProvider = contentTypeProvider;
 
             JsonSerializerOptions = new JsonSerializerOptions
             {
