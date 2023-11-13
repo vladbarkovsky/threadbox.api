@@ -2,7 +2,6 @@
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Files.Interfaces;
 using ThreadboxApi.Domain.Entities;
-using ThreadboxApi.Infrastructure.Persistence;
 
 namespace ThreadboxApi.Application.Services
 {

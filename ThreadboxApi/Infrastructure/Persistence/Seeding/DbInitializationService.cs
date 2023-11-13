@@ -1,5 +1,5 @@
-﻿using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Data;
@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Common.Helpers.Utilities;
 using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Application.Files.Interfaces;
 using ThreadboxApi.Application.Identity;
@@ -25,6 +26,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IContentTypeProvider _contentTypeProvider;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
@@ -34,7 +36,8 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
             IFileStorage fileStorage,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IContentTypeProvider contentTypeProvider)
         {
             _appDbContext = appDbContext;
             _webHostEnvironment = webHostEnvironment;
@@ -42,6 +45,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
             _userManager = userManager;
             _fileStorage = fileStorage;
             _roleManager = roleManager;
+            _contentTypeProvider = contentTypeProvider;
 
             JsonSerializerOptions = new JsonSerializerOptions
             {
@@ -67,13 +71,12 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedAsync()
         {
             await SeedRolesAsync();
+            await SeedPermissionsAsync();
             await SeedUsersAsync();
 
             if (_webHostEnvironment.IsDevelopment())
             {
                 await SeedBoardsAsync();
-                await SeedRolesAsync();
-                await SeedPermissionsAsync();
                 await SeedThreadsAsync();
                 await SeedThreadImagesAsync();
                 await SeedPostsAsync();
@@ -165,10 +168,17 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var threads = await _appDbContext.Threads.ToListAsync();
 
-            //threads[0].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(1);
-            //threads[1].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(2);
-            //threads[2].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(3);
-            //threads[3].ThreadImages = await _fileSeedingService.CreateFiles<ThreadImage>(5);
+            await SeedThreadImageAsync(threads[0], "CataasImage0.");
+            await SeedThreadImageAsync(threads[1], "CataasImage1.");
+            await SeedThreadImageAsync(threads[1], "CataasImage2.");
+            await SeedThreadImageAsync(threads[2], "CataasImage3.");
+            await SeedThreadImageAsync(threads[2], "CataasImage4.");
+            await SeedThreadImageAsync(threads[2], "CataasImage5.");
+            await SeedThreadImageAsync(threads[3], "CataasImage6.");
+            await SeedThreadImageAsync(threads[3], "CataasImage7.");
+            await SeedThreadImageAsync(threads[3], "CataasImage8.");
+            await SeedThreadImageAsync(threads[3], "CataasImage9.");
+            await SeedThreadImageAsync(threads[3], "CataasImage10.");
 
             _appDbContext.Threads.UpdateRange(threads);
             await _appDbContext.SaveChangesAsync();
@@ -193,14 +203,28 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var posts = await _appDbContext.Posts.ToListAsync();
 
-            //posts[0].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
-            //posts[1].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
-            //posts[2].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
-            //posts[3].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
-            //posts[4].PostImages = await _fileSeedingService.CreateFiles<PostImage>(1);
-            //posts[5].PostImages = await _fileSeedingService.CreateFiles<PostImage>(2);
-            //posts[6].PostImages = await _fileSeedingService.CreateFiles<PostImage>(3);
-            //posts[7].PostImages = await _fileSeedingService.CreateFiles<PostImage>(5);
+            await SeedPostImageAsync(posts[0], "CataasImage11.");
+            await SeedPostImageAsync(posts[1], "CataasImage12.");
+            await SeedPostImageAsync(posts[1], "CataasImage13.");
+            await SeedPostImageAsync(posts[2], "CataasImage14.");
+            await SeedPostImageAsync(posts[2], "CataasImage15.");
+            await SeedPostImageAsync(posts[2], "CataasImage16.");
+            await SeedPostImageAsync(posts[3], "CataasImage17.");
+            await SeedPostImageAsync(posts[3], "CataasImage18.");
+            await SeedPostImageAsync(posts[3], "CataasImage19.");
+            await SeedPostImageAsync(posts[3], "CataasImage20.");
+            await SeedPostImageAsync(posts[3], "CataasImage21.");
+            await SeedPostImageAsync(posts[4], "CataasImage22.");
+            await SeedPostImageAsync(posts[5], "CataasImage23.");
+            await SeedPostImageAsync(posts[5], "CataasImage24.");
+            await SeedPostImageAsync(posts[6], "CataasImage25.");
+            await SeedPostImageAsync(posts[6], "CataasImage26.");
+            await SeedPostImageAsync(posts[6], "CataasImage27.");
+            await SeedPostImageAsync(posts[7], "CataasImage28.");
+            await SeedPostImageAsync(posts[7], "CataasImage29.");
+            await SeedPostImageAsync(posts[7], "CataasImage30.");
+            await SeedPostImageAsync(posts[7], "CataasImage31.");
+            await SeedPostImageAsync(posts[7], "CataasImage32.");
 
             _appDbContext.Posts.UpdateRange(posts);
             await _appDbContext.SaveChangesAsync();
@@ -210,6 +234,43 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var data = File.ReadAllText(path);
             return JsonSerializer.Deserialize<T>(data, JsonSerializerOptions);
+        }
+
+        private async Task SeedThreadImageAsync(Domain.Entities.Thread thread, string fileName)
+        {
+            var threadImageId = Guid.NewGuid();
+            var storagePath = @$"ThreadImages\Thread_{thread.Id}\{threadImageId}";
+
+            thread.ThreadImages.Add(new ThreadImage
+            {
+                FileInfo = new Domain.Entities.FileInfo
+                {
+                    Name = fileName,
+                    ContentType = ContentType.Get(fileName),
+                    Path = storagePath
+                }
+            });
+
+            var file = await File.ReadAllBytesAsync(@$"{SeedingConstants.CataasDirectory}\{fileName}");
+            await _fileStorage.SaveFileAsync(storagePath, file);
+        }
+
+        private async Task SeedPostImageAsync(Post post, string fileName)
+        {
+            var storagePath = @$"PostImages\Post{post.Id}\{fileName}";
+
+            post.PostImages.Add(new PostImage
+            {
+                FileInfo = new Domain.Entities.FileInfo
+                {
+                    Name = fileName,
+                    ContentType = ContentType.Get(fileName),
+                    Path = storagePath
+                }
+            });
+
+            var file = await File.ReadAllBytesAsync(@$"{SeedingConstants.CataasDirectory}\{fileName}");
+            await _fileStorage.SaveFileAsync(storagePath, file);
         }
     }
 }

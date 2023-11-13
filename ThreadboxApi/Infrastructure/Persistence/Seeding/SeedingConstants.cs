@@ -5,7 +5,7 @@
         public const string SeedDirectory = @"Infrastructure\Persistence\Seeding";
 
         public const string JsonDirectory = @$"{SeedDirectory}\JSON";
-        public const string CataasImagesDirectory = @$"{SeedDirectory}\CataasImages";
+        public const string CataasDirectory = @$"{SeedDirectory}\Cataas";
 
         public const string BoardsSeedFile = @$"{JsonDirectory}\Boards.json";
         public const string ThreadsSeedFile = @$"{JsonDirectory}\Threads.json";

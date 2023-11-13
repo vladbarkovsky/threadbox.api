@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Infrastructure.Identity;
@@ -23,12 +24,15 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [DisplayName("User name")]
             public string UserName { get; set; }
 
             [Required]
+            [DisplayName("Password")]
             public string Password { get; set; }
 
             [Required]
+            [DisplayName("Remember me")]
             public bool OfflineAccess { get; set; }
         }
 
