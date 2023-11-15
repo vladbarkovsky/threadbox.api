@@ -147,7 +147,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
         private async Task SeedBoardsAsync()
         {
-            var boards = LoadFromJson<List<Board>>(SeedingConstants.BoardsSeedFile);
+            var boards = LoadFromJson<List<Board>>(SeedingConstants.JsonFiles.Boards);
             await _appDbContext.AddRangeAsync(boards);
             await _appDbContext.SaveChangesAsync();
         }
@@ -155,7 +155,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedThreadsAsync()
         {
             var boards = await _appDbContext.Boards.ToListAsync();
-            var threads = LoadFromJson<List<Domain.Entities.Thread>>(SeedingConstants.ThreadsSeedFile);
+            var threads = LoadFromJson<List<Domain.Entities.Thread>>(SeedingConstants.JsonFiles.Threads);
             boards.First().Threads = threads;
             await _appDbContext.SaveChangesAsync();
         }
@@ -164,17 +164,17 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var threads = await _appDbContext.Threads.ToListAsync();
 
-            await SeedThreadImageAsync(threads[0], "CataasImage0.");
-            await SeedThreadImageAsync(threads[1], "CataasImage1.");
-            await SeedThreadImageAsync(threads[1], "CataasImage2.");
-            await SeedThreadImageAsync(threads[2], "CataasImage3.");
-            await SeedThreadImageAsync(threads[2], "CataasImage4.");
-            await SeedThreadImageAsync(threads[2], "CataasImage5.");
-            await SeedThreadImageAsync(threads[3], "CataasImage6.");
-            await SeedThreadImageAsync(threads[3], "CataasImage7.");
-            await SeedThreadImageAsync(threads[3], "CataasImage8.");
-            await SeedThreadImageAsync(threads[3], "CataasImage9.");
-            await SeedThreadImageAsync(threads[3], "CataasImage10.");
+            await SeedThreadImageAsync(threads[0], "CataasImage0.png");
+            await SeedThreadImageAsync(threads[1], "CataasImage1.jpeg");
+            await SeedThreadImageAsync(threads[1], "CataasImage2.png");
+            await SeedThreadImageAsync(threads[2], "CataasImage3.jpeg");
+            await SeedThreadImageAsync(threads[2], "CataasImage4.jpeg");
+            await SeedThreadImageAsync(threads[2], "CataasImage5.jpeg");
+            await SeedThreadImageAsync(threads[3], "CataasImage6.jpeg");
+            await SeedThreadImageAsync(threads[3], "CataasImage7.png");
+            await SeedThreadImageAsync(threads[3], "CataasImage8.jpeg");
+            await SeedThreadImageAsync(threads[3], "CataasImage9.jpeg");
+            await SeedThreadImageAsync(threads[3], "CataasImage10.jpeg");
 
             _appDbContext.Threads.UpdateRange(threads);
             await _appDbContext.SaveChangesAsync();
@@ -183,7 +183,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         private async Task SeedPostsAsync()
         {
             var threads = await _appDbContext.Threads.ToListAsync();
-            var posts = LoadFromJson<List<Post>>(SeedingConstants.PostsSeedFile);
+            var posts = LoadFromJson<List<Post>>(SeedingConstants.JsonFiles.Posts);
 
             threads[0].Posts = posts.GetRange(0, 1);
             threads[1].Posts = posts.GetRange(1, 2);
@@ -199,28 +199,28 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
         {
             var posts = await _appDbContext.Posts.ToListAsync();
 
-            await SeedPostImageAsync(posts[0], "CataasImage11.");
-            await SeedPostImageAsync(posts[1], "CataasImage12.");
-            await SeedPostImageAsync(posts[1], "CataasImage13.");
-            await SeedPostImageAsync(posts[2], "CataasImage14.");
-            await SeedPostImageAsync(posts[2], "CataasImage15.");
-            await SeedPostImageAsync(posts[2], "CataasImage16.");
-            await SeedPostImageAsync(posts[3], "CataasImage17.");
-            await SeedPostImageAsync(posts[3], "CataasImage18.");
-            await SeedPostImageAsync(posts[3], "CataasImage19.");
-            await SeedPostImageAsync(posts[3], "CataasImage20.");
-            await SeedPostImageAsync(posts[3], "CataasImage21.");
-            await SeedPostImageAsync(posts[4], "CataasImage22.");
-            await SeedPostImageAsync(posts[5], "CataasImage23.");
-            await SeedPostImageAsync(posts[5], "CataasImage24.");
-            await SeedPostImageAsync(posts[6], "CataasImage25.");
-            await SeedPostImageAsync(posts[6], "CataasImage26.");
-            await SeedPostImageAsync(posts[6], "CataasImage27.");
-            await SeedPostImageAsync(posts[7], "CataasImage28.");
-            await SeedPostImageAsync(posts[7], "CataasImage29.");
-            await SeedPostImageAsync(posts[7], "CataasImage30.");
-            await SeedPostImageAsync(posts[7], "CataasImage31.");
-            await SeedPostImageAsync(posts[7], "CataasImage32.");
+            await SeedPostImageAsync(posts[0], "CataasImage11.jpeg");
+            await SeedPostImageAsync(posts[1], "CataasImage12.jpeg");
+            await SeedPostImageAsync(posts[1], "CataasImage13.jpeg");
+            await SeedPostImageAsync(posts[2], "CataasImage14.jpeg");
+            await SeedPostImageAsync(posts[2], "CataasImage15.jpeg");
+            await SeedPostImageAsync(posts[2], "CataasImage16.png");
+            await SeedPostImageAsync(posts[3], "CataasImage17.png");
+            await SeedPostImageAsync(posts[3], "CataasImage18.jpeg");
+            await SeedPostImageAsync(posts[3], "CataasImage19.jpeg");
+            await SeedPostImageAsync(posts[3], "CataasImage20.jpeg");
+            await SeedPostImageAsync(posts[3], "CataasImage21.png");
+            await SeedPostImageAsync(posts[4], "CataasImage22.jpeg");
+            await SeedPostImageAsync(posts[5], "CataasImage23.jpeg");
+            await SeedPostImageAsync(posts[5], "CataasImage24.jpeg");
+            await SeedPostImageAsync(posts[6], "CataasImage25.jpeg");
+            await SeedPostImageAsync(posts[6], "CataasImage26.jpeg");
+            await SeedPostImageAsync(posts[6], "CataasImage27.jpeg");
+            await SeedPostImageAsync(posts[7], "CataasImage28.jpeg");
+            await SeedPostImageAsync(posts[7], "CataasImage29.jpeg");
+            await SeedPostImageAsync(posts[7], "CataasImage30.jpeg");
+            await SeedPostImageAsync(posts[7], "CataasImage31.jpeg");
+            await SeedPostImageAsync(posts[7], "CataasImage32.jpeg");
 
             _appDbContext.Posts.UpdateRange(posts);
             await _appDbContext.SaveChangesAsync();
