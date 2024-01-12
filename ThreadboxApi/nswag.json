@@ -72,7 +72,7 @@
       "promiseType": "Promise",
       "httpClass": "HttpClient",
       "withCredentials": false,
-      "useSingletonProvider": true,
+      "useSingletonProvider": false,
       "injectionTokenType": "InjectionToken",
       "rxJsVersion": 7.0,
       "dateTimeType": "Date",

@@ -12,7 +12,15 @@ namespace ThreadboxApi.Application.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string BaseUrl => $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+        public string BaseUrl
+        {
+            get
+            {
+                var request = _httpContextAccessor.HttpContext.Request;
+                return $"{request.Scheme}://{request.Host.ToUriComponent()}";
+            }
+        } 
+
         public string UserId => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

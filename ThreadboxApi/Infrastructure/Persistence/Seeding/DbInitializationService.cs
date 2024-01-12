@@ -253,7 +253,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
         private async Task SeedPostImageAsync(Post post, string fileName)
         {
-            var storagePath = @$"PostImages\Post{post.Id}\{fileName}";
+            var storagePath = @$"PostImages\Post_{post.Id}\{fileName}";
 
             post.PostImages.Add(new PostImage
             {

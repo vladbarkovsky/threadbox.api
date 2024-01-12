@@ -2,14 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Boards.Commands;
 using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.Application.Boards.Queries;
-using ThreadboxApi.Application.Identity.Permissions;
-using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Web.Controllers
 {
     public class BoardsController : MediatRController
     {
-        [Permission(BoardsPermissions.Read)]
         [HttpGet("[action]")]
         public async Task<ActionResult<List<BoardListDto>>> GetBoardsList()
         {
