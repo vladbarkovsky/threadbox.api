@@ -212,7 +212,7 @@ namespace ThreadboxApi
                         RedirectUris =
                         {
                             _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
-                            _configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-silent-callback"
+                            _configuration[AppSettings.ClientBaseUrl] + "/assets/authorization/sign-in-silent-callback.html"
                         },
 
                         Properties =
