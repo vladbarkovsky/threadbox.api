@@ -12,7 +12,7 @@ namespace ThreadboxApi.Application.Boards.Queries
         { }
 
         private readonly ApplicationDbContext _dbContext;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public GetBoardsList(ApplicationDbContext dbContext, IMapper mapper)
         {

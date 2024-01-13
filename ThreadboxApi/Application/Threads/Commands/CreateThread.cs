@@ -52,7 +52,7 @@ namespace ThreadboxApi.Application.Threads.Commands
                 await SaveThreadImage(threadImage, thread.Id, cancellationToken);
             }
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
 
@@ -64,7 +64,7 @@ namespace ThreadboxApi.Application.Threads.Commands
             formFile.CopyTo(memoryStream);
             var data = memoryStream.ToArray();
 
-            await _fileStorage.SaveFileAsync(filePath, data);
+            await _fileStorage.SaveFileAsync(filePath, data, cancellationToken);
 
             var threadImage = new ThreadImage
             {

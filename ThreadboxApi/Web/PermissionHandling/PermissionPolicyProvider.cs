@@ -17,7 +17,7 @@ namespace ThreadboxApi.Web.PermissionHandling
                 return await base.GetPolicyAsync(policyName);
             }
 
-            var permission = policyName.Substring(PermissionContants.PermissionPolicyPrefix.Length + 1);
+            var permission = policyName[(PermissionContants.PermissionPolicyPrefix.Length + 1)..];
             var requirement = new PermissionRequirement(permission);
 
             return new AuthorizationPolicyBuilder().AddRequirements(requirement).Build();

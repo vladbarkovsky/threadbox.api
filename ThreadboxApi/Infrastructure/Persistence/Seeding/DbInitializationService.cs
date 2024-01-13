@@ -62,6 +62,10 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
                 _appDbContext.Database.Migrate();
                 await SeedAsync();
             }
+            else
+            {
+                // TODO: Update permissions
+            }
         }
 
         private async Task SeedAsync()
@@ -94,7 +98,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
         public async Task SeedPermissionsAsync()
         {
-            var adminPermissions = Assembly
+            var allPermissions = Assembly
                 .GetExecutingAssembly()
                 .GetTypes()
                 .Where(x => x.IsAssignableTo(typeof(IPermissionSet)) && x.IsClass)
@@ -103,7 +107,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
 
             var adminRole = await _roleManager.FindByNameAsync(Roles.Admin);
 
-            foreach (var permission in adminPermissions)
+            foreach (var permission in allPermissions)
             {
                 await _roleManager.AddClaimAsync(adminRole, new Claim(PermissionContants.ClaimType, permission));
             }
@@ -113,7 +117,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
                 // Default permissions for moderator
             };
 
-            var moderatorRole = await _roleManager.FindByNameAsync(Roles.Moderator);
+            var moderatorRole = await _roleManager.FindByNameAsync(Roles.Manager);
 
             foreach (var permission in moderatorPermissions)
             {
@@ -136,13 +140,13 @@ namespace ThreadboxApi.Infrastructure.Persistence.Seeding
                 return;
             }
 
-            var moderator = new ApplicationUser
+            var manager = new ApplicationUser
             {
-                UserName = "moderator"
+                UserName = "manager"
             };
 
-            await _userManager.CreateAsync(moderator, _configuration[AppSettings.DefaultAdminCredentials.Password]);
-            await _userManager.AddToRoleAsync(moderator, Roles.Moderator);
+            await _userManager.CreateAsync(manager, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.AddToRoleAsync(manager, Roles.Manager);
         }
 
         private async Task SeedBoardsAsync()

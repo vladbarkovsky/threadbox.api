@@ -29,14 +29,12 @@ namespace ThreadboxApi
                 })
                 .Build();
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var dbInitializationService = services.GetRequiredService<DbInitializationService>();
-                await dbInitializationService.EnsureInitializedAsync();
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var dbInitializationService = services.GetRequiredService<DbInitializationService>();
+            await dbInitializationService.EnsureInitializedAsync();
 
-                await host.RunAsync();
-            }
+            await host.RunAsync();
         }
     }
 }

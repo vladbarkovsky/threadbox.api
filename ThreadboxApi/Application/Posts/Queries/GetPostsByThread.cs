@@ -23,7 +23,7 @@ namespace ThreadboxApi.Application.Posts.Queries
         }
 
         private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public GetPostsByThread(Infrastructure.Persistence.ApplicationDbContext dbContext, IMapper mapper)
         {
