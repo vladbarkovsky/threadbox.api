@@ -19,6 +19,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
             builder
                 .Property(x => x.Data)
                 .IsRequired()
+                // 10 MB
                 .HasMaxLength(10 * 1024 * 1024);
         }
     }

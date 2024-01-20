@@ -28,7 +28,7 @@ namespace ThreadboxApi.Application.Identity.Commands
             };
 
             _dbContext.RegistrationKeys.Add(registrationKey);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return registrationKey.Id;
         }
     }

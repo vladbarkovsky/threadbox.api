@@ -38,6 +38,15 @@
     </PackageReference>
     <PackageReference Include="Scrutor" Version="4.2.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+
+	<!--
+	  This reference prevents System.TypeLoadException on migration creating
+	  Source: https://www.youtube.com/watch?v=HJ1TOiX-aZs&t=83s&ab_channel=CoffeeProgrammer
+	-->
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.4">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -46,17 +55,14 @@
   </ItemGroup>
 
   <Target Name="NSwag" AfterTargets="Build" Condition="$(Configuration) == 'Debug'">
-	<!-- NOTE: NSwag target does something with reflection, that launches code with ASPNETCORE_ENVIRONMENT=Production by default
-    during build process before application launch. It can cause problems; therefore we set ASPNETCORE_ENVIRONMENT=Development -->
+	<!--
+	  NOTE: NSwag target does something with reflection, that launches code with ASPNETCORE_ENVIRONMENT=Production by default
+      during build process before application launch. It can cause problems; therefore we set ASPNETCORE_ENVIRONMENT=Development
+	-->
     <Exec Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" />
   </Target>
 
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\VladislavBarkovsky\source\repos\Threadbox\threadbox.api\ThreadboxApi\.editorconfig" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="C:\Users\VladislavBarkovsky\source\repos\Threadbox\threadbox.api\ThreadboxApi\.editorconfig" />
-  </ItemGroup>
-
 </Project>

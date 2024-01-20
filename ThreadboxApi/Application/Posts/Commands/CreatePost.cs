@@ -61,7 +61,7 @@ namespace ThreadboxApi.Application.Posts.Commands
             formFile.CopyTo(memoryStream);
             var data = memoryStream.ToArray();
 
-            await _fileStorage.SaveFileAsync(filePath, data, cancellationToken);
+            await _fileStorage.SaveFileAsync(filePath, data);
 
             var postImage = new PostImage
             {

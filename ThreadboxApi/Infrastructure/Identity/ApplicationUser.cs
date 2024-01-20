@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using ThreadboxApi.Application.Common.Helpers.Mapping.Interfaces;
 using ThreadboxApi.Domain.Entities;
 
 namespace ThreadboxApi.Infrastructure.Identity
 {
-    public class ApplicationUser : IdentityUser, IMappedFrom<Person>
+    public class ApplicationUser : IdentityUser
     {
         public Person Person { get; set; }
+        public List<AuditLog> AuditLogs { get; set; }
     }
 }

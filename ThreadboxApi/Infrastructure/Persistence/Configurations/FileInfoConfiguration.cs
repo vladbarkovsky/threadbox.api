@@ -17,6 +17,23 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
                 .Property(x => x.ContentType)
                 .IsRequired()
                 .HasMaxLength(128);
+
+            builder
+                .Property(x => x.Path)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            builder
+                .HasMany(x => x.ThreadImages)
+                .WithOne(x => x.FileInfo)
+                .HasForeignKey(x => x.FileInfoId)
+                .IsRequired();
+
+            builder
+                .HasMany(x => x.PostImages)
+                .WithOne(x => x.FileInfo)
+                .HasForeignKey(x => x.FileInfoId)
+                .IsRequired();
         }
     }
 }

@@ -49,7 +49,7 @@ namespace ThreadboxApi.Application.Files.Queries
             HttpResponseException.ThrowNotFoundIfNull(threads);
 
             var fileInfos = threads.ThreadImages.Select(x => x.FileInfo);
-            var fileRetrievalTasks = threads.ThreadImages.Select(x => _fileStorage.GetFileAsync(x.FileInfo.Path, cancellationToken));
+            var fileRetrievalTasks = threads.ThreadImages.Select(x => _fileStorage.GetFileAsync(x.FileInfo.Path));
             var filesData = await Task.WhenAll(fileRetrievalTasks);
 
             var archivableFiles = fileInfos.Zip(filesData, (fileInfo, data) => new ArchivableFile

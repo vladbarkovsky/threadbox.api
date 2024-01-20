@@ -19,8 +19,8 @@ namespace ThreadboxApi.Application.Services
                 var request = _httpContextAccessor.HttpContext.Request;
                 return $"{request.Scheme}://{request.Host.ToUriComponent()}";
             }
-        } 
+        }
 
-        public string UserId => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

@@ -10,15 +10,14 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
             base.Configure(builder);
 
             builder
+                .Property(x => x.Text)
+                .HasMaxLength(131072);
+
+            builder
                 .HasMany(x => x.PostImages)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId)
                 .IsRequired();
-
-            builder
-                .Property(x => x.Text)
-                .IsRequired(false)
-                .HasMaxLength(131072);
         }
     }
 }

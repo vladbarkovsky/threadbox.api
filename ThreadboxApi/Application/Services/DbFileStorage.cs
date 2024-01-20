@@ -14,20 +14,20 @@ namespace ThreadboxApi.Application.Services
             _dbContext = dbContext;
         }
 
-        public async Task<byte[]> GetFileAsync(string filePath, CancellationToken cancellationToken)
+        public async Task<byte[]> GetFileAsync(string filePath)
         {
             var data = await _dbContext.DbFiles
                 .AsNoTracking()
                 .Where(x => x.Path == filePath)
                 .Select(x => x.Data)
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync();
 
             HttpResponseException.ThrowNotFoundIfNull(data);
 
             return data;
         }
 
-        public async Task SaveFileAsync(string path, byte[] data, CancellationToken cancellationToken)
+        public async Task SaveFileAsync(string path, byte[] data)
         {
             var dbFile = new DbFile
             {
@@ -37,20 +37,20 @@ namespace ThreadboxApi.Application.Services
 
             using var transaction = _dbContext.Database.BeginTransaction();
             _dbContext.DbFiles.Add(dbFile);
-            await transaction.CommitAsync(cancellationToken);
+            await transaction.CommitAsync();
         }
 
-        public async Task DeleteFileAsync(string path, CancellationToken cancellationToken)
+        public async Task DeleteFileAsync(string path)
         {
             var dbFile = await _dbContext.DbFiles
                 .Where(x => x.Path == path)
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync();
 
             HttpResponseException.ThrowNotFoundIfNull(dbFile);
 
             using var transaction = _dbContext.Database.BeginTransaction();
             _dbContext.DbFiles.Remove(dbFile);
-            await transaction.CommitAsync(cancellationToken);
+            await transaction.CommitAsync();
         }
     }
 }

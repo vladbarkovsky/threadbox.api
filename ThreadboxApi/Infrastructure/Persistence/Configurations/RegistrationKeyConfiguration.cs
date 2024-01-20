@@ -8,8 +8,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
         public override void Configure(EntityTypeBuilder<RegistrationKey> builder)
         {
             base.Configure(builder);
-
-            builder.Property(x => x.CreatedAt).IsRequired();
         }
     }
 }

@@ -8,12 +8,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
         public override void Configure(EntityTypeBuilder<PostImage> builder)
         {
             base.Configure(builder);
-
-            builder
-                .HasOne(x => x.FileInfo)
-                .WithMany(x => x.PostImages)
-                .HasForeignKey(x => x.FileInfoId)
-                .IsRequired();
         }
     }
 }

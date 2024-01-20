@@ -2,6 +2,6 @@
 {
     public interface IDateTimeService : IScopedService
     {
-        DateTime UtcNow { get; }
+        DateTimeOffset UtcNow { get; }
     }
 }

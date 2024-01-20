@@ -9,6 +9,16 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
             base.Configure(builder);
 
             builder
+                .Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(128);
+
+            builder
+                .Property(x => x.Text)
+                .IsRequired()
+                .HasMaxLength(131072);
+
+            builder
                 .HasMany(x => x.Posts)
                 .WithOne(x => x.Thread)
                 .HasForeignKey(x => x.ThreadId)
@@ -19,16 +29,6 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
                 .WithOne(x => x.Thread)
                 .HasForeignKey(x => x.ThreadId)
                 .IsRequired();
-
-            builder
-                .Property(x => x.Title)
-                .IsRequired()
-                .HasMaxLength(128);
-
-            builder
-                .Property(x => x.Text)
-                .IsRequired()
-                .HasMaxLength(131072);
         }
     }
 }

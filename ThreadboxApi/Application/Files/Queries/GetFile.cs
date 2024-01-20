@@ -39,7 +39,7 @@ namespace ThreadboxApi.Application.Files.Queries
                 .FirstOrDefaultAsync(cancellationToken);
 
             HttpResponseException.ThrowNotFoundIfNull(fileInfo);
-            var data = await _fileStorage.GetFileAsync(fileInfo.Path, cancellationToken);
+            var data = await _fileStorage.GetFileAsync(fileInfo.Path);
 
             return new FileContentResult(data, fileInfo.ContentType)
             {

@@ -4,6 +4,6 @@ namespace ThreadboxApi.Application.Services
 {
     public class DateTimeService : IDateTimeService
     {
-        public DateTime UtcNow => DateTime.UtcNow;
+        public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
 }

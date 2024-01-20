@@ -10,20 +10,17 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
             base.Configure(builder);
 
             builder
-                .HasMany(x => x.Threads)
-                .WithOne(x => x.Board)
-                .HasForeignKey(x => x.BoardId)
-                .IsRequired();
-
-            builder
                 .Property(x => x.Title)
                 .IsRequired()
                 .HasMaxLength(128);
 
+            builder.Property(x => x.Description).HasMaxLength(2048);
+
             builder
-                .Property(x => x.Description)
-                .IsRequired(false)
-                .HasMaxLength(2048);
+                .HasMany(x => x.Threads)
+                .WithOne(x => x.Board)
+                .HasForeignKey(x => x.BoardId)
+                .IsRequired();
         }
     }
 }

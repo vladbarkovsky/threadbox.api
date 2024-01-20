@@ -30,16 +30,13 @@ namespace ThreadboxApi.Application.Boards.Commands
 
         async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken)
         {
-            var board = _dbContext.Boards
+            var board = await _dbContext.Boards
                 .Where(x => x.Id == request.BoardId)
-                .FirstOrDefaultAsync(cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken) ?? throw HttpResponseException.NotFound;
 
-            if (board == null)
-            {
-                throw HttpResponseException.NotFound;
-            }
+            board.Deleted = true;
 
-            _dbContext.Remove(board);
+            _dbContext.Update(board);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
