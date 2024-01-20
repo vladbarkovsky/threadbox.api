@@ -12,7 +12,7 @@ using ThreadboxApi.Infrastructure.Persistence;
 namespace ThreadboxApi.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240120190644_Auditing")]
+    [Migration("20240120195303_Auditing")]
     partial class Auditing
     {
         /// <inheritdoc />
@@ -276,11 +276,11 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("EntityId")
+                    b.Property<string>("EntityName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EntityName")
+                    b.Property<string>("EntityPrimaryKeys")
                         .IsRequired()
                         .HasColumnType("text");
 

@@ -19,16 +19,16 @@ namespace ThreadboxApi.Infrastructure.Persistence
         private readonly IDateTimeService _dateTimeService;
         private readonly ApplicationContext _appContext;
 
-        public DbSet<AuditLog> AuditLogs { get; }
-        public DbSet<Person> Persons { get; }
-        public DbSet<RegistrationKey> RegistrationKeys { get; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<RegistrationKey> RegistrationKeys { get; set; }
         public DbSet<Domain.Entities.FileInfo> FileInfos { get; set; }
-        public DbSet<DbFile> DbFiles { get; }
-        public DbSet<Board> Boards { get; }
-        public DbSet<Domain.Entities.Thread> Threads { get; }
-        public DbSet<ThreadImage> ThreadImages { get; }
-        public DbSet<Post> Posts { get; }
-        public DbSet<PostImage> PostImages { get; }
+        public DbSet<DbFile> DbFiles { get; set; }
+        public DbSet<Board> Boards { get; set; }
+        public DbSet<Domain.Entities.Thread> Threads { get; set; }
+        public DbSet<ThreadImage> ThreadImages { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<PostImage> PostImages { get; set; }
 
         private string UserId { get; }
 
@@ -112,8 +112,11 @@ namespace ThreadboxApi.Infrastructure.Persistence
                 .Entries()
                 .Where(x =>
                     x.Entity is not AuditLog &&
-                    x.State == EntityState.Detached &&
-                    x.State == EntityState.Unchanged);
+                    x.State != EntityState.Detached &&
+                    x.State != EntityState.Unchanged)
+
+                /// Preventing <see cref="InvalidOperationException"/> with message 'Collection was modified; enumeration operation may not execute.'
+                .ToList();
 
             var utcNow = _dateTimeService.UtcNow;
 
@@ -121,12 +124,12 @@ namespace ThreadboxApi.Infrastructure.Persistence
             {
                 var auditLog = new AuditLog()
                 {
-                    EntityId = entry.Properties.Single(x => x.Metadata.IsPrimaryKey()).CurrentValue.ToString(),
                     EntityName = entry.Entity.GetType().Name,
                     CreatedAt = utcNow,
                     UserId = UserId
                 };
 
+                var primaryKeys = new Dictionary<string, string>();
                 var oldValues = new Dictionary<string, object>();
                 var newValues = new Dictionary<string, object>();
                 var affectedProperties = new List<string>();
@@ -134,6 +137,11 @@ namespace ThreadboxApi.Infrastructure.Persistence
                 foreach (var property in entry.Properties)
                 {
                     var propertyName = property.Metadata.Name;
+
+                    if (property.Metadata.IsPrimaryKey())
+                    {
+                        primaryKeys[propertyName] = property.CurrentValue.ToString();
+                    }
 
                     switch (entry.State)
                     {
@@ -160,6 +168,7 @@ namespace ThreadboxApi.Infrastructure.Persistence
                     }
                 }
 
+                auditLog.EntityPrimaryKeys = primaryKeys.Any() ? JsonSerializer.Serialize(primaryKeys) : null;
                 auditLog.OldValues = oldValues.Any() ? JsonSerializer.Serialize(oldValues) : null;
                 auditLog.NewValues = newValues.Any() ? JsonSerializer.Serialize(newValues) : null;
                 auditLog.AffectedProperties = affectedProperties.Any() ? JsonSerializer.Serialize(affectedProperties) : null;
@@ -182,7 +191,7 @@ namespace ThreadboxApi.Infrastructure.Persistence
 
         public void ConfigureQueryFilterForDeletedEntities<TEntity>(ModelBuilder modelBuilder) where TEntity : class, IDeletable
         {
-            modelBuilder.Entity<TEntity>().HasQueryFilter(x => x.Deleted);
+            modelBuilder.Entity<TEntity>().HasQueryFilter(x => !x.Deleted);
         }
     }
 }

@@ -273,11 +273,11 @@ namespace ThreadboxApi.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("EntityId")
+                    b.Property<string>("EntityName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EntityName")
+                    b.Property<string>("EntityPrimaryKeys")
                         .IsRequired()
                         .HasColumnType("text");
 

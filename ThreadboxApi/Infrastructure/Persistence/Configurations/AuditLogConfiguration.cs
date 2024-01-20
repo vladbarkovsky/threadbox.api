@@ -10,7 +10,7 @@ namespace ThreadboxApi.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.EntityId).IsRequired();
+            builder.Property(x => x.EntityPrimaryKeys).IsRequired();
             builder.Property(x => x.EntityName).IsRequired();
 
             builder

@@ -6,7 +6,7 @@ namespace ThreadboxApi.Domain.Entities
     {
         public Guid Id { get; set; }
 
-        public string EntityId { get; set; }
+        public string EntityPrimaryKeys { get; set; }
         public string EntityName { get; set; }
         public AuditLogOperation Operation { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
