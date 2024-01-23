@@ -14,8 +14,6 @@ namespace ThreadboxApi.Infrastructure.Persistence
 {
     public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
-        private static MethodInfo ConfigureQueryFilterForDeletedEntitiesInfo { get; } = typeof(ApplicationDbContext).GetMethod(nameof(ConfigureQueryFilterForDeletedEntities));
-
         private readonly IDateTimeService _dateTimeService;
         private readonly ApplicationContext _appContext;
 
@@ -181,10 +179,11 @@ namespace ThreadboxApi.Infrastructure.Persistence
         {
             var entityTypes = modelBuilder.Model.GetEntityTypes().Select(x => x.ClrType);
             var deletableEntityTypes = entityTypes.Where(x => typeof(IDeletable).IsAssignableFrom(x));
+            var methodInfo = typeof(ApplicationDbContext).GetMethod(nameof(ConfigureQueryFilterForDeletedEntities));
 
             foreach (var entityType in deletableEntityTypes)
             {
-                var method = ConfigureQueryFilterForDeletedEntitiesInfo.MakeGenericMethod(entityType);
+                var method = methodInfo.MakeGenericMethod(entityType);
                 method.Invoke(this, new object[] { modelBuilder });
             }
         }
