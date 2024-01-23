@@ -17,6 +17,7 @@ using System.Reflection;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Common.Interfaces;
+using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Infrastructure.Identity;
 using ThreadboxApi.Infrastructure.Persistence;
 using ThreadboxApi.Web.ApiSpecification;
@@ -261,7 +262,9 @@ namespace ThreadboxApi
                     settings.DocumentPath = "/api/specification.json";
                 });
 
-                app.UseHttpsRedirection();
+#if DEBUG
+                GeneratePermissionsForClient();
+#endif
             }
 
             app.UseExceptionHandler();
@@ -283,6 +286,30 @@ namespace ThreadboxApi
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
+        }
+
+        private void GeneratePermissionsForClient()
+        {
+            using var writer = new StreamWriter($@"..\..\threadbox.front\api-permissions.ts");
+
+            var permissionSetTypes = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.IsAssignableTo(typeof(IPermissionSet)) && x.IsClass);
+
+            foreach (var type in permissionSetTypes)
+            {
+                writer.WriteLine($"export class {type.Name} {{");
+                var constants = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+
+                foreach (var constant in constants)
+                {
+                    var constantName = constant.Name[..1].ToLower() + constant.Name[1..];
+                    writer.WriteLine($"  static readonly {constantName}: string = '{constant.GetRawConstantValue()}';");
+                }
+
+                writer.WriteLine($"}}\r\n");
+            }
         }
     }
 }
