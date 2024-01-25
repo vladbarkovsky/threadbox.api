@@ -1,5 +1,5 @@
-﻿using ThreadboxApi.Application.Common.Helpers.Mapping.Interfaces;
-using ThreadboxApi.Domain.Entities;
+﻿using ThreadboxApi.Application.Common.Mapping.Interfaces;
+using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.Boards.Models
 {

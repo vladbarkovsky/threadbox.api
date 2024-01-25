@@ -2,9 +2,9 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Application.Common.Helpers.Pagination;
+using ThreadboxApi.Application.Common.Pagination;
 using ThreadboxApi.Application.Threads.Models;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Threads.Queries
 {
@@ -37,7 +37,7 @@ namespace ThreadboxApi.Application.Threads.Queries
             var paginatedThreads = await _dbContext.Threads
                 .AsNoTracking()
                 .AsSplitQuery()
-                .Select(thread => new Domain.Entities.Thread
+                .Select(thread => new ORM.Entities.Thread
                 {
                     Id = thread.Id,
                     Title = thread.Title,

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using ThreadboxApi.Infrastructure.Identity;
+using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Areas.Identity.Pages.Account
 {

@@ -1,4 +1,4 @@
-﻿// https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/WebUI/nswag.json
+﻿// Taken from https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/WebUI/nswag.json
 
 {
   "runtime": "Net60",

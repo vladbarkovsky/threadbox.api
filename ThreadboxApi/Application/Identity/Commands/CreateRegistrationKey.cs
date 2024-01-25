@@ -1,7 +1,6 @@
 ﻿using MediatR;
-using ThreadboxApi.Application.Common.Interfaces;
-using ThreadboxApi.Domain.Entities;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Identity.Commands
 {
@@ -11,20 +10,17 @@ namespace ThreadboxApi.Application.Identity.Commands
         { }
 
         private readonly ApplicationDbContext _dbContext;
-        private readonly IDateTimeService _dateTimeOffsetService;
 
-        public CreateRegistrationKey(ApplicationDbContext dbContext, IDateTimeService dateTimeOffsetService)
+        public CreateRegistrationKey(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _dateTimeOffsetService = dateTimeOffsetService;
         }
 
         public async Task<Guid> Handle(Command request, CancellationToken cancellationToken)
         {
             var registrationKey = new RegistrationKey
             {
-                Id = Guid.NewGuid(),
-                CreatedAt = _dateTimeOffsetService.UtcNow
+                Id = Guid.NewGuid()
             };
 
             _dbContext.RegistrationKeys.Add(registrationKey);

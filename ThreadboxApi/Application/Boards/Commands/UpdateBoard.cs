@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {

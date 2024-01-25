@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using ThreadboxApi.Domain.Entities;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {

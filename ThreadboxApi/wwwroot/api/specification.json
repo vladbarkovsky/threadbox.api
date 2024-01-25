@@ -254,6 +254,34 @@
         }
       }
     },
+    "/api/Identity/GetUserPermissions": {
+      "get": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_GetUserPermissions",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Posts/GetPostsByThread": {
       "get": {
         "tags": [

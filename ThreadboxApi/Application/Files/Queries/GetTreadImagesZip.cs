@@ -3,11 +3,11 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Application.Files.Interfaces;
+using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Files.Models;
 using ThreadboxApi.Application.Services;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Files.Queries
 {

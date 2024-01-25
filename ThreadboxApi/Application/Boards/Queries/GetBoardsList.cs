@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Boards.Models;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Boards.Queries
 {

@@ -2,8 +2,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Application.Files.Interfaces;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Files.Queries
 {
@@ -22,10 +23,10 @@ namespace ThreadboxApi.Application.Files.Queries
             }
         }
 
-        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
 
-        public GetFile(Infrastructure.Persistence.ApplicationDbContext dbContext, IFileStorage fileStorage)
+        public GetFile(ApplicationDbContext dbContext, IFileStorage fileStorage)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;

@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using ThreadboxApi.Application.Common.Helpers.Validation;
-using ThreadboxApi.Application.Files.Interfaces;
-using ThreadboxApi.Domain.Entities;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Posts.Commands
 {
@@ -46,14 +46,14 @@ namespace ThreadboxApi.Application.Posts.Commands
 
             foreach (var formFile in request.PostImages)
             {
-                await SavePostImage(formFile, post.Id, cancellationToken);
+                await SavePostImage(formFile, post.Id);
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
 
-        private async Task SavePostImage(IFormFile formFile, Guid postId, CancellationToken cancellationToken)
+        private async Task SavePostImage(IFormFile formFile, Guid postId)
         {
             var filePath = $"Images/PostImages/{postId}/{formFile.Name}";
 
@@ -66,7 +66,7 @@ namespace ThreadboxApi.Application.Posts.Commands
             var postImage = new PostImage
             {
                 PostId = postId,
-                FileInfo = new Domain.Entities.FileInfo
+                FileInfo = new ORM.Entities.FileInfo
                 {
                     Name = formFile.Name,
                     ContentType = formFile.ContentType,

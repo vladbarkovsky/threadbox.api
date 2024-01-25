@@ -9,13 +9,9 @@
 
   <ItemGroup>
     <Compile Remove="Application\Identity\Models\**" />
-    <Compile Remove="Application\Identity\Queries\**" />
     <Content Remove="Application\Identity\Models\**" />
-    <Content Remove="Application\Identity\Queries\**" />
     <EmbeddedResource Remove="Application\Identity\Models\**" />
-    <EmbeddedResource Remove="Application\Identity\Queries\**" />
     <None Remove="Application\Identity\Models\**" />
-    <None Remove="Application\Identity\Queries\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\Persistence\Migrations\" />
+    <Folder Include="ORM\Migrations\" />
     <Folder Include="Logs\" />
   </ItemGroup>
 

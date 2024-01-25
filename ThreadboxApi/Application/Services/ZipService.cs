@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
-using ThreadboxApi.Application.Common.Interfaces;
 using ThreadboxApi.Application.Files.Models;
+using ThreadboxApi.Application.Services.Interfaces;
 
 namespace ThreadboxApi.Application.Services
 {

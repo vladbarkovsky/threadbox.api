@@ -3,7 +3,8 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Boards.Models;
-using ThreadboxApi.Application.Common.Helpers;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Boards.Queries
 {
@@ -22,10 +23,10 @@ namespace ThreadboxApi.Application.Boards.Queries
             }
         }
 
-        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetBoard(Infrastructure.Persistence.ApplicationDbContext dbContext, IMapper mapper)
+        public GetBoard(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -36,9 +37,10 @@ namespace ThreadboxApi.Application.Boards.Queries
             var board = await _dbContext.Boards
                 .AsNoTracking()
                 .Where(x => x.Id == request.BoardId)
-                .FirstOrDefaultAsync(cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken);
 
             HttpResponseException.ThrowNotFoundIfNull(board);
+
             var dto = _mapper.Map<BoardDto>(board);
             return dto;
         }

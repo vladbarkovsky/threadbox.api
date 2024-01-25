@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using ThreadboxApi.Application.Common.Helpers;
 using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Web.PermissionHandling
@@ -23,15 +22,16 @@ namespace ThreadboxApi.Web.PermissionHandling
                 return;
             }
 
-            // IdentityServer stores user ID in subject claim
-            // JWT specification: https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
-            var userId = context.User.FindFirstValue("sub");
-            HttpResponseException.ThrowNotFoundIfNull(userId);
+            var permissionClaims = await identityService.GetPermissionClaimsAsync();
 
-            var permissionsIdentity = await identityService.GetPermissionsIdentity(userId);
-
-            if (permissionsIdentity.Claims.Any())
+            if (permissionClaims.Any())
             {
+                var permissionsIdentity = new ClaimsIdentity(
+                    permissionClaims,
+                    nameof(PermissionsMiddleware),
+                    "name",
+                    "role");
+
                 context.User.AddIdentity(permissionsIdentity);
             }
 

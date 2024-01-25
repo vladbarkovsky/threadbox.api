@@ -1,4 +1,4 @@
-﻿using ThreadboxApi.Application.Common.Interfaces;
+﻿using ThreadboxApi.Application.Services.Interfaces;
 
 namespace ThreadboxApi.Application.Services
 {

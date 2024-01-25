@@ -3,7 +3,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Posts.Models;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Posts.Queries
 {
@@ -22,10 +22,10 @@ namespace ThreadboxApi.Application.Posts.Queries
             }
         }
 
-        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetPostsByThread(Infrastructure.Persistence.ApplicationDbContext dbContext, IMapper mapper)
+        public GetPostsByThread(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

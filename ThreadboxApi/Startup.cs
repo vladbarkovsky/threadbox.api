@@ -15,11 +15,10 @@ using NSwag.Generation.Processors.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using ThreadboxApi.Application.Common;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Application.Common.Interfaces;
-using ThreadboxApi.Application.Identity.Permissions;
-using ThreadboxApi.Infrastructure.Identity;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ApiSpecification;
 using ThreadboxApi.Web.PermissionHandling;
 
@@ -46,11 +45,11 @@ namespace ThreadboxApi
                 }
                 else
                 {
-                    // Database for production
+                    // Database for production.
                 }
 
-                // Throw exceptions in case of performance issues with single queries
-                // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries
+                // Throw exceptions in case of performance issues with single queries.
+                // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries.
                 options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             });
 
@@ -74,8 +73,8 @@ namespace ThreadboxApi
                     builder
                         .WithOrigins(_configuration[AppSettings.ClientBaseUrl])
                         // NOTE: CORS allows simple methods (GET, HEAD, POST) regardless of
-                        // Access-Control-Allow-Methods header content
-                        // Source: https://stackoverflow.com/a/44385327
+                        // Access-Control-Allow-Methods header content.
+                        // Source: https://stackoverflow.com/a/44385327.
                         .WithMethods("PUT", "DELETE")
                         .WithHeaders("Authorization", "Content-Type")
                         .Build();
@@ -88,11 +87,11 @@ namespace ThreadboxApi
                 {
                     settings.Title = "Threadbox API specification";
 
-                    // Overrride default name generation patterns
+                    // Overrride default name generation patterns.
                     settings.SchemaNameGenerator = new SchemaNameGenerator();
 
-                    // JWT authorization (used for Swagger UI)
-                    // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs
+                    // JWT authorization (used for Swagger UI).
+                    // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs.
 
                     settings.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                     {
@@ -110,7 +109,7 @@ namespace ThreadboxApi
             {
                 options.AllowStatusCode404Response = true;
 
-                // NOTE: Must be declared through options.ExceptionHandler - otherwise it won't work
+                /// NOTE: Must be declared through <see cref="ExceptionHandlerOptions.ExceptionHandler"/> - otherwise it won't work.
                 options.ExceptionHandler = httpContext =>
                 {
                     var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
@@ -152,10 +151,10 @@ namespace ThreadboxApi
             }
             else
             {
-                // Use SSL certificate
+                // Use SSL certificate.
             }
 
-            // NOTE: Configuration is based on ApiAuthorizationOptions methods
+            /// NOTE: Configuration is based on <see cref="ApiAuthorizationOptions"/> methods.
             services.Configure<ApiAuthorizationOptions>(options =>
             {
                 options.ApiScopes = new ApiScopeCollection(new List<ApiScope>
@@ -225,12 +224,12 @@ namespace ThreadboxApi
                         ProtocolType = IdentityServerConstants.ProtocolTypes.OpenIdConnect,
                         RefreshTokenExpiration = TokenExpiration.Absolute,
                         RefreshTokenUsage = TokenUsage.OneTimeOnly,
-                        RequireClientSecret = false,
+                        RequireClientSecret = false
                     }
                 });
             });
 
-            // Disable JWT token claims mapping by Identity
+            // Disable JWT token claims mapping by ASP.NET Identity.
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddAuthentication().AddIdentityServerJwt();
@@ -263,13 +262,13 @@ namespace ThreadboxApi
                 });
 
 #if DEBUG
-                GeneratePermissionsForClient();
+                Reflection.GenerateTypeScriptPermissions();
 #endif
             }
 
             app.UseExceptionHandler();
 
-            // Enable HTTP routing
+            // Enable HTTP routing.
             app.UseRouting();
 
             app.UseAuthentication();
@@ -277,50 +276,15 @@ namespace ThreadboxApi
             app.UseIdentityServer();
             app.UseAuthorization();
 
-            // Enable internet access to wwwroot
+            // Enable internet access to wwwroot.
             app.UseStaticFiles();
 
-            // Configure HTTP endpoints for controllers and Razor pages
+            // Configure HTTP endpoints for controllers and Razor pages.
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
-        }
-
-        private void GeneratePermissionsForClient()
-        {
-            using var writer = new StreamWriter($@"..\..\threadbox.front\api-permissions.ts");
-
-            writer.WriteLine(
-                "//----------------------" + "\r\n" +
-                "// <auto-generated>" + "\r\n" +
-                "//     Generated using the server ThreadboxApi.Startup.GeneratePermissionsForClient()" + "\r\n" +
-                "// </auto-generated>" + "\r\n" +
-                "//----------------------" + "\r\n" +
-                "\r\n" +
-                "/* tslint:disable */" + "\r\n" +
-                "/* eslint-disable */" + "\r\n" +
-                "// ReSharper disable InconsistentNaming" + "\r\n");
-
-            var permissionSetTypes = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Where(x => x.IsAssignableTo(typeof(IPermissionSet)) && x.IsClass);
-
-            foreach (var type in permissionSetTypes)
-            {
-                writer.WriteLine($"export class {type.Name} {{");
-                var constants = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-
-                foreach (var constant in constants)
-                {
-                    var constantName = constant.Name[..1].ToLower() + constant.Name[1..];
-                    writer.WriteLine($"  static readonly {constantName}: string = '{constant.GetRawConstantValue()}';");
-                }
-
-                writer.WriteLine($"}}\r\n");
-            }
         }
     }
 }

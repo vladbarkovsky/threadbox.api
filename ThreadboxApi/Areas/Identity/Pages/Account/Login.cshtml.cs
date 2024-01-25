@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Infrastructure.Identity;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Areas.Identity.Pages.Account
 {

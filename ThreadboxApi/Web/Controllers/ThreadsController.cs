@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ThreadboxApi.Application.Common.Helpers.Pagination;
+using ThreadboxApi.Application.Common.Pagination;
 using ThreadboxApi.Application.Threads.Commands;
 using ThreadboxApi.Application.Threads.Models;
 using ThreadboxApi.Application.Threads.Queries;

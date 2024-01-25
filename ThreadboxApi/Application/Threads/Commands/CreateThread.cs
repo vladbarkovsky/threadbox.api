@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using ThreadboxApi.Application.Common.Helpers.Validation;
-using ThreadboxApi.Application.Files.Interfaces;
-using ThreadboxApi.Domain.Entities;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Threads.Commands
 {
@@ -39,7 +39,7 @@ namespace ThreadboxApi.Application.Threads.Commands
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
         {
-            var thread = new Domain.Entities.Thread()
+            var thread = new ORM.Entities.Thread()
             {
                 Id = Guid.NewGuid(),
                 Title = request.Title,
@@ -49,14 +49,14 @@ namespace ThreadboxApi.Application.Threads.Commands
 
             foreach (var threadImage in request.ThreadImages)
             {
-                await SaveThreadImage(threadImage, thread.Id, cancellationToken);
+                await SaveThreadImage(threadImage, thread.Id);
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }
 
-        private async Task SaveThreadImage(IFormFile formFile, Guid threadId, CancellationToken cancellationToken)
+        private async Task SaveThreadImage(IFormFile formFile, Guid threadId)
         {
             var filePath = $"Images/ThreadImages/{threadId}/{formFile.Name}";
 
@@ -69,7 +69,7 @@ namespace ThreadboxApi.Application.Threads.Commands
             var threadImage = new ThreadImage
             {
                 ThreadId = threadId,
-                FileInfo = new Domain.Entities.FileInfo
+                FileInfo = new ORM.Entities.FileInfo
                 {
                     Name = formFile.Name,
                     ContentType = formFile.ContentType,

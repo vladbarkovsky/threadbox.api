@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Application.Common.Helpers;
-using ThreadboxApi.Infrastructure.Persistence;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {
@@ -21,9 +21,9 @@ namespace ThreadboxApi.Application.Boards.Commands
             }
         }
 
-        private readonly Infrastructure.Persistence.ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
-        public DeleteBoard(Infrastructure.Persistence.ApplicationDbContext dbContext)
+        public DeleteBoard(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }

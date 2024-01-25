@@ -1,7 +1,7 @@
 using Serilog;
 using Serilog.Formatting.Display;
 using Serilog.Events;
-using ThreadboxApi.Infrastructure.Persistence.Seeding;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi
 {
