@@ -20,14 +20,16 @@ namespace ThreadboxApi.ORM.Services
                 .AsNoTracking()
                 .Where(x => x.Path == filePath)
                 .Select(x => x.Data)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             HttpResponseException.ThrowNotFoundIfNull(data);
 
             return data;
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task SaveFileAsync(string path, byte[] data)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var dbFile = new DbFile
             {
@@ -35,22 +37,17 @@ namespace ThreadboxApi.ORM.Services
                 Data = data
             };
 
-            using var transaction = _dbContext.Database.BeginTransaction();
             _dbContext.DbFiles.Add(dbFile);
-            await transaction.CommitAsync();
         }
 
         public async Task DeleteFileAsync(string path)
         {
             var dbFile = await _dbContext.DbFiles
                 .Where(x => x.Path == path)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             HttpResponseException.ThrowNotFoundIfNull(dbFile);
-
-            using var transaction = _dbContext.Database.BeginTransaction();
             _dbContext.DbFiles.Remove(dbFile);
-            await transaction.CommitAsync();
         }
     }
 }

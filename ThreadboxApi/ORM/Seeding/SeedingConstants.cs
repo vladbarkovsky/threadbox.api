@@ -2,7 +2,8 @@
 {
     public class SeedingConstants
     {
-        public const string CataasDirectory = @$"{SeedDirectory}\Cataas";
+        private const string SeedDirectory = @"ORM\Seeding";
+        private const string JsonDirectory = @$"{SeedDirectory}\Json";
 
         public class JsonFiles
         {
@@ -11,7 +12,6 @@
             public const string Posts = @$"{JsonDirectory}\Posts.json";
         }
 
-        private const string SeedDirectory = @"Infrastructure\Persistence\Seeding";
-        private const string JsonDirectory = @$"{SeedDirectory}\Json";
+        public const string CataasDirectory = @$"{SeedDirectory}\Cataas";
     }
 }

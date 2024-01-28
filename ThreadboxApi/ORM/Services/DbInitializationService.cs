@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System.Data;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Identity;
 using ThreadboxApi.Application.Identity.Permissions;
+using ThreadboxApi.Application.Identity.Roles;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Seeding;
@@ -24,6 +22,7 @@ namespace ThreadboxApi.ORM.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleSynchronizer _roleSynchronizer;
 
         private JsonSerializerOptions JsonSerializerOptions { get; }
 
@@ -33,7 +32,8 @@ namespace ThreadboxApi.ORM.Services
             IConfiguration configuration,
             UserManager<ApplicationUser> userManager,
             IFileStorage fileStorage,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            RoleSynchronizer roleSynchronizer)
         {
             _dbContext = dbContext;
             _webHostEnvironment = webHostEnvironment;
@@ -41,6 +41,7 @@ namespace ThreadboxApi.ORM.Services
             _userManager = userManager;
             _fileStorage = fileStorage;
             _roleManager = roleManager;
+            _roleSynchronizer = roleSynchronizer;
 
             JsonSerializerOptions = new JsonSerializerOptions
             {
@@ -53,74 +54,57 @@ namespace ThreadboxApi.ORM.Services
         {
             // NOTE: NSwag target in project file does something with reflection, and application code
             // executes during build because of NSwag target and again during application launch.
-            // Therefore don't be surprised that databaseExists is true
+            // Therefore don't be surprised that databaseExists is true.
             var databaseExists = await _dbContext.Database.CanConnectAsync();
 
             if (!databaseExists)
             {
                 _dbContext.Database.Migrate();
                 await SeedAsync();
+                await _dbContext.SaveChangesAsync();
+                Log.Information("Database initialized and seeded.");
             }
             else
             {
-                // TODO: Update permissions
+                await _roleSynchronizer.SyncAsync();
+                await _dbContext.SaveChangesAsync();
+                Log.Information("Roles synchronized.");
             }
         }
 
         private async Task SeedAsync()
         {
             await SeedRolesAsync();
-            await SeedPermissionsAsync();
             await SeedUsersAsync();
 
-            if (_webHostEnvironment.IsDevelopment())
+            if (!_webHostEnvironment.IsDevelopment())
             {
-                await SeedBoardsAsync();
-                await SeedThreadsAsync();
-                await SeedThreadImagesAsync();
-                await SeedPostsAsync();
-                await SeedPostImagesAsync();
+                return;
             }
 
-            Log.Information("Database initialized and seeded.");
+            SeedBoards();
+            SeedThreads();
+            await SeedThreadImagesAsync();
+            SeedPosts();
+            await SeedPostImagesAsync();
         }
 
         public async Task SeedRolesAsync()
         {
-            var roleConstants = typeof(Roles).GetFields();
+            var roleTypes = Reflection.GetRoleTypes();
 
-            foreach (var constant in roleConstants)
+            foreach (var roleType in roleTypes)
             {
-                await _roleManager.CreateAsync(new IdentityRole(constant.GetRawConstantValue().ToString()));
-            }
-        }
+                var roleName = Reflection.GetRoleName(roleType);
+                await _roleManager.CreateAsync(new IdentityRole(roleName));
+                var role = await _roleManager.FindByNameAsync(roleName);
 
-        public async Task SeedPermissionsAsync()
-        {
-            var allPermissions = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Where(x => x.IsAssignableTo(typeof(IPermissionSet)) && x.IsClass)
-                .SelectMany(x => x.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
-                .Select(x => x.GetRawConstantValue().ToString());
+                var rolePermissions = Reflection.GetRolePermissions(roleType);
 
-            var adminRole = await _roleManager.FindByNameAsync(Roles.Admin);
-
-            foreach (var permission in allPermissions)
-            {
-                await _roleManager.AddClaimAsync(adminRole, new Claim(PermissionContants.ClaimType, permission));
-            }
-
-            var managerPermissions = new List<string>
-            {
-                // Default permissions for manager
-            };
-
-            var managerRole = await _roleManager.FindByNameAsync(Roles.Manager);
-
-            foreach (var permission in managerPermissions)
-            {
-                await _roleManager.AddClaimAsync(managerRole, new Claim(PermissionContants.ClaimType, permission));
+                foreach (var permission in rolePermissions)
+                {
+                    await _roleManager.AddClaimAsync(role, new Claim(PermissionContants.ClaimType, permission));
+                }
             }
         }
 
@@ -132,7 +116,7 @@ namespace ThreadboxApi.ORM.Services
             };
 
             await _userManager.CreateAsync(admin, _configuration[AppSettings.DefaultAdminCredentials.Password]);
-            await _userManager.AddToRoleAsync(admin, Roles.Admin);
+            await _userManager.AddToRoleAsync(admin, AdminRole.Name);
 
             if (!_webHostEnvironment.IsDevelopment())
             {
@@ -145,27 +129,24 @@ namespace ThreadboxApi.ORM.Services
             };
 
             await _userManager.CreateAsync(manager, _configuration[AppSettings.DefaultAdminCredentials.Password]);
-            await _userManager.AddToRoleAsync(manager, Roles.Manager);
+            await _userManager.AddToRoleAsync(manager, ManagerRole.Name);
         }
 
-        private async Task SeedBoardsAsync()
+        private void SeedBoards()
         {
             var boards = LoadFromJson<List<Board>>(SeedingConstants.JsonFiles.Boards);
             _dbContext.AddRange(boards);
-            await _dbContext.SaveChangesAsync();
         }
 
-        private async Task SeedThreadsAsync()
+        private void SeedThreads()
         {
-            var boards = await _dbContext.Boards.ToListAsync();
-            var threads = LoadFromJson<List<Entities.Thread>>(SeedingConstants.JsonFiles.Threads);
-            boards.First().Threads = threads;
-            await _dbContext.SaveChangesAsync();
+            var boards = _dbContext.Boards.Local.ToList();
+            boards.First().Threads = LoadFromJson<List<Entities.Thread>>(SeedingConstants.JsonFiles.Threads);
         }
 
         private async Task SeedThreadImagesAsync()
         {
-            var threads = await _dbContext.Threads.ToListAsync();
+            var threads = _dbContext.Threads.Local.ToList();
 
             await SeedThreadImageAsync(threads[0], "CataasImage0.png");
             await SeedThreadImageAsync(threads[1], "CataasImage1.jpeg");
@@ -178,29 +159,22 @@ namespace ThreadboxApi.ORM.Services
             await SeedThreadImageAsync(threads[3], "CataasImage8.jpeg");
             await SeedThreadImageAsync(threads[3], "CataasImage9.jpeg");
             await SeedThreadImageAsync(threads[3], "CataasImage10.jpeg");
-
-            _dbContext.Threads.UpdateRange(threads);
-            await _dbContext.SaveChangesAsync();
         }
 
-        private async Task SeedPostsAsync()
+        private void SeedPosts()
         {
-            var threads = await _dbContext.Threads.ToListAsync();
+            var threads = _dbContext.Threads.Local.ToList();
             var posts = LoadFromJson<List<Post>>(SeedingConstants.JsonFiles.Posts);
 
             threads[0].Posts = posts.GetRange(0, 1);
             threads[1].Posts = posts.GetRange(1, 2);
             threads[2].Posts = posts.GetRange(3, 3);
             threads[3].Posts = posts.GetRange(6, 5);
-
-            _dbContext.Threads.UpdateRange(threads);
-            await _dbContext.Posts.AddRangeAsync(posts);
-            await _dbContext.SaveChangesAsync();
         }
 
         private async Task SeedPostImagesAsync()
         {
-            var posts = await _dbContext.Posts.ToListAsync();
+            var posts = _dbContext.Posts.Local.ToList();
 
             await SeedPostImageAsync(posts[0], "CataasImage11.jpeg");
             await SeedPostImageAsync(posts[1], "CataasImage12.jpeg");
@@ -224,9 +198,6 @@ namespace ThreadboxApi.ORM.Services
             await SeedPostImageAsync(posts[7], "CataasImage30.jpeg");
             await SeedPostImageAsync(posts[7], "CataasImage31.jpeg");
             await SeedPostImageAsync(posts[7], "CataasImage32.jpeg");
-
-            _dbContext.Posts.UpdateRange(posts);
-            await _dbContext.SaveChangesAsync();
         }
 
         private T LoadFromJson<T>(string path)
@@ -235,7 +206,7 @@ namespace ThreadboxApi.ORM.Services
             return JsonSerializer.Deserialize<T>(data, JsonSerializerOptions);
         }
 
-        // FIXME: Distributed transaction unsafe.
+        // NOTE: Distributed transaction unsafe.
         private async Task SeedThreadImageAsync(Entities.Thread thread, string fileName)
         {
             var threadImageId = Guid.NewGuid();
@@ -255,7 +226,7 @@ namespace ThreadboxApi.ORM.Services
             await _fileStorage.SaveFileAsync(storagePath, file);
         }
 
-        // FIXME: Distributed transaction unsafe.
+        // NOTE: Distributed transaction unsafe.
         private async Task SeedPostImageAsync(Post post, string fileName)
         {
             var storagePath = @$"PostImages\Post_{post.Id}\{fileName}";
