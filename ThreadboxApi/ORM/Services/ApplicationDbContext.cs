@@ -20,6 +20,7 @@ namespace ThreadboxApi.ORM.Services
         public DbSet<RegistrationKey> RegistrationKeys { get; set; }
         public DbSet<Entities.FileInfo> FileInfos { get; set; }
         public DbSet<DbFile> DbFiles { get; set; }
+        public DbSet<Section> Sections { get; set; }
         public DbSet<Board> Boards { get; set; }
         public DbSet<Entities.Thread> Threads { get; set; }
         public DbSet<ThreadImage> ThreadImages { get; set; }

@@ -8,7 +8,7 @@ using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Files.Queries
 {
-    public class GetFile
+    public class GetFile : IRequestHandler<GetFile.Query, FileContentResult>
     {
         public class Query : IRequest<FileContentResult>
         {

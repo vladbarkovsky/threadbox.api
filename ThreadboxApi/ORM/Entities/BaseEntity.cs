@@ -10,7 +10,7 @@
         public string UpdatedById { get; set; }
         public ApplicationUser UpdatedBy { get; set; }
         public bool Deleted { get; set; }
-        public byte RowVersion { get; set; }
+        public byte[] RowVersion { get; set; }
     }
 
     public interface IAuditable

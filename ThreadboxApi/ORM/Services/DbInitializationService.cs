@@ -82,6 +82,7 @@ namespace ThreadboxApi.ORM.Services
                 return;
             }
 
+            SeedSections();
             SeedBoards();
             SeedThreads();
             await SeedThreadImagesAsync();
@@ -132,16 +133,26 @@ namespace ThreadboxApi.ORM.Services
             await _userManager.AddToRoleAsync(manager, ManagerRole.Name);
         }
 
+        private void SeedSections()
+        {
+            var section = new Section
+            {
+                Title = "Web programming"
+            };
+
+            _dbContext.Sections.Add(section);
+        }
+
         private void SeedBoards()
         {
-            var boards = LoadFromJson<List<Board>>(SeedingConstants.JsonFiles.Boards);
-            _dbContext.AddRange(boards);
+            var section = _dbContext.Sections.Local.First();
+            section.Boards = LoadFromJson<List<Board>>(SeedingConstants.JsonFiles.Boards);
         }
 
         private void SeedThreads()
         {
-            var boards = _dbContext.Boards.Local.ToList();
-            boards.First().Threads = LoadFromJson<List<Entities.Thread>>(SeedingConstants.JsonFiles.Threads);
+            var board = _dbContext.Boards.Local.First();
+            board.Threads = LoadFromJson<List<Entities.Thread>>(SeedingConstants.JsonFiles.Threads);
         }
 
         private async Task SeedThreadImagesAsync()

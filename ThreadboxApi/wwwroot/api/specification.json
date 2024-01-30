@@ -20,7 +20,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BoardListDto"
+                    "$ref": "#/components/schemas/SectionBoardDto"
                   }
                 }
               }
@@ -349,6 +349,29 @@
         }
       }
     },
+    "/api/Sections/GetSections": {
+      "get": {
+        "tags": [
+          "Sections"
+        ],
+        "operationId": "Sections_GetSections",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SectionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Threads/GetThreadsByBoard": {
       "post": {
         "tags": [
@@ -417,7 +440,7 @@
   },
   "components": {
     "schemas": {
-      "BoardListDto": {
+      "SectionBoardDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -525,6 +548,27 @@
           "threadId": {
             "type": "string",
             "format": "guid"
+          }
+        }
+      },
+      "SectionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "boards": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/SectionBoardDto"
+            }
           }
         }
       },

@@ -8,7 +8,7 @@ namespace ThreadboxApi.Web.Controllers
     public class BoardsController : MediatRController
     {
         [HttpGet("[action]")]
-        public async Task<ActionResult<List<BoardListDto>>> GetBoardsList()
+        public async Task<ActionResult<List<SectionBoardDto>>> GetBoardsList()
         {
             return await Mediator.Send(new GetBoardsList.Query());
         }

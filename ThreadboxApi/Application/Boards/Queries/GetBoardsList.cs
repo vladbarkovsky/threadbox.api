@@ -6,9 +6,9 @@ using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Boards.Queries
 {
-    public class GetBoardsList : IRequestHandler<GetBoardsList.Query, List<BoardListDto>>
+    public class GetBoardsList : IRequestHandler<GetBoardsList.Query, List<SectionBoardDto>>
     {
-        public class Query : IRequest<List<BoardListDto>>
+        public class Query : IRequest<List<SectionBoardDto>>
         { }
 
         private readonly ApplicationDbContext _dbContext;
@@ -20,13 +20,13 @@ namespace ThreadboxApi.Application.Boards.Queries
             _mapper = mapper;
         }
 
-        public async Task<List<BoardListDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<List<SectionBoardDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var boards = await _dbContext.Boards
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            var dtos = _mapper.Map<List<BoardListDto>>(boards);
+            var dtos = _mapper.Map<List<SectionBoardDto>>(boards);
             return dtos;
         }
     }
