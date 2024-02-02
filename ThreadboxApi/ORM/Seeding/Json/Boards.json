@@ -1,13 +1,16 @@
 [
   {
+    "Id": "4cd02ec6-de02-45f3-94f3-108a0c139892",
     "Title": "ASP.NET",
     "Description": "Active Server Pages for Network Enabled Technologies - open-source, server-side web-application framework designed for web development to produce dynamic web pages. It was developed by Microsoft to allow programmers to build dynamic web sites, applications and services."
   },
   {
+    "Id": "7f05c587-3f81-4ff4-8c6c-376b1aa90de3",
     "Title": "Angular",
     "Description": "TypeScript-based, free and open-source web application framework led by the Angular Team at Google and by a community of individuals and corporations."
   },
   {
+    "Id": "ecc34873-1350-4462-b7cb-5df366fb6bd9",
     "Title": "NSwag",
     "Description": "NSwag is a Swagger/OpenAPI 2.0 and 3.0 toolchain for . NET, . NET Core, Web API, ASP.NET Core, TypeScript (jQuery, AngularJS, Angular 2+, Aurelia, KnockoutJS and more) and other platforms, written in C#. The OpenAPI/Swagger specification uses JSON and JSON Schema to describe a RESTful web API."
   }

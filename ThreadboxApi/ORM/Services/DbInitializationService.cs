@@ -145,13 +145,16 @@ namespace ThreadboxApi.ORM.Services
 
         private void SeedBoards()
         {
-            var section = _dbContext.Sections.Local.First();
+            var section = _dbContext.Sections.Local.Single();
             section.Boards = LoadFromJson<List<Board>>(SeedingConstants.JsonFiles.Boards);
         }
 
         private void SeedThreads()
         {
-            var board = _dbContext.Boards.Local.First();
+            var board = _dbContext.Boards.Local
+                .Where(x => x.Id == Guid.Parse("4cd02ec6-de02-45f3-94f3-108a0c139892"))
+                .Single();
+
             board.Threads = LoadFromJson<List<Entities.Thread>>(SeedingConstants.JsonFiles.Threads);
         }
 
