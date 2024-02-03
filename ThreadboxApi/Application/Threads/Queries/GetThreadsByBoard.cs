@@ -38,14 +38,29 @@ namespace ThreadboxApi.Application.Threads.Queries
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Where(x => x.BoardId == request.BoardId)
-                .Select(thread => new ORM.Entities.Thread
+                .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
+                .Select(t => new ORM.Entities.Thread
                 {
-                    Id = thread.Id,
-                    Title = thread.Title,
-                    Text = thread.Text,
-                    BoardId = thread.BoardId,
-                    Posts = thread.Posts.Take(3).ToList(),
-                    ThreadImages = thread.ThreadImages
+                    Id = t.Id,
+                    Title = t.Title,
+                    Text = t.Text,
+                    BoardId = t.BoardId,
+                    Posts = t.Posts
+                        .OrderByDescending(x => x.CreatedAt)
+
+                        /// We need 4 posts, because based on 4th post presence we will determine
+                        /// <see cref="ThreadDto.HasMorePosts"/> value. See <see cref="ThreadDto.Mapping(Profile)"/>.
+                        .Take(4)
+
+                        .Select(p => new ORM.Entities.Post
+                        {
+                            Id = p.Id,
+                            Text = p.Text,
+                            ThreadId = p.ThreadId,
+                            PostImages = p.PostImages,
+                        })
+                        .ToList(),
+                    ThreadImages = t.ThreadImages
                 })
                 .ToPaginatedResultAsync(request, cancellationToken);
 

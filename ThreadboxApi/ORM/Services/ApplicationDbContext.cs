@@ -191,5 +191,7 @@ namespace ThreadboxApi.ORM.Services
         {
             modelBuilder.Entity<TEntity>().HasQueryFilter(x => !x.Deleted);
         }
+
+        /// TODO: Default ordering by <see cref="IAuditable.CreatedAt"/>?
     }
 }

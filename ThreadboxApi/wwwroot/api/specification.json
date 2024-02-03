@@ -632,6 +632,9 @@
             "items": {
               "$ref": "#/components/schemas/PostDto"
             }
+          },
+          "hasMorePosts": {
+            "type": "boolean"
           }
         }
       },

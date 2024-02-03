@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ThreadboxApi.Application.Common.Mapping.Interfaces;
+using ThreadboxApi.Application.Services;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web;
 
@@ -21,9 +22,9 @@ namespace ThreadboxApi.Application.Posts.Models
 
     public class PostImageUrlsResolver : IValueResolver<Post, PostDto, List<string>>
     {
-        private readonly Services.ApplicationContext _appContext;
+        private readonly ApplicationContext _appContext;
 
-        public PostImageUrlsResolver(Services.ApplicationContext appContext)
+        public PostImageUrlsResolver(ApplicationContext appContext)
         {
             _appContext = appContext;
         }
