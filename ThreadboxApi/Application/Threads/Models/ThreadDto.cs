@@ -17,17 +17,17 @@ namespace ThreadboxApi.Application.Threads.Models
         public void Mapping(Profile profile)
         {
             profile.CreateMap<ORM.Entities.Thread, ThreadDto>()
-                .ForMember(d => d.ThreadImageUrls, o => o.MapFrom<ThreadImageUrlsResolver>())
+                .ForMember(d => d.ThreadImageUrls, o => o.MapFrom<ThreadDtoImageUrlsResolver>())
                 .ForMember(d => d.Posts, o => o.MapFrom<PostsResolver>())
                 .ForMember(d => d.HasMorePosts, o => o.MapFrom(s => s.Posts.Count > 3));
         }
     }
 
-    public class ThreadImageUrlsResolver : IValueResolver<ORM.Entities.Thread, ThreadDto, List<string>>
+    public class ThreadDtoImageUrlsResolver : IValueResolver<ORM.Entities.Thread, ThreadDto, List<string>>
     {
         private readonly Services.ApplicationContext _appContext;
 
-        public ThreadImageUrlsResolver(Services.ApplicationContext appContext)
+        public ThreadDtoImageUrlsResolver(Services.ApplicationContext appContext)
         {
             _appContext = appContext;
         }

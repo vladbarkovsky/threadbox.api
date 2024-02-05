@@ -34,7 +34,7 @@ namespace ThreadboxApi.Application.Threads.Queries
 
         public async Task<PaginatedResult<ThreadDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var paginatedThreads = await _dbContext.Threads
+            var threads = await _dbContext.Threads
                 .AsNoTracking()
                 .AsSplitQuery()
                 .Where(x => x.BoardId == request.BoardId)
@@ -64,7 +64,7 @@ namespace ThreadboxApi.Application.Threads.Queries
                 })
                 .ToPaginatedResultAsync(request, cancellationToken);
 
-            var paginatedResult = _mapper.Map<PaginatedResult<ThreadDto>>(paginatedThreads);
+            var paginatedResult = _mapper.Map<PaginatedResult<ThreadDto>>(threads);
             return paginatedResult;
         }
     }
