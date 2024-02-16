@@ -404,38 +404,6 @@
         }
       }
     },
-    "/api/Threads/SearchThreads": {
-      "post": {
-        "tags": [
-          "Threads"
-        ],
-        "operationId": "Threads_SearchThreads",
-        "requestBody": {
-          "x-name": "query",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SearchThreadsQuery"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaginatedResultOfThreadSearchDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Threads/CreateThread": {
       "post": {
         "tags": [
@@ -682,6 +650,10 @@
               "boardId": {
                 "type": "string",
                 "format": "guid"
+              },
+              "searchText": {
+                "type": "string",
+                "nullable": true
               }
             }
           }
@@ -700,90 +672,6 @@
             "format": "int32"
           }
         }
-      },
-      "PaginatedResultOfThreadSearchDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "pageItems": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/ThreadSearchDto"
-            }
-          },
-          "pageIndex": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalCount": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "hasPreviousPage": {
-            "type": "boolean"
-          },
-          "hasNextPage": {
-            "type": "boolean"
-          }
-        }
-      },
-      "ThreadSearchDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "text": {
-            "type": "string",
-            "nullable": true
-          },
-          "threadImageUrls": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string"
-            }
-          },
-          "posts": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/PostDto"
-            }
-          }
-        }
-      },
-      "SearchThreadsQuery": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/PaginatedQuery"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "boardId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "searchText": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
       },
       "CreateThreadCommand": {
         "type": "object",

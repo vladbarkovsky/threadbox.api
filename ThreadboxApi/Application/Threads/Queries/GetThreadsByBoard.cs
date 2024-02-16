@@ -13,6 +13,7 @@ namespace ThreadboxApi.Application.Threads.Queries
         public class Query : PaginatedQuery, IRequest<PaginatedResult<ThreadDto>>
         {
             public Guid BoardId { get; set; }
+            public string SearchText { get; set; }
 
             public class Validator : PaginatedQueryValidatorTemplate<Query>
             {
@@ -34,37 +35,62 @@ namespace ThreadboxApi.Application.Threads.Queries
 
         public async Task<PaginatedResult<ThreadDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var threads = await _dbContext.Threads
+            var threadsQuery = _dbContext.Threads
                 .AsNoTracking()
                 .AsSplitQuery()
-                .Where(x => x.BoardId == request.BoardId)
-                .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
-                .Select(t => new ORM.Entities.Thread
-                {
-                    Id = t.Id,
-                    Title = t.Title,
-                    Text = t.Text,
-                    BoardId = t.BoardId,
-                    Posts = t.Posts
+                .Where(x => x.BoardId == request.BoardId);
+
+            var hasSearchText = !string.IsNullOrEmpty(request.SearchText);
+
+            if (hasSearchText)
+            {
+                // TODO: Use some framework for global search.
+
+                threadsQuery = threadsQuery
+                    // Include posts containing search text.
+                    .Include(t => t.Posts
+                        .Where(p => p.Text.ToLower().Contains(request.SearchText.ToLower()))
+                        .OrderByDescending(x => x.CreatedAt))
+                    .ThenInclude(x => x.PostImages)
+                    // Select threads containig search text and threads containing posts that contain search text.
+                    .Where(t =>
+                        t.Title.ToLower().Contains(request.SearchText.ToLower()) ||
+                        t.Text.ToLower().Contains(request.SearchText.ToLower()) ||
+                        t.Posts.Any(p => p.Text.ToLower().Contains(request.SearchText.ToLower())));
+            }
+            else
+            {
+                threadsQuery = threadsQuery
+                    .Include(t => t.Posts
                         .OrderByDescending(x => x.CreatedAt)
+                        /// We need 4 posts if there are no search text specified.
+                        /// Based on 4th post presence we will determine <see cref="ThreadDto.HasMorePosts"/> value.
+                        .Take(4))
+                    .ThenInclude(x => x.PostImages);
+            }
 
-                        /// We need 4 posts, because based on 4th post presence we will determine
-                        /// <see cref="ThreadDto.HasMorePosts"/> value. See <see cref="ThreadDto.Mapping(Profile)"/>.
-                        .Take(4)
-
-                        .Select(p => new ORM.Entities.Post
-                        {
-                            Id = p.Id,
-                            Text = p.Text,
-                            ThreadId = p.ThreadId,
-                            PostImages = p.PostImages,
-                        })
-                        .ToList(),
-                    ThreadImages = t.ThreadImages
-                })
+            var threads = await threadsQuery
+                .Include(x => x.ThreadImages)
+                .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
                 .ToPaginatedResultAsync(request, cancellationToken);
 
-            var paginatedResult = _mapper.Map<PaginatedResult<ThreadDto>>(threads);
+            var paginatedResult = _mapper.Map<PaginatedResult<ThreadDto>>(threads, o =>
+            {
+                if (!hasSearchText)
+                {
+                    o.AfterMap((s, d) =>
+                    {
+                        foreach (var thread in d.PageItems)
+                        {
+                            thread.HasMorePosts = thread.Posts.Count > 3;
+                            // List of post entities contains maximum of 4 posts if no search text specified.
+                            // We need a maximum of 3.
+                            thread.Posts = thread.Posts.Take(3).ToList();
+                        }
+                    });
+                }
+            });
+
             return paginatedResult;
         }
     }

@@ -15,12 +15,6 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<PaginatedResult<ThreadSearchDto>>> SearchThreads([FromBody] SearchThreads.Query query)
-        {
-            return await Mediator.Send(query);
-        }
-
-        [HttpPost("[action]")]
         public async Task<ActionResult> CreateThread([FromBody] CreateThread.Command command)
         {
             await Mediator.Send(command);
