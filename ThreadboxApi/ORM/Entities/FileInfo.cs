@@ -5,7 +5,7 @@
         public string Name { get; set; }
         public string ContentType { get; set; }
         public string Path { get; set; }
-        public List<ThreadImage> ThreadImages { get; set; } = new();
-        public List<PostImage> PostImages { get; set; } = new();
+        public ThreadImage ThreadImage { get; set; }
+        public PostImage PostImage { get; set; }
     }
 }

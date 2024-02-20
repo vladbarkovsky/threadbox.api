@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.ORM.Configurations
 {
@@ -24,15 +25,15 @@ namespace ThreadboxApi.ORM.Configurations
                 .HasMaxLength(256);
 
             builder
-                .HasMany(x => x.ThreadImages)
+                .HasOne(x => x.ThreadImage)
                 .WithOne(x => x.FileInfo)
-                .HasForeignKey(x => x.FileInfoId)
+                .HasForeignKey<ThreadImage>(x => x.FileInfoId)
                 .IsRequired();
 
             builder
-                .HasMany(x => x.PostImages)
+                .HasOne(x => x.PostImage)
                 .WithOne(x => x.FileInfo)
-                .HasForeignKey(x => x.FileInfoId)
+                .HasForeignKey<PostImage>(x => x.FileInfoId)
                 .IsRequired();
         }
     }
