@@ -411,16 +411,35 @@
         ],
         "operationId": "Threads_CreateThread",
         "requestBody": {
-          "x-name": "command",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreateThreadCommand"
+                "type": "object",
+                "properties": {
+                  "Title": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "Text": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "BoardId": {
+                    "type": "string",
+                    "format": "guid"
+                  },
+                  "ThreadImages": {
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
               }
             }
-          },
-          "required": true,
-          "x-position": 1
+          }
         },
         "responses": {
           "200": {
@@ -670,32 +689,6 @@
           "pageSize": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "CreateThreadCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "text": {
-            "type": "string",
-            "nullable": true
-          },
-          "boardId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "threadImages": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string",
-              "format": "binary"
-            }
           }
         }
       }

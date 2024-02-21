@@ -15,7 +15,7 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult> CreateThread([FromBody] CreateThread.Command command)
+        public async Task<ActionResult> CreateThread([FromForm] CreateThread.Command command)
         {
             await Mediator.Send(command);
             return NoContent();
