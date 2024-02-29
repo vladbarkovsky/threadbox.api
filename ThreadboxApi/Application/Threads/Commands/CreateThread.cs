@@ -14,7 +14,10 @@ namespace ThreadboxApi.Application.Threads.Commands
             public string Title { get; set; }
             public string Text { get; set; }
             public Guid BoardId { get; set; }
-            public List<IFormFile> ThreadImages { get; set; }
+
+            // NOTE: This property will be null in case we pass empty array from client,
+            // because we use multipart/form-data encoding for this request.
+            public List<IFormFile> ThreadImages { get; set; } = new();
 
             public class Validator : AbstractValidator<Command>
             {
