@@ -41,7 +41,6 @@ namespace ThreadboxApi.Application.Threads.Queries
             var threadsQuery = _dbContext.Threads
                 .AsNoTracking()
                 .AsSplitQuery()
-                .IgnoreQueryFilters()
                 .Where(x => x.BoardId == request.BoardId);
 
             var hasSearchText = !string.IsNullOrEmpty(request.SearchText);
@@ -55,10 +54,9 @@ namespace ThreadboxApi.Application.Threads.Queries
                     .Include(t => t.Posts
                         .Where(p => p.Text.ToLower().Contains(request.SearchText.ToLower()))
                         .OrderBy(x => x.Id)
-                        .ThenByDescending(x => x.UpdatedAt ?? x.CreatedAt))
+                        .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt))
                     .ThenInclude(x => x.PostImages
-                        .OrderBy(x => x.Id)
-                        .ThenByDescending(x => x.UpdatedAt ?? x.CreatedAt))
+                        .OrderBy(x => x.Id))
                     // Select threads containig search text and threads containing posts that contain search text.
                     .Where(t =>
                         t.Title.ToLower().Contains(request.SearchText.ToLower()) ||
@@ -70,19 +68,19 @@ namespace ThreadboxApi.Application.Threads.Queries
                 threadsQuery = threadsQuery
                     .Include(t => t.Posts
                         .OrderBy(x => x.Id)
-                        .ThenByDescending(x => x.CreatedAt)
+                        .OrderByDescending(x => x.CreatedAt)
                         /// We need 4 posts if there are no search text specified.
                         /// Based on 4th post presence we will determine <see cref="ThreadDto.HasMorePosts"/> value.
                         .Take(4))
                     .ThenInclude(x => x.PostImages
-                        .OrderBy(x => x.Id)
-                        .ThenByDescending(x => x.UpdatedAt ?? x.CreatedAt));
+                        .OrderBy(x => x.Id));
             }
 
             var threads = await threadsQuery
-                .Include(x => x.ThreadImages)
+                .Include(x => x.ThreadImages
+                    .OrderBy(x => x.Id))
                 .OrderBy(x => x.Id)
-                .ThenByDescending(x => x.UpdatedAt ?? x.CreatedAt)
+                .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
                 .ToPaginatedResultAsync(request, cancellationToken);
 
             var paginatedResult = _mapper.Map<PaginatedResult<ThreadDto>>(threads, o =>
