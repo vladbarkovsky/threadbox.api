@@ -44,18 +44,24 @@ namespace ThreadboxApi.Application.Files.Queries
                 .Where(x => x.Id == request.PostId)
                 .Include(x => x.PostImages)
                 .ThenInclude(x => x.FileInfo)
-                .FirstOrDefaultAsync(cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken);
 
             HttpResponseException.ThrowNotFoundIfNull(post);
 
             var fileInfos = post.PostImages.Select(x => x.FileInfo);
-            var fileRetrievalTasks = post.PostImages.Select(x => _fileStorage.GetFileAsync(x.FileInfo.Path));
-            var filesData = await Task.WhenAll(fileRetrievalTasks);
+            var files = new List<byte[]>();
 
-            var archivableFiles = fileInfos.Zip(filesData, (fileInfo, data) => new ArchivableFile
+            /// NOTE: We don't use <see cref="Task.WhenAll(IEnumerable{Task})"/>,
+            /// because current file storage implementation interacts with database.
+            foreach (var fileInfo in fileInfos)
+            {
+                files.Add(await _fileStorage.GetFileAsync(fileInfo.Path));
+            }
+
+            var archivableFiles = fileInfos.Zip(files, (fileInfo, file) => new ArchivableFile
             {
                 Name = fileInfo.Name,
-                Data = data
+                Data = file
             });
 
             var archive = await _zipService.ArchiveAsync(archivableFiles);

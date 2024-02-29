@@ -23,7 +23,7 @@ namespace ThreadboxApi.Application.Threads.Commands
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.BoardId).NotEmpty();
-                    RuleFor(x => x.ThreadImages).ForEach(x => x.ValidateImage());
+                    RuleFor(x => x.ThreadImages).ForEach(x => x.ValidateImage()).WithUnique(x => x.FileName);
                 }
             }
         }
@@ -47,6 +47,8 @@ namespace ThreadboxApi.Application.Threads.Commands
                 BoardId = request.BoardId,
             };
 
+            _dbContext.Add(thread);
+
             foreach (var threadImage in request.ThreadImages)
             {
                 await SaveThreadImage(threadImage, thread.Id);
@@ -58,7 +60,7 @@ namespace ThreadboxApi.Application.Threads.Commands
 
         private async Task SaveThreadImage(IFormFile formFile, Guid threadId)
         {
-            var filePath = $"Images/ThreadImages/{threadId}/{formFile.Name}";
+            var filePath = $"Images/ThreadImages/{threadId}/{formFile.FileName}";
 
             using var memoryStream = new MemoryStream();
             formFile.CopyTo(memoryStream);
@@ -71,7 +73,7 @@ namespace ThreadboxApi.Application.Threads.Commands
                 ThreadId = threadId,
                 FileInfo = new ORM.Entities.FileInfo
                 {
-                    Name = formFile.Name,
+                    Name = formFile.FileName,
                     ContentType = formFile.ContentType,
                     Path = filePath
                 }

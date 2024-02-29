@@ -39,30 +39,36 @@ namespace ThreadboxApi.Application.Files.Queries
 
         public async Task<FileContentResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            var threads = await _dbContext.Threads
+            var thread = await _dbContext.Threads
                 .AsNoTracking()
                 .Where(x => x.Id == request.ThreadId)
                 .Include(x => x.ThreadImages)
                 .ThenInclude(x => x.FileInfo)
-                .FirstOrDefaultAsync(cancellationToken);
+                .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(threads);
+            HttpResponseException.ThrowNotFoundIfNull(thread);
 
-            var fileInfos = threads.ThreadImages.Select(x => x.FileInfo);
-            var fileRetrievalTasks = threads.ThreadImages.Select(x => _fileStorage.GetFileAsync(x.FileInfo.Path));
-            var filesData = await Task.WhenAll(fileRetrievalTasks);
+            var fileInfos = thread.ThreadImages.Select(x => x.FileInfo);
+            var files = new List<byte[]>();
 
-            var archivableFiles = fileInfos.Zip(filesData, (fileInfo, data) => new ArchivableFile
+            /// NOTE: We don't use <see cref="Task.WhenAll(IEnumerable{Task})"/>,
+            /// because current file storage implementation interacts with database.
+            foreach (var fileInfo in fileInfos)
+            {
+                files.Add(await _fileStorage.GetFileAsync(fileInfo.Path));
+            }
+
+            var archivableFiles = fileInfos.Zip(files, (fileInfo, file) => new ArchivableFile
             {
                 Name = fileInfo.Name,
-                Data = data
+                Data = file
             });
 
             var archive = await _zipService.ArchiveAsync(archivableFiles);
 
             return new FileContentResult(archive, MediaTypeNames.Application.Zip)
             {
-                FileDownloadName = $"Thread_{threads.Id}_images.zip"
+                FileDownloadName = $"Thread_{thread.Id}_images.zip"
             };
         }
     }

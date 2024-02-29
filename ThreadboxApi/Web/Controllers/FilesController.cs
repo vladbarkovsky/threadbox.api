@@ -6,18 +6,21 @@ namespace ThreadboxApi.Web.Controllers
     public class FilesController : MediatRController
     {
         [HttpGet("[action]")]
+        [ExposeContentDisposition]
         public async Task<FileContentResult> GetFile([FromQuery] GetFile.Query query)
         {
             return await Mediator.Send(query);
         }
 
         [HttpGet("[action]")]
+        [ExposeContentDisposition]
         public async Task<FileContentResult> GetThreadImagesZip([FromQuery] GetTreadImagesZip.Query query)
         {
             return await Mediator.Send(query);
         }
 
         [HttpGet("[action]")]
+        [ExposeContentDisposition]
         public async Task<FileContentResult> GetPostImagesZip([FromQuery] GetPostImagesZip.Query query)
         {
             return await Mediator.Send(query);

@@ -539,12 +539,26 @@
             "type": "string",
             "format": "guid"
           },
-          "postImageUrls": {
+          "postImages": {
             "type": "array",
             "nullable": true,
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/PostImageDto"
             }
+          }
+        }
+      },
+      "PostImageDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileInfoId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -638,11 +652,11 @@
             "type": "string",
             "nullable": true
           },
-          "threadImageUrls": {
+          "threadImages": {
             "type": "array",
             "nullable": true,
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ThreadImageDto"
             }
           },
           "posts": {
@@ -654,6 +668,20 @@
           },
           "hasMorePosts": {
             "type": "boolean"
+          }
+        }
+      },
+      "ThreadImageDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileInfoId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

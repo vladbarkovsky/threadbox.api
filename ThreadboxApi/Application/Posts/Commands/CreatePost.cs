@@ -20,7 +20,7 @@ namespace ThreadboxApi.Application.Posts.Commands
                 public Validator()
                 {
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
-                    RuleFor(x => x.PostImages).ForEach(x => x.ValidateImage());
+                    RuleFor(x => x.PostImages).ForEach(x => x.ValidateImage()).WithUnique(x => x.FileName);
                     RuleFor(x => x.ThreadId).NotEmpty();
                 }
             }
@@ -55,7 +55,7 @@ namespace ThreadboxApi.Application.Posts.Commands
 
         private async Task SavePostImage(IFormFile formFile, Guid postId)
         {
-            var filePath = $"Images/PostImages/{postId}/{formFile.Name}";
+            var filePath = $"Images/PostImages/{postId}/{formFile.FileName}";
 
             using var memoryStream = new MemoryStream();
             formFile.CopyTo(memoryStream);
@@ -68,7 +68,7 @@ namespace ThreadboxApi.Application.Posts.Commands
                 PostId = postId,
                 FileInfo = new ORM.Entities.FileInfo
                 {
-                    Name = formFile.Name,
+                    Name = formFile.FileName,
                     ContentType = formFile.ContentType,
                     Path = filePath
                 }
