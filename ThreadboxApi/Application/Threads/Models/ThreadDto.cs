@@ -12,5 +12,6 @@ namespace ThreadboxApi.Application.Threads.Models
         public List<ThreadImageDto> ThreadImages { get; set; }
         public List<PostDto> Posts { get; set; }
         public bool HasMorePosts { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace ThreadboxApi.Application.Posts.Models
         public string Text { get; set; }
         public Guid ThreadId { get; set; }
         public List<PostImageDto> PostImages { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }

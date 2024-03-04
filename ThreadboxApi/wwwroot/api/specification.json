@@ -545,6 +545,10 @@
             "items": {
               "$ref": "#/components/schemas/PostImageDto"
             }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -668,6 +672,10 @@
           },
           "hasMorePosts": {
             "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

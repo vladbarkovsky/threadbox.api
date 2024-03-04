@@ -11,13 +11,15 @@ namespace ThreadboxApi.ORM.Configurations
 
             builder
                 .Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(128);
+                .HasMaxLength(128)
+                .IsRequired();
 
             builder
                 .Property(x => x.ContentType)
-                .IsRequired()
-                .HasMaxLength(128);
+                // According to RFC 4288 page 6.
+                // https://datatracker.ietf.org/doc/html/rfc4288
+                .HasMaxLength(255)
+                .IsRequired();
 
             builder
                 .Property(x => x.Path)
