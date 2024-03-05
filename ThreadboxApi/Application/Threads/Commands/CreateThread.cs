@@ -26,7 +26,14 @@ namespace ThreadboxApi.Application.Threads.Commands
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.BoardId).NotEmpty();
-                    RuleFor(x => x.ThreadImages).ForEach(x => x.ValidateImage()).WithUnique(x => x.FileName);
+
+                    RuleFor(x => x.ThreadImages)
+                        // TODO: Collection length validator.
+                        .Must(x => x.Count <= 5)
+                        .WithMessage("Maximum allowed number of files is 5.")
+
+                        .ForEach(x => x.ValidateImage())
+                        .WithUnique(x => x.FileName);
                 }
             }
         }

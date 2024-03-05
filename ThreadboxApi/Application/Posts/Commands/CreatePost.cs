@@ -11,16 +11,23 @@ namespace ThreadboxApi.Application.Posts.Commands
     {
         public class Command : IRequest<Unit>
         {
+            public Guid ThreadId { get; set; }
             public string Text { get; set; }
             public List<IFormFile> PostImages { get; set; }
-            public Guid ThreadId { get; set; }
 
             public class Validator : AbstractValidator<Command>
             {
                 public Validator()
                 {
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
-                    RuleFor(x => x.PostImages).ForEach(x => x.ValidateImage()).WithUnique(x => x.FileName);
+
+                    RuleFor(x => x.PostImages)
+                        // TODO: Collection length validator.
+                        .Must(x => x.Count <= 5)
+                        .WithMessage("Maximum allowed number of files is 5.")
+
+                        .ForEach(x => x.ValidateImage())
+                        .WithUnique(x => x.FileName);
                     RuleFor(x => x.ThreadId).NotEmpty();
                 }
             }

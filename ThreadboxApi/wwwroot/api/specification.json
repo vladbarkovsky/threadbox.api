@@ -323,16 +323,31 @@
         ],
         "operationId": "Posts_CreatePost",
         "requestBody": {
-          "x-name": "command",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreatePostCommand"
+                "type": "object",
+                "properties": {
+                  "ThreadId": {
+                    "type": "string",
+                    "format": "guid"
+                  },
+                  "Text": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "PostImages": {
+                    "type": "array",
+                    "nullable": true,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
               }
             }
-          },
-          "required": true,
-          "x-position": 1
+          }
         },
         "responses": {
           "200": {
@@ -563,28 +578,6 @@
           "url": {
             "type": "string",
             "nullable": true
-          }
-        }
-      },
-      "CreatePostCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "text": {
-            "type": "string",
-            "nullable": true
-          },
-          "postImages": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "string",
-              "format": "binary"
-            }
-          },
-          "threadId": {
-            "type": "string",
-            "format": "guid"
           }
         }
       },
