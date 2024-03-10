@@ -26,8 +26,7 @@ namespace ThreadboxApi.ORM.Services
         public DbSet<ThreadImage> ThreadImages { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
-
-        private string UserId { get; }
+        public DbSet<Tripcode> Tripcodes { get; set; }
 
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
@@ -37,8 +36,6 @@ namespace ThreadboxApi.ORM.Services
         {
             _dateTimeService = dateTimeService;
             _appContext = appContext;
-
-            UserId = _appContext.UserId;
         }
 
         public override int SaveChanges()
@@ -91,13 +88,13 @@ namespace ThreadboxApi.ORM.Services
                     if (x.State == EntityState.Added)
                     {
                         entity.CreatedAt = utcNow;
-                        entity.CreatedById = UserId;
+                        entity.CreatedById = _appContext.UserId;
                     }
 
                     if (x.State == EntityState.Modified)
                     {
                         entity.UpdatedAt = utcNow;
-                        entity.UpdatedById = UserId;
+                        entity.UpdatedById = _appContext.UserId;
                     }
                 });
         }
@@ -123,7 +120,7 @@ namespace ThreadboxApi.ORM.Services
                 {
                     EntityName = entry.Entity.GetType().Name,
                     CreatedAt = utcNow,
-                    UserId = UserId
+                    UserId = _appContext.UserId
                 };
 
                 var primaryKeys = new Dictionary<string, string>();

@@ -9,9 +9,12 @@ namespace ThreadboxApi.ORM.Configurations
         {
             base.Configure(builder);
 
+            builder.Property(x => x.Text).IsRequired().HasMaxLength(131072);
+
             builder
-                .Property(x => x.Text)
-                .HasMaxLength(131072);
+                .HasOne(x => x.Tripcode)
+                .WithOne(x => x.Post)
+                .HasForeignKey<Post>(x => x.TripcodeId);
 
             builder
                 .HasMany(x => x.PostImages)

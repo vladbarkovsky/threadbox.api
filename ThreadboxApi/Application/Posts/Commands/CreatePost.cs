@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
@@ -11,15 +12,23 @@ namespace ThreadboxApi.Application.Posts.Commands
     {
         public class Command : IRequest<Unit>
         {
-            public Guid ThreadId { get; set; }
             public string Text { get; set; }
-            public List<IFormFile> PostImages { get; set; }
+            public Guid ThreadId { get; set; }
+            public string TripcodeString { get; set; }
+
+            // NOTE: This property will be null in case we pass empty array from client,
+            // because we use multipart/form-data encoding for this request.
+            public List<IFormFile> PostImages { get; set; } = new();
 
             public class Validator : AbstractValidator<Command>
             {
                 public Validator()
                 {
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
+                    RuleFor(x => x.ThreadId).NotEmpty();
+                    RuleFor(x => x.TripcodeString)
+                        .ValidateTripcodeString()
+                        .When(x => !string.IsNullOrEmpty(x.TripcodeString));
 
                     RuleFor(x => x.PostImages)
                         // TODO: Collection length validator.
@@ -28,18 +37,22 @@ namespace ThreadboxApi.Application.Posts.Commands
 
                         .ForEach(x => x.ValidateImage())
                         .WithUnique(x => x.FileName);
-                    RuleFor(x => x.ThreadId).NotEmpty();
                 }
             }
         }
 
         private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
+        private readonly TripcodesService _tripcodesService;
 
-        public CreatePost(ApplicationDbContext dbContext, IFileStorage fileStorage)
+        public CreatePost(
+            ApplicationDbContext dbContext,
+            IFileStorage fileStorage,
+            TripcodesService tripcodesService)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;
+            _tripcodesService = tripcodesService;
         }
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -50,6 +63,15 @@ namespace ThreadboxApi.Application.Posts.Commands
                 Text = request.Text,
                 ThreadId = request.ThreadId,
             };
+
+            if (!string.IsNullOrEmpty(request.TripcodeString))
+            {
+                post.Tripcode = await _tripcodesService.ProcessTripcodeStringAsync(
+                    request.TripcodeString,
+                    cancellationToken);
+            }
+
+            _dbContext.Posts.Add(post);
 
             foreach (var formFile in request.PostImages)
             {

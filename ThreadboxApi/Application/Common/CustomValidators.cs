@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.Text.RegularExpressions;
 using ThreadboxApi.Application.Common.Constants;
 
 namespace ThreadboxApi.Application.Common
@@ -48,6 +49,14 @@ namespace ThreadboxApi.Application.Common
                     return true;
                 })
                 .WithMessage("The collection contains duplicate elements.");
+        }
+
+        public static IRuleBuilderOptions<T, string> ValidateTripcodeString<T>(this IRuleBuilder<T, string> builder)
+        {
+            return builder
+                // Regex: 1-128 ASCII characters (33-126) + '#' + 8-128 ASCII characters (33-126).
+                .Matches(new Regex("^[!-~]{1,128}#[!-~]{8,128}$"))
+                .WithMessage("Invalid tripcode string format.");
         }
     }
 }

@@ -328,11 +328,15 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "Text": {
+                    "type": "string",
+                    "nullable": true
+                  },
                   "ThreadId": {
                     "type": "string",
                     "format": "guid"
                   },
-                  "Text": {
+                  "TripcodeString": {
                     "type": "string",
                     "nullable": true
                   },
@@ -442,6 +446,10 @@
                   "BoardId": {
                     "type": "string",
                     "format": "guid"
+                  },
+                  "TripcodeString": {
+                    "type": "string",
+                    "nullable": true
                   },
                   "ThreadImages": {
                     "type": "array",
@@ -554,6 +562,10 @@
             "type": "string",
             "format": "guid"
           },
+          "tripcodeKey": {
+            "type": "string",
+            "nullable": true
+          },
           "postImages": {
             "type": "array",
             "nullable": true,
@@ -649,18 +661,22 @@
             "type": "string",
             "nullable": true
           },
-          "threadImages": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/ThreadImageDto"
-            }
+          "tripcodeKey": {
+            "type": "string",
+            "nullable": true
           },
           "posts": {
             "type": "array",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PostDto"
+            }
+          },
+          "threadImages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ThreadImageDto"
             }
           },
           "hasMorePosts": {

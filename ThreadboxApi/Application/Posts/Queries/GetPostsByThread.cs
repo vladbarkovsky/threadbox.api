@@ -35,6 +35,7 @@ namespace ThreadboxApi.Application.Posts.Queries
         {
             var posts = await _dbContext.Posts
                 .Where(x => x.ThreadId == request.ThreadId)
+                .Include(x => x.Tripcode)
                 .Include(x => x.PostImages)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);

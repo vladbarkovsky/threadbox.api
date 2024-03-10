@@ -16,13 +16,11 @@ namespace ThreadboxApi.ORM.Configurations
             builder.HasOne(x => x.CreatedBy)
                 .WithMany()
                 .HasForeignKey(x => x.CreatedById)
-                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.UpdatedBy)
                 .WithMany()
                 .HasForeignKey(x => x.UpdatedById)
-                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

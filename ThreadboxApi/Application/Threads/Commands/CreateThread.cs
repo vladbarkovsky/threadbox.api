@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
@@ -14,6 +15,7 @@ namespace ThreadboxApi.Application.Threads.Commands
             public string Title { get; set; }
             public string Text { get; set; }
             public Guid BoardId { get; set; }
+            public string TripcodeString { get; set; }
 
             // NOTE: This property will be null in case we pass empty array from client,
             // because we use multipart/form-data encoding for this request.
@@ -26,6 +28,9 @@ namespace ThreadboxApi.Application.Threads.Commands
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.BoardId).NotEmpty();
+                    RuleFor(x => x.TripcodeString)
+                        .ValidateTripcodeString()
+                        .When(x => !string.IsNullOrEmpty(x.TripcodeString));
 
                     RuleFor(x => x.ThreadImages)
                         // TODO: Collection length validator.
@@ -40,11 +45,16 @@ namespace ThreadboxApi.Application.Threads.Commands
 
         private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
+        private readonly TripcodesService _tripcodesService;
 
-        public CreateThread(ApplicationDbContext dbContext, IFileStorage fileStorage)
+        public CreateThread(
+            ApplicationDbContext dbContext,
+            IFileStorage fileStorage,
+            TripcodesService tripcodesService)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;
+            _tripcodesService = tripcodesService;
         }
 
         public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -56,6 +66,13 @@ namespace ThreadboxApi.Application.Threads.Commands
                 Text = request.Text,
                 BoardId = request.BoardId,
             };
+
+            if (!string.IsNullOrEmpty(request.TripcodeString))
+            {
+                thread.Tripcode = await _tripcodesService.ProcessTripcodeStringAsync(
+                    request.TripcodeString,
+                    cancellationToken);
+            }
 
             _dbContext.Add(thread);
 

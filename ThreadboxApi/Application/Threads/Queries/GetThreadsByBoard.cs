@@ -53,10 +53,15 @@ namespace ThreadboxApi.Application.Threads.Queries
                     // Include posts containing search text.
                     .Include(t => t.Posts
                         .Where(p => p.Text.ToLower().Contains(request.SearchText.ToLower()))
-                        .OrderBy(x => x.Id)
+                        .OrderBy(p => p.Id)
                         .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt))
-                    .ThenInclude(x => x.PostImages
-                        .OrderBy(x => x.Id))
+                    .ThenInclude(p => p.PostImages
+                        .OrderBy(p => p.Id))
+                    .Include(t => t.Posts
+                        .Where(p => p.Text.ToLower().Contains(request.SearchText.ToLower()))
+                        .OrderBy(p => p.Id)
+                        .OrderByDescending(p => p.UpdatedAt ?? p.CreatedAt))
+                    .ThenInclude(p => p.Tripcode)
                     // Select threads containig search text and threads containing posts that contain search text.
                     .Where(t =>
                         t.Title.ToLower().Contains(request.SearchText.ToLower()) ||
@@ -73,12 +78,20 @@ namespace ThreadboxApi.Application.Threads.Queries
                         /// Based on 4th post presence we will determine <see cref="ThreadDto.HasMorePosts"/> value.
                         .Take(4))
                     .ThenInclude(x => x.PostImages
-                        .OrderBy(x => x.Id));
+                        .OrderBy(x => x.Id))
+                    .Include(t => t.Posts
+                        .OrderBy(x => x.Id)
+                        .OrderByDescending(x => x.CreatedAt)
+                        /// We need 4 posts if there are no search text specified.
+                        /// Based on 4th post presence we will determine <see cref="ThreadDto.HasMorePosts"/> value.
+                        .Take(4))
+                    .ThenInclude(p => p.Tripcode);
             }
 
             var threads = await threadsQuery
                 .Include(x => x.ThreadImages
                     .OrderBy(x => x.Id))
+                .Include(x => x.Tripcode)
                 .OrderBy(x => x.Id)
                 .OrderByDescending(x => x.UpdatedAt ?? x.CreatedAt)
                 .ToPaginatedResultAsync(request, cancellationToken);

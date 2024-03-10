@@ -17,7 +17,6 @@ namespace ThreadboxApi.ORM.Configurations
                 .HasOne(x => x.User)
                 .WithMany(x => x.AuditLogs)
                 .HasForeignKey(x => x.UserId)
-                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
