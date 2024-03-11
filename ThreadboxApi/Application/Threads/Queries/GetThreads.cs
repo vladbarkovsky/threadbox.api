@@ -8,7 +8,7 @@ using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Threads.Queries
 {
-    public class GetThreadsByBoard : IRequestHandler<GetThreadsByBoard.Query, PaginatedResult<ThreadDto>>
+    public class GetThreads : IRequestHandler<GetThreads.Query, PaginatedResult<ThreadDto>>
     {
         public class Query : PaginatedQuery, IRequest<PaginatedResult<ThreadDto>>
         {
@@ -27,7 +27,7 @@ namespace ThreadboxApi.Application.Threads.Queries
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetThreadsByBoard(ApplicationDbContext dbContext, IMapper mapper)
+        public GetThreads(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;

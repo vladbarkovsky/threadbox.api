@@ -7,11 +7,12 @@ using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Posts.Queries
 {
-    public class GetPostsByThread : IRequestHandler<GetPostsByThread.Query, List<PostDto>>
+    public class GetPosts : IRequestHandler<GetPosts.Query, List<PostDto>>
     {
         public class Query : IRequest<List<PostDto>>
         {
             public Guid ThreadId { get; set; }
+            public bool All { get; set; }
 
             public class Validator : AbstractValidator<Query>
             {
@@ -25,7 +26,7 @@ namespace ThreadboxApi.Application.Posts.Queries
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetPostsByThread(ApplicationDbContext dbContext, IMapper mapper)
+        public GetPosts(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -33,13 +34,19 @@ namespace ThreadboxApi.Application.Posts.Queries
 
         public async Task<List<PostDto>> Handle(Query request, CancellationToken cancellationToken)
         {
-            var posts = await _dbContext.Posts
+            var query = _dbContext.Posts
                 .Where(x => x.ThreadId == request.ThreadId)
                 .Include(x => x.Tripcode)
                 .Include(x => x.PostImages)
                 .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync(cancellationToken);
+                .AsQueryable();
 
+            if (!request.All)
+            {
+                query = query.Take(3);
+            }
+
+            var posts = await query.ToListAsync(cancellationToken);
             var dtos = _mapper.Map<List<PostDto>>(posts);
             return dtos;
         }

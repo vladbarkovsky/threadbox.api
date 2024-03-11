@@ -19,11 +19,6 @@ namespace ThreadboxApi.ORM.Configurations
                 .HasMaxLength(131072);
 
             builder
-                .HasOne(x => x.Tripcode)
-                .WithOne(x => x.Thread)
-                .HasForeignKey<Entities.Thread>(x => x.TripcodeId);
-
-            builder
                 .HasMany(x => x.Posts)
                 .WithOne(x => x.Thread)
                 .HasForeignKey(x => x.ThreadId)

@@ -12,11 +12,6 @@ namespace ThreadboxApi.ORM.Configurations
             builder.Property(x => x.Text).IsRequired().HasMaxLength(131072);
 
             builder
-                .HasOne(x => x.Tripcode)
-                .WithOne(x => x.Post)
-                .HasForeignKey<Post>(x => x.TripcodeId);
-
-            builder
                 .HasMany(x => x.PostImages)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId)

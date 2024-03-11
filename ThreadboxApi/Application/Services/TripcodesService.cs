@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Services.Interfaces;
-using ThreadboxApi.Application.Tripcodes;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 

@@ -282,12 +282,12 @@
         ]
       }
     },
-    "/api/Posts/GetPostsByThread": {
+    "/api/Posts/GetPosts": {
       "get": {
         "tags": [
           "Posts"
         ],
-        "operationId": "Posts_GetPostsByThread",
+        "operationId": "Posts_GetPosts",
         "parameters": [
           {
             "name": "ThreadId",
@@ -297,6 +297,14 @@
               "format": "guid"
             },
             "x-position": 1
+          },
+          {
+            "name": "All",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "x-position": 2
           }
         ],
         "responses": {
@@ -391,18 +399,18 @@
         }
       }
     },
-    "/api/Threads/GetThreadsByBoard": {
+    "/api/Threads/GetThreads": {
       "post": {
         "tags": [
           "Threads"
         ],
-        "operationId": "Threads_GetThreadsByBoard",
+        "operationId": "Threads_GetThreads",
         "requestBody": {
           "x-name": "query",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GetThreadsByBoardQuery"
+                "$ref": "#/components/schemas/GetThreadsQuery"
               }
             }
           },
@@ -702,7 +710,7 @@
           }
         }
       },
-      "GetThreadsByBoardQuery": {
+      "GetThreadsQuery": {
         "allOf": [
           {
             "$ref": "#/components/schemas/PaginatedQuery"

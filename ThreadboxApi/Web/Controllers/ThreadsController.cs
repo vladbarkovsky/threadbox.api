@@ -9,7 +9,7 @@ namespace ThreadboxApi.Web.Controllers
     public class ThreadsController : MediatRController
     {
         [HttpPost("[action]")]
-        public async Task<ActionResult<PaginatedResult<ThreadDto>>> GetThreadsByBoard([FromBody] GetThreadsByBoard.Query query)
+        public async Task<ActionResult<PaginatedResult<ThreadDto>>> GetThreads([FromBody] GetThreads.Query query)
         {
             return await Mediator.Send(query);
         }

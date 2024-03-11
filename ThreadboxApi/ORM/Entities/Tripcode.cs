@@ -5,7 +5,7 @@
         public string Key { get; set; }
         public byte[] Salt { get; set; }
         public byte[] Hash { get; set; }
-        public Thread Thread { get; set; }
-        public Post Post { get; set; }
+        public List<Thread> Threads { get; set; }
+        public List<Post> Posts { get; set; }
     }
 }
