@@ -1,6 +1,6 @@
 ﻿namespace ThreadboxApi.Application.Identity.Permissions
 {
-    public class PermissionContants
+    public class PermissionConstants
     {
         public const string ClaimType = "Permission";
         public const string PermissionPolicyPrefix = "Permission";

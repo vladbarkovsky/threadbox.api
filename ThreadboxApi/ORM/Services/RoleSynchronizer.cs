@@ -44,7 +44,7 @@ namespace ThreadboxApi.ORM.Services
                 var roleToDelete = await _roleManager.FindByNameAsync(roleName);
 
                 var permissionClaims = await _dbContext.RoleClaims
-                    .Where(x => x.RoleId == roleToDelete.Id && x.ClaimType == PermissionContants.ClaimType)
+                    .Where(x => x.RoleId == roleToDelete.Id && x.ClaimType == PermissionConstants.ClaimType)
                     .ToListAsync();
 
                 _dbContext.RoleClaims.RemoveRange(permissionClaims);
@@ -63,7 +63,7 @@ namespace ThreadboxApi.ORM.Services
 
                 foreach (var permission in permissions)
                 {
-                    await _roleManager.AddClaimAsync(role, new Claim(PermissionContants.ClaimType, permission));
+                    await _roleManager.AddClaimAsync(role, new Claim(PermissionConstants.ClaimType, permission));
                 }
             }
         }
@@ -79,7 +79,7 @@ namespace ThreadboxApi.ORM.Services
                     .Single();
 
                 var existingPermissions = await _dbContext.RoleClaims
-                    .Where(x => x.RoleId == role.Id && x.ClaimType == PermissionContants.ClaimType)
+                    .Where(x => x.RoleId == role.Id && x.ClaimType == PermissionConstants.ClaimType)
                     .ToListAsync();
 
                 var existingPermissionNames = existingPermissions.Select(x => x.ClaimValue);
@@ -91,7 +91,7 @@ namespace ThreadboxApi.ORM.Services
 
                 foreach (var permission in permissionsToAdd)
                 {
-                    await _roleManager.AddClaimAsync(role, new Claim(PermissionContants.ClaimType, permission));
+                    await _roleManager.AddClaimAsync(role, new Claim(PermissionConstants.ClaimType, permission));
                 }
             }
         }

@@ -45,7 +45,7 @@ namespace ThreadboxApi.Application.Services
             var role = await _roleManager.FindByNameAsync(roles.First());
             var claims = await _roleManager.GetClaimsAsync(role);
 
-            permissionClaims.AddRange(claims.Where(x => x.Type == PermissionContants.ClaimType));
+            permissionClaims.AddRange(claims.Where(x => x.Type == PermissionConstants.ClaimType));
             return permissionClaims;
         }
     }

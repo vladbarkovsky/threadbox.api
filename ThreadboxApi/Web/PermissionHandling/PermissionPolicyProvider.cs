@@ -12,12 +12,12 @@ namespace ThreadboxApi.Web.PermissionHandling
 
         public override async Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
-            if (!policyName.StartsWith(PermissionContants.PermissionPolicyPrefix))
+            if (!policyName.StartsWith(PermissionConstants.PermissionPolicyPrefix))
             {
                 return await base.GetPolicyAsync(policyName);
             }
 
-            var permission = policyName[(PermissionContants.PermissionPolicyPrefix.Length + 1)..];
+            var permission = policyName[(PermissionConstants.PermissionPolicyPrefix.Length + 1)..];
             var requirement = new PermissionRequirement(permission);
 
             return new AuthorizationPolicyBuilder().AddRequirements(requirement).Build();

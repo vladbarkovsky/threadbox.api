@@ -7,7 +7,7 @@ namespace ThreadboxApi.Web.PermissionHandling
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            var hasPermission = context.User.HasClaim(PermissionContants.ClaimType, requirement.Permission);
+            var hasPermission = context.User.HasClaim(PermissionConstants.ClaimType, requirement.Permission);
 
             if (hasPermission)
             {

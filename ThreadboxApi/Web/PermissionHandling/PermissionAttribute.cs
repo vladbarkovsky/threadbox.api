@@ -7,7 +7,7 @@ namespace ThreadboxApi.Web.PermissionHandling
     {
         public PermissionAttribute(string permission)
         {
-            Policy = $"{PermissionContants.PermissionPolicyPrefix}.{permission}";
+            Policy = $"{PermissionConstants.PermissionPolicyPrefix}.{permission}";
         }
     }
 }

@@ -104,7 +104,7 @@ namespace ThreadboxApi.ORM.Services
 
                 foreach (var permission in rolePermissions)
                 {
-                    await _roleManager.AddClaimAsync(role, new Claim(PermissionContants.ClaimType, permission));
+                    await _roleManager.AddClaimAsync(role, new Claim(PermissionConstants.ClaimType, permission));
                 }
             }
         }
