@@ -376,6 +376,37 @@
         }
       }
     },
+    "/api/Sections/GetSection": {
+      "get": {
+        "tags": [
+          "Sections"
+        ],
+        "operationId": "Sections_GetSection",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Sections/GetSections": {
       "get": {
         "tags": [
@@ -390,13 +421,89 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SectionDto"
+                    "$ref": "#/components/schemas/SectionListDto"
                   }
                 }
               }
             }
           }
         }
+      }
+    },
+    "/api/Sections/CreateSection": {
+      "post": {
+        "tags": [
+          "Sections"
+        ],
+        "operationId": "Sections_CreateSection",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSectionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Sections/UpdateSection": {
+      "put": {
+        "tags": [
+          "Sections"
+        ],
+        "operationId": "Sections_UpdateSection",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSectionCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Threads/GetThreads": {
@@ -646,6 +753,25 @@
             "type": "string",
             "format": "guid"
           },
+          "rowVersion": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "SectionListDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "title": {
             "type": "string",
             "nullable": true
@@ -656,6 +782,35 @@
             "items": {
               "$ref": "#/components/schemas/SectionBoardDto"
             }
+          }
+        }
+      },
+      "CreateSectionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateSectionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "rowVersion": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

@@ -2,6 +2,7 @@ using Serilog;
 using Serilog.Formatting.Display;
 using Serilog.Events;
 using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Application.Common;
 
 namespace ThreadboxApi
 {
@@ -33,6 +34,10 @@ namespace ThreadboxApi
             var services = scope.ServiceProvider;
             var dbInitializationService = services.GetRequiredService<DbInitializationService>();
             await dbInitializationService.EnsureInitializedAsync();
+
+#if DEBUG
+            Reflection.GenerateTypeScriptPermissions();
+#endif
 
             await host.RunAsync();
         }

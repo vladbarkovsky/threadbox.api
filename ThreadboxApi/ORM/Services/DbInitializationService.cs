@@ -220,7 +220,6 @@ namespace ThreadboxApi.ORM.Services
             return JsonSerializer.Deserialize<T>(data, JsonSerializerOptions);
         }
 
-        // NOTE: Distributed transaction unsafe.
         private async Task SeedThreadImageAsync(Entities.Thread thread, string fileName)
         {
             var threadImageId = Guid.NewGuid();
@@ -240,7 +239,6 @@ namespace ThreadboxApi.ORM.Services
             await _fileStorage.SaveFileAsync(storagePath, file);
         }
 
-        // NOTE: Distributed transaction unsafe.
         private async Task SeedPostImageAsync(Post post, string fileName)
         {
             var storagePath = @$"PostImages\Post_{post.Id}\{fileName}";

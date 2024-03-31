@@ -1,4 +1,5 @@
-﻿using IdentityServer4.EntityFramework.Options;
+﻿using AutoMapper.Internal;
+using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -7,6 +8,7 @@ using System.Text.Json;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Entities.Interfaces;
 
 namespace ThreadboxApi.ORM.Services
 {
@@ -40,6 +42,7 @@ namespace ThreadboxApi.ORM.Services
 
         public override int SaveChanges()
         {
+            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChanges();
@@ -47,6 +50,7 @@ namespace ThreadboxApi.ORM.Services
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
+            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
@@ -54,6 +58,7 @@ namespace ThreadboxApi.ORM.Services
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
+            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChanges(acceptAllChangesOnSuccess);
@@ -61,6 +66,7 @@ namespace ThreadboxApi.ORM.Services
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChangesAsync(cancellationToken);
@@ -71,6 +77,20 @@ namespace ThreadboxApi.ORM.Services
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             ConfigureQueryFilters(modelBuilder);
+        }
+
+        // TODO: Test if needed.
+        private void SyncRowVersion()
+        {
+            ChangeTracker
+                .Entries<IConsistent>()
+                .ForAll(entry =>
+                {
+                    var propertyEntry = entry.Property(x => x.RowVersion);
+
+                    // Ensuring that the original value will came from the client - not from the database.
+                    propertyEntry.OriginalValue = propertyEntry.CurrentValue;
+                });
         }
 
         private void AddAuditInfo()

@@ -118,6 +118,10 @@ namespace ThreadboxApi
                     {
                         var httpResponseException = exception as HttpResponseException;
                         httpContext.Response.StatusCode = httpResponseException.StatusCode;
+
+                        // TODO: Response body can be added here.
+                        // Investigate NSwag and Angular - we need ability to read exception messages on client.
+                        // TODO: Add localization of exception messages.
                     }
 
                     return Task.CompletedTask;
@@ -199,6 +203,13 @@ namespace ThreadboxApi
                         {
                             IdentityServerConstants.StandardScopes.OpenId,
                             IdentityServerConstants.StandardScopes.Profile,
+
+                            // This scope is required for silent renew through refresh tokens.
+                            // Regardless of this scope client still uses iframe for silent renew.
+                            // TODO: Investigate iframe and refresh token security aspects and choose more appropriate
+                            // silent renew mechanism. If it will be refresh tokens, fix problem described above.
+                            // IdentityServerConstants.StandardScopes.OfflineAccess,
+
                             "threadbox_api.access"
                         },
 
@@ -260,10 +271,6 @@ namespace ThreadboxApi
                     settings.Path = "/api";
                     settings.DocumentPath = "/api/specification.json";
                 });
-
-#if DEBUG
-                Reflection.GenerateTypeScriptPermissions();
-#endif
             }
 
             app.UseExceptionHandler();

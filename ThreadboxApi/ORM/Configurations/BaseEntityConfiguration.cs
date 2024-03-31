@@ -11,6 +11,8 @@ namespace ThreadboxApi.ORM.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.CreatedAt).IsRequired();
+
+            // TODO: Investigate, test.
             builder.Property(x => x.RowVersion).IsRowVersion();
 
             builder.HasOne(x => x.CreatedBy)

@@ -3,9 +3,8 @@
 namespace ThreadboxApi.Application.Common.Mapping.Interfaces
 {
     /// <summary>
-    /// Creates simple mapping from <typeparamref name="TSource"/> without any configuration
+    /// Creates default mapping from <typeparamref name="TSource"/> without any configuration
     /// </summary>
-    /// <typeparam name="TSource"></typeparam>
     public interface IMappedFrom<TSource>
     {
         void Mapping(Profile profile)

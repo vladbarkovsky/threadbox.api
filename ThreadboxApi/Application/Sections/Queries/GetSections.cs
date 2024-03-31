@@ -7,9 +7,9 @@ using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Sections.Queries
 {
-    public class GetSections : IRequestHandler<GetSections.Query, List<SectionDto>>
+    public class GetSections : IRequestHandler<GetSections.Query, List<SectionListDto>>
     {
-        public class Query : IRequest<List<SectionDto>>
+        public class Query : IRequest<List<SectionListDto>>
         { }
 
         private readonly ApplicationDbContext _dbContext;
@@ -21,11 +21,11 @@ namespace ThreadboxApi.Application.Sections.Queries
             _mapper = mapper;
         }
 
-        public async Task<List<SectionDto>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<List<SectionListDto>> Handle(Query request, CancellationToken cancellationToken)
         {
             var dtos = await _dbContext.Sections
                 .AsNoTracking()
-                .ProjectTo<SectionDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<SectionListDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             return dtos;

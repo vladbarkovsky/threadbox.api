@@ -4,7 +4,7 @@ namespace ThreadboxApi.Application.Common.Constants
 {
     public class MediaConstants
     {
-        public static HashSet<string> AllowedImageFormats { get; } = new()
+        public static IReadOnlyCollection<string> AllowedImageFormats { get; } = new HashSet<string>
         {
             MediaTypeNames.Image.Jpeg,
             MediaTypeNames.Image.Gif,
