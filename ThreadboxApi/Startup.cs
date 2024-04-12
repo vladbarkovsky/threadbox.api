@@ -87,7 +87,7 @@ namespace ThreadboxApi
                 {
                     settings.Title = "Threadbox API specification";
 
-                    // Overrride default name generation patterns.
+                    // Overriding default name generation patterns.
                     settings.SchemaNameGenerator = new SchemaNameGenerator();
 
                     // JWT authorization (used for Swagger UI).

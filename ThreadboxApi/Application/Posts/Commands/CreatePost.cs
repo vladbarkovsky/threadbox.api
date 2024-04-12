@@ -87,7 +87,10 @@ namespace ThreadboxApi.Application.Posts.Commands
             var filePath = $"Images/PostImages/{postId}/{formFile.FileName}";
 
             using var memoryStream = new MemoryStream();
+
+            // TODO: Use async version of method.
             formFile.CopyTo(memoryStream);
+
             var data = memoryStream.ToArray();
 
             await _fileStorage.SaveFileAsync(filePath, data);

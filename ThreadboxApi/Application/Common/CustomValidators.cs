@@ -54,8 +54,8 @@ namespace ThreadboxApi.Application.Common
         public static IRuleBuilderOptions<T, string> ValidateTripcodeString<T>(this IRuleBuilder<T, string> builder)
         {
             return builder
-                // Regex: 1-128 ASCII characters (33-126) + '#' + 8-128 ASCII characters (33-126).
-                .Matches(new Regex("^[!-~]{1,128}#[!-~]{8,128}$"))
+                // Regex: 1-128 ASCII characters (codes 33-34 and 36-126 - except '#') + '#' + 8-128 ASCII characters (codes 33-126).
+                .Matches(new Regex("^[!-\"\\$-~]{1,128}#[!-~]{8,128}$"))
                 .WithMessage("Invalid tripcode string format.");
         }
     }
