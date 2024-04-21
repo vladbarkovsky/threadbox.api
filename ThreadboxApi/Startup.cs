@@ -110,21 +110,20 @@ namespace ThreadboxApi
                 options.AllowStatusCode404Response = true;
 
                 /// NOTE: Must be declared through <see cref="ExceptionHandlerOptions.ExceptionHandler"/> - otherwise it won't work.
-                options.ExceptionHandler = httpContext =>
+                options.ExceptionHandler = async httpContext =>
                 {
                     var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
 
-                    if (exception is HttpResponseException)
+                    if (exception is not HttpResponseException)
                     {
-                        var httpResponseException = exception as HttpResponseException;
-                        httpContext.Response.StatusCode = httpResponseException.StatusCode;
-
-                        // TODO: Response body can be added here.
-                        // Investigate NSwag and Angular - we need ability to read exception messages on client.
-                        // TODO: Add localization of exception messages.
+                        return;
                     }
 
-                    return Task.CompletedTask;
+                    var httpResponseException = exception as HttpResponseException;
+                    httpContext.Response.StatusCode = httpResponseException.StatusCode;
+
+                    // TODO: Add localization of exception messages.
+                    await httpContext.Response.WriteAsync(httpResponseException.Message);
                 };
             });
 
