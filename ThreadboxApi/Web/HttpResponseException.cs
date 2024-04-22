@@ -1,4 +1,4 @@
-﻿namespace ThreadboxApi.Application.Common
+﻿namespace ThreadboxApi.Web
 {
     public class HttpResponseException : Exception
     {

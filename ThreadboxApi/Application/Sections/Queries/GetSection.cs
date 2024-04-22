@@ -3,10 +3,9 @@ using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
-using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Sections.Models;
 using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Application.Sections.Queries
 {

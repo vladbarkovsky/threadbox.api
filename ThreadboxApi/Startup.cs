@@ -14,11 +14,11 @@ using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Web;
 using ThreadboxApi.Web.ApiSpecification;
 using ThreadboxApi.Web.PermissionHandling;
 
