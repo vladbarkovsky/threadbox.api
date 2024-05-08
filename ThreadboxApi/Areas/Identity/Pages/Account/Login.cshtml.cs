@@ -43,6 +43,7 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
                 throw HttpResponseException.BadRequest;
             }
 
+            // FIXME: If user clicks "Back" button in browser after signing in, he gets "Bad Request" text. 
             if (_signInManager.IsSignedIn(User))
             {
                 throw HttpResponseException.BadRequest;
