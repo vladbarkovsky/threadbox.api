@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Net.Http.Headers;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.IdentityModel.Tokens.Jwt;
@@ -76,7 +77,7 @@ namespace ThreadboxApi
                         // Access-Control-Allow-Methods header content.
                         // Source: https://stackoverflow.com/a/44385327.
                         .WithMethods("PUT", "DELETE")
-                        .WithHeaders("Authorization", "Content-Type")
+                        .WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
                         .Build();
                 });
             });

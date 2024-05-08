@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Net.Http.Headers;
 
 namespace ThreadboxApi.Web
 {
@@ -9,7 +10,7 @@ namespace ThreadboxApi.Web
     {
         public override void OnActionExecuted(ActionExecutedContext context)
         {
-            context.HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", new string[] { "Content-Disposition" });
+            context.HttpContext.Response.Headers.Add(HeaderNames.AccessControlExposeHeaders, new string[] { HeaderNames.ContentDisposition });
         }
     }
 }
