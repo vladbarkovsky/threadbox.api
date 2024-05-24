@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.Application.Threads.Commands
 {
@@ -34,7 +34,7 @@ namespace ThreadboxApi.Application.Threads.Commands
                 .Where(x => x.Id == request.ThreadId)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(thread);
+            HttpStatusException.ThrowNotFoundIfNull(thread);
 
             thread.Deleted = true;
             _dbContext.Threads.Update(thread);

@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {
@@ -38,7 +38,7 @@ namespace ThreadboxApi.Application.Boards.Commands
                 .Where(x => x.Id == request.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(board);
+            HttpStatusException.ThrowNotFoundIfNull(board);
 
             board.Title = request.Title;
             board.Description = request.Description;

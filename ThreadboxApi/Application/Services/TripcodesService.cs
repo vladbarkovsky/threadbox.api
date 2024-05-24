@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.Application.Services
 {
@@ -22,7 +22,6 @@ namespace ThreadboxApi.Application.Services
         /// Otherwise returns existing tripcode if its value is equal to specified
         /// in <paramref name="tripcodeString"/>.
         /// </summary>
-        /// <exception cref="HttpResponseException"></exception>
         public async Task<Tripcode> ProcessTripcodeStringAsync(string tripcodeString, CancellationToken cancellationToken)
         {
             var fragments = tripcodeString.Split('#');
@@ -49,7 +48,7 @@ namespace ThreadboxApi.Application.Services
 
             if (!Hash(value, tripcode.Salt).SequenceEqual(tripcode.Hash))
             {
-                throw new HttpResponseException("Incorrect tripcode value.");
+                throw new HttpStatusException("Incorrect tripcode value.");
             }
 
             return tripcode;

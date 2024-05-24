@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {
@@ -32,7 +32,9 @@ namespace ThreadboxApi.Application.Boards.Commands
         {
             var board = await _dbContext.Boards
                 .Where(x => x.Id == request.BoardId)
-                .SingleOrDefaultAsync(cancellationToken) ?? throw HttpResponseException.NotFound;
+                .SingleOrDefaultAsync(cancellationToken);
+
+            HttpStatusException.ThrowNotFoundIfNull(board);
 
             board.Deleted = true;
 

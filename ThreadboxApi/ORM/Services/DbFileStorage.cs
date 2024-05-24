@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.ORM.Services
 {
@@ -22,7 +22,7 @@ namespace ThreadboxApi.ORM.Services
                 .Select(x => x.Data)
                 .SingleOrDefaultAsync();
 
-            HttpResponseException.ThrowNotFoundIfNull(data);
+            HttpStatusException.ThrowNotFoundIfNull(data);
 
             return data;
         }
@@ -46,7 +46,7 @@ namespace ThreadboxApi.ORM.Services
                 .Where(x => x.Path == path)
                 .SingleOrDefaultAsync();
 
-            HttpResponseException.ThrowNotFoundIfNull(dbFile);
+            HttpStatusException.ThrowNotFoundIfNull(dbFile);
             _dbContext.DbFiles.Remove(dbFile);
         }
     }

@@ -7,7 +7,7 @@ using ThreadboxApi.Application.Files.Models;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.Application.Files.Queries
 {
@@ -46,7 +46,7 @@ namespace ThreadboxApi.Application.Files.Queries
                 .ThenInclude(x => x.FileInfo)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(thread);
+            HttpStatusException.ThrowNotFoundIfNull(thread);
 
             var fileInfos = thread.ThreadImages.Select(x => x.FileInfo);
             var files = new List<byte[]>();

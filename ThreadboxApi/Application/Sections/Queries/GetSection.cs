@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Sections.Models;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.Exceptions;
 
 namespace ThreadboxApi.Application.Sections.Queries
 {
@@ -46,7 +46,7 @@ namespace ThreadboxApi.Application.Sections.Queries
                 .ProjectTo<SectionDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
 
-            HttpResponseException.ThrowNotFoundIfNull(dto);
+            HttpStatusException.ThrowNotFoundIfNull(dto);
             return dto;
         }
     }

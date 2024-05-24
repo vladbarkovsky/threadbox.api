@@ -19,8 +19,8 @@ using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
 using ThreadboxApi.Web.ApiSpecification;
+using ThreadboxApi.Web.Exceptions;
 using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi
@@ -115,16 +115,19 @@ namespace ThreadboxApi
                 {
                     var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
 
-                    if (exception is not HttpResponseException)
+                    if (exception is not HttpStatusException)
                     {
                         return;
                     }
 
-                    var httpResponseException = exception as HttpResponseException;
-                    httpContext.Response.StatusCode = httpResponseException.StatusCode;
+                    var httpStatusException = exception as HttpStatusException;
+                    httpContext.Response.StatusCode = httpStatusException.StatusCode;
 
-                    // TODO: Add localization of exception messages.
-                    await httpContext.Response.WriteAsync(httpResponseException.Message);
+                    if (exception is HttpResponseException)
+                    {
+                        // TODO: Add localization of exception messages.
+                        await httpContext.Response.WriteAsync(httpStatusException.Message);
+                    }
                 };
             });
 
