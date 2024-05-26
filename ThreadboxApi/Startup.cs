@@ -115,18 +115,15 @@ namespace ThreadboxApi
                 {
                     var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
 
-                    if (exception is not HttpStatusException)
+                    if (exception is HttpStatusException)
                     {
-                        return;
-                    }
+                        httpContext.Response.StatusCode = (exception as HttpStatusException).StatusCode;
 
-                    var httpStatusException = exception as HttpStatusException;
-                    httpContext.Response.StatusCode = httpStatusException.StatusCode;
-
-                    if (exception is HttpResponseException)
-                    {
-                        // TODO: Add localization of exception messages.
-                        await httpContext.Response.WriteAsync(httpStatusException.Message);
+                        if (exception is HttpResponseException)
+                        {
+                            // TODO: Add localization of exception messages.
+                            await httpContext.Response.WriteAsync((exception as HttpResponseException).Response);
+                        }
                     }
                 };
             });

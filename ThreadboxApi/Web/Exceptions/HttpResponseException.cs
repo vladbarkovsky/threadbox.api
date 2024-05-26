@@ -2,7 +2,14 @@
 {
     public class HttpResponseException : HttpStatusException
     {
-        public HttpResponseException(string message, int statusCode = StatusCodes.Status400BadRequest) : base(message, statusCode)
-        { }
+        public string Response { get; }
+
+        public HttpResponseException(
+            string message,
+            string response,
+            int statusCode = StatusCodes.Status400BadRequest) : base(message, statusCode)
+        {
+            Response = response;
+        }
     }
 }
