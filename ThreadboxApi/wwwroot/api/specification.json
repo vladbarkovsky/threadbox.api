@@ -376,6 +376,43 @@
         }
       }
     },
+    "/api/Posts/DeletePost": {
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "Posts_DeletePost",
+        "parameters": [
+          {
+            "name": "PostId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Sections/GetSection": {
       "get": {
         "tags": [
