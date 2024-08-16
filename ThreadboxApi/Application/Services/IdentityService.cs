@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Identity.Permissions;
-using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.Services

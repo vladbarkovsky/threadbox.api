@@ -15,8 +15,8 @@ using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ApiSpecification;
@@ -256,8 +256,9 @@ namespace ThreadboxApi
                 configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             });
 
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddFluentValidationAutoValidation();
+            services
+                .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+                .AddFluentValidationAutoValidation();
         }
 
         public void Configure(IApplicationBuilder app)

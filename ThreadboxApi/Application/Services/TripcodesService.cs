@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.Application.Common;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.Exceptions;

@@ -28,6 +28,7 @@ namespace ThreadboxApi.Application.Threads.Commands
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.BoardId).NotEmpty();
+
                     RuleFor(x => x.TripcodeString)
                         .ValidateTripcodeString()
                         .When(x => !string.IsNullOrEmpty(x.TripcodeString));

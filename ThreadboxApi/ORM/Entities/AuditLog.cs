@@ -3,7 +3,6 @@
     public class AuditLog
     {
         public Guid Id { get; set; }
-
         public string EntityPrimaryKeys { get; set; }
         public string EntityName { get; set; }
         public AuditLogOperation Operation { get; set; }

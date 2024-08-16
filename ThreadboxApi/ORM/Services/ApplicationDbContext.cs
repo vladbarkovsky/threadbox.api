@@ -84,6 +84,7 @@ namespace ThreadboxApi.ORM.Services
         {
             ChangeTracker
                 .Entries<IConsistent>()
+                .AsParallel()
                 .ForAll(entry =>
                 {
                     var propertyEntry = entry.Property(x => x.RowVersion);
@@ -121,7 +122,6 @@ namespace ThreadboxApi.ORM.Services
 
         private void CreateAuditLogs()
         {
-            ChangeTracker.DetectChanges();
             var entries = ChangeTracker
                 .Entries()
                 .Where(x =>
@@ -191,6 +191,11 @@ namespace ThreadboxApi.ORM.Services
             }
         }
 
+        public void ConfigureQueryFilterForDeletedEntities<TEntity>(ModelBuilder modelBuilder) where TEntity : class, IDeletable
+        {
+            modelBuilder.Entity<TEntity>().HasQueryFilter(x => !x.Deleted);
+        }
+
         private void ConfigureQueryFilters(ModelBuilder modelBuilder)
         {
             var entityTypes = modelBuilder.Model.GetEntityTypes().Select(x => x.ClrType);
@@ -203,12 +208,5 @@ namespace ThreadboxApi.ORM.Services
                 method.Invoke(this, new object[] { modelBuilder });
             }
         }
-
-        public void ConfigureQueryFilterForDeletedEntities<TEntity>(ModelBuilder modelBuilder) where TEntity : class, IDeletable
-        {
-            modelBuilder.Entity<TEntity>().HasQueryFilter(x => !x.Deleted);
-        }
-
-        /// TODO: Default ordering by <see cref="IAuditable.CreatedAt"/>?
     }
 }

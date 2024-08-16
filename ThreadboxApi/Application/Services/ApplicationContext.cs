@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.Application.Common;
 
 namespace ThreadboxApi.Application.Services
 {
