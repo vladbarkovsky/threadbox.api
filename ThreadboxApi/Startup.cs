@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Reflection;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.Configuration;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web;
 
