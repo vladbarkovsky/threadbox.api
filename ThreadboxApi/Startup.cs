@@ -3,9 +3,9 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Reflection;
+using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services.Interfaces;
-using ThreadboxApi.Configuration;
+using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web;
 

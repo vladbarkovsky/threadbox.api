@@ -1,4 +1,4 @@
-﻿namespace ThreadboxApi.Application.Services.Interfaces
+﻿namespace ThreadboxApi.Application.Common
 {
     public interface ITransientService
     { }

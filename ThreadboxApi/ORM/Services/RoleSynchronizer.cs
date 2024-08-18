@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Identity.Permissions;
-using ThreadboxApi.Application.Services.Interfaces;
 
 namespace ThreadboxApi.ORM.Services
 {

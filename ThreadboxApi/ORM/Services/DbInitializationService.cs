@@ -14,7 +14,7 @@ using ThreadboxApi.ORM.Seeding;
 
 namespace ThreadboxApi.ORM.Services
 {
-    public class DbInitializationService : ITransientService
+    public class DbInitializationService : IScopedService
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;

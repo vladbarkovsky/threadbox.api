@@ -2,18 +2,23 @@
 
 namespace ThreadboxApi.Application.Common
 {
-    public class ContentType
+    public static class ContentType
     {
+        private static FileExtensionContentTypeProvider FileExtensionContentTypeProvider { get; }
+
+        static ContentType()
+        {
+            FileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
+        }
+
         public static string Get(string fileName)
         {
-            var contentTypeProvider = new FileExtensionContentTypeProvider();
-
-            if (!contentTypeProvider.TryGetContentType(fileName, out var contentType))
+            if (FileExtensionContentTypeProvider.TryGetContentType(fileName, out var contentType))
             {
-                throw new InvalidOperationException($"Cannot get Content-Type for file {fileName}");
+                return contentType;
             }
 
-            return contentType;
+            throw new InvalidOperationException($"Cannot get Content-Type for file {fileName}");
         }
     }
 }
