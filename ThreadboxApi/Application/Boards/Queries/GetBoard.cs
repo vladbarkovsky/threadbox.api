@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web.Exceptions;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Application.Boards.Queries
 {
@@ -39,7 +39,7 @@ namespace ThreadboxApi.Application.Boards.Queries
                 .Where(x => x.Id == request.BoardId)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpStatusException.ThrowNotFoundIfNull(board);
+            HttpResponseException.ThrowNotFoundIfNull(board);
 
             var dto = _mapper.Map<BoardDto>(board);
             return dto;

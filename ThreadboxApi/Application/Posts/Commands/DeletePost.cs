@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web.Exceptions;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Application.Posts.Commands
 {
@@ -36,7 +36,7 @@ namespace ThreadboxApi.Application.Posts.Commands
                 .ThenInclude(x => x.FileInfo)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpStatusException.ThrowNotFoundIfNull(post);
+            HttpResponseException.ThrowNotFoundIfNull(post);
 
             post.Deleted = true;
 

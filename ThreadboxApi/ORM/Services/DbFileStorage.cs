@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.Web.Exceptions;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.ORM.Services
 {
@@ -22,14 +22,12 @@ namespace ThreadboxApi.ORM.Services
                 .Select(x => x.Data)
                 .SingleOrDefaultAsync();
 
-            HttpStatusException.ThrowNotFoundIfNull(data);
+            HttpResponseException.ThrowNotFoundIfNull(data);
 
             return data;
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task SaveFileAsync(string path, byte[] data)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public Task SaveFileAsync(string path, byte[] data)
         {
             var dbFile = new DbFile
             {
@@ -38,6 +36,7 @@ namespace ThreadboxApi.ORM.Services
             };
 
             _dbContext.DbFiles.Add(dbFile);
+            return Task.CompletedTask;
         }
 
         public async Task DeleteFileAsync(string path)
@@ -46,7 +45,7 @@ namespace ThreadboxApi.ORM.Services
                 .Where(x => x.Path == path)
                 .SingleOrDefaultAsync();
 
-            HttpStatusException.ThrowNotFoundIfNull(dbFile);
+            HttpResponseException.ThrowNotFoundIfNull(dbFile);
             _dbContext.DbFiles.Remove(dbFile);
         }
     }

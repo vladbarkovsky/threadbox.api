@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web.Exceptions;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Application.Files.Queries
 {
@@ -39,7 +39,7 @@ namespace ThreadboxApi.Application.Files.Queries
                 .Where(x => x.Id == request.FileInfoId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            HttpStatusException.ThrowNotFoundIfNull(fileInfo);
+            HttpResponseException.ThrowNotFoundIfNull(fileInfo);
             var data = await _fileStorage.GetFileAsync(fileInfo.Path);
 
             return new FileContentResult(data, fileInfo.ContentType)

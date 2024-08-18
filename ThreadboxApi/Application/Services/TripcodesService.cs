@@ -48,7 +48,7 @@ namespace ThreadboxApi.Application.Services
 
             if (!Hash(value, tripcode.Salt).SequenceEqual(tripcode.Hash))
             {
-                throw new HttpResponseException("Incorrect tripcode value.", "Incorrect tripcode value.");
+                throw new HttpResponseException("Incorrect tripcode value.");
             }
 
             return tripcode;

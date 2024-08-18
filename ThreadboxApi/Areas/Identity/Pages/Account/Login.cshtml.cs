@@ -40,13 +40,13 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
-                throw new HttpStatusException("Return URL not specified.");
+                throw new HttpResponseException("Return URL not specified.");
             }
 
             // FIXME: If user clicks "Back" button in browser after signing in, he gets "Bad Request" text.
             if (_signInManager.IsSignedIn(User))
             {
-                throw new HttpStatusException("User is already authorized.");
+                throw new HttpResponseException("User is already authorized.");
             }
         }
 
@@ -54,12 +54,12 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
-                throw new HttpStatusException("Return URL not specified.");
+                throw new HttpResponseException("Return URL not specified.");
             }
 
             if (_signInManager.IsSignedIn(User))
             {
-                throw new HttpStatusException("User is already authorized.");
+                throw new HttpResponseException("User is already authorized.");
             }
 
             var result = await _signInManager.PasswordSignInAsync(
