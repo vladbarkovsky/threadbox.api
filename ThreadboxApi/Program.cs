@@ -22,7 +22,7 @@ namespace ThreadboxApi
                         .WriteTo.File(
                             restrictedToMinimumLevel: LogEventLevel.Warning,
                             path: "Logs/.log",
-                            formatter: new MessageTemplateTextFormatter("[{Timestamp:HH:mm:ss.fff} {Level:u3}] {SourceContext}: {Message}{NewLine}{Exception}"),
+                            formatter: new MessageTemplateTextFormatter("[{Timestamp:HH:mm:ss.fff} {Level:u3}] {TraceId} {SourceContext}: {Message}{NewLine}{Exception}"),
                             rollingInterval: RollingInterval.Day,
                             retainedFileCountLimit: 7)
                         .WriteTo.Console()

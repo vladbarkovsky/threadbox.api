@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Areas.Identity.Pages.Account
 {

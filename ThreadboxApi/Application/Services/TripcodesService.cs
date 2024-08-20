@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Services
 {

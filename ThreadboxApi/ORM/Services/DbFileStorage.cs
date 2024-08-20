@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.ORM.Services
 {

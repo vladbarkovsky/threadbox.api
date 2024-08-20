@@ -24,6 +24,8 @@ namespace ThreadboxApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            ErrorHandlingStartup.ConfigureServices(services);
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(_configuration.GetConnectionString(AppSettings.ConnectionStrings.Database));
@@ -68,9 +70,10 @@ namespace ThreadboxApi
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseMiddleware<TraceIdLoggingMidleware>();
+            ErrorHandlingStartup.Configure(app);
             SecurityStartup.Configure(app, _webHostEnvironment);
             NSwagStartup.Configure(app, _webHostEnvironment);
-            app.UseMiddleware<ProblemMiddleware>();
             app.UseRouting();
             app.UseHealthChecks("/health");
             IdentityStartup.Configure(app);
