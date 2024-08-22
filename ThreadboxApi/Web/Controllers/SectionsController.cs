@@ -3,7 +3,6 @@ using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Application.Sections.Commands;
 using ThreadboxApi.Application.Sections.Models;
 using ThreadboxApi.Application.Sections.Queries;
-using ThreadboxApi.Web.ErrorHandling;
 using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Web.Controllers
@@ -19,9 +18,7 @@ namespace ThreadboxApi.Web.Controllers
         [HttpGet("[action]")]
         public async Task<ActionResult<List<SectionListDto>>> GetSections()
         {
-            //return Problem();
-            throw new HttpResponseException("Aboba", StatusCodes.Status400BadRequest);
-            //return await Mediator.Send(new GetSections.Query());
+            return await Mediator.Send(new GetSections.Query());
         }
 
         [HttpPost("[action]")]

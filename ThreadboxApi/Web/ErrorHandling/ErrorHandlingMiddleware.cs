@@ -11,7 +11,7 @@ namespace ThreadboxApi.Web.ErrorHandling
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, ProblemDetailsService problemDetailsService)
         {
             await _next(context);
 
@@ -22,8 +22,7 @@ namespace ThreadboxApi.Web.ErrorHandling
 
             if (context.Response.StatusCode > 399 && context.Response.StatusCode < 600)
             {
-                var problemDetails = ErrorHandlingExtensions.GetProblemDetails(context.Response.StatusCode);
-                problemDetails.Instance = context.Request.Path + context.Request.QueryString;
+                var problemDetails = problemDetailsService.GetProblemDetails(context.Response.StatusCode);
                 context.Response.ContentType = "application/problem+json";
                 await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
                 return;

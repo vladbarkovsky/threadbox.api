@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Text.Json;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -15,26 +16,29 @@ namespace ThreadboxApi.Configuration
 
                 options.ExceptionHandler = async httpContext =>
                 {
+                    var problemDetailsService = httpContext.RequestServices.GetRequiredService<ProblemDetailsService>();
                     var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
+
                     ProblemDetails problemDetails;
 
                     if (exception is HttpResponseException httpResponseException)
                     {
                         httpContext.Response.StatusCode = httpResponseException.StatusCode;
-                        problemDetails = ErrorHandlingExtensions.GetProblemDetails(httpResponseException.StatusCode);
+                        problemDetails = problemDetailsService.GetProblemDetails(httpResponseException.StatusCode);
                         problemDetails.Detail = httpResponseException.Message;
                     }
                     else
                     {
                         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        problemDetails = ErrorHandlingExtensions.GetProblemDetails(httpContext.Response.StatusCode);
+                        problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status500InternalServerError);
                     }
 
-                    problemDetails.Instance = httpContext.Request.Path + httpContext.Request.QueryString;
                     httpContext.Response.ContentType = "application/problem+json";
                     await httpContext.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
                 };
             });
+
+            services.AddSingleton<ProblemDetailsFactory, ApplicationProblemDetailsFactory>();
         }
 
         public static void Configure(IApplicationBuilder app)

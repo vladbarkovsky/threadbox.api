@@ -14,7 +14,15 @@ namespace ThreadboxApi.Web
 
         public async Task InvokeAsync(HttpContext context)
         {
-            using (LogContext.PushProperty("TraceId", Activity.Current.Id))
+            var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
+
+            if (traceId == null)
+            {
+                await _next(context);
+                return;
+            }
+
+            using (LogContext.PushProperty("TraceId", traceId))
             {
                 await _next(context);
             }
