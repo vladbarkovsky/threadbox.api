@@ -32,7 +32,7 @@ namespace ThreadboxApi.Web.ErrorHandling
 
             if (traceId != null)
             {
-                problemDetails.Extensions.Add("traceId", Activity.Current.Id);
+                problemDetails.Extensions.Add("traceId", traceId);
             }
 
             return problemDetails;
