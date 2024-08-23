@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 
 namespace ThreadboxApi.Web.ErrorHandling
 {
@@ -53,13 +52,7 @@ namespace ThreadboxApi.Web.ErrorHandling
 
             statusCode ??= 400;
 
-            var problemDetails = new ValidationProblemDetails(modelStateDictionary)
-            {
-                Status = statusCode,
-                Type = type,
-                Detail = detail,
-                Instance = instance,
-            };
+            var problemDetails = _problemDetailsService.GetValidationProblemDetails(statusCode.Value, modelStateDictionary);
 
             if (title != null)
             {
@@ -67,26 +60,7 @@ namespace ThreadboxApi.Web.ErrorHandling
                 problemDetails.Title = title;
             }
 
-            ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
-
             return problemDetails;
-        }
-
-        private void ApplyProblemDetailsDefaults(HttpContext httpContext, ProblemDetails problemDetails, int statusCode)
-        {
-            problemDetails.Status ??= statusCode;
-
-            if (_options.ClientErrorMapping.TryGetValue(statusCode, out var clientErrorData))
-            {
-                problemDetails.Title ??= clientErrorData.Title;
-                problemDetails.Type ??= clientErrorData.Link;
-            }
-
-            var traceId = Activity.Current?.Id ?? httpContext?.TraceIdentifier;
-            if (traceId != null)
-            {
-                problemDetails.Extensions["traceId"] = traceId;
-            }
         }
     }
 }

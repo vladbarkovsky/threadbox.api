@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -25,7 +26,7 @@ namespace ThreadboxApi.Configuration
                     {
                         httpContext.Response.StatusCode = httpResponseException.StatusCode;
                         problemDetails = problemDetailsService.GetProblemDetails(httpResponseException.StatusCode);
-                        problemDetails.Detail = httpResponseException.Message;
+                        problemDetails.Detail = HtmlEncoder.Default.Encode(httpResponseException.Message);
                     }
                     else
                     {
@@ -33,7 +34,7 @@ namespace ThreadboxApi.Configuration
                         problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status500InternalServerError);
                     }
 
-                    httpContext.Response.ContentType = "application/problem+json";
+                    httpContext.Response.ContentType = "application/problem+json; charset=utf-8";
                     await httpContext.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
                 };
             });

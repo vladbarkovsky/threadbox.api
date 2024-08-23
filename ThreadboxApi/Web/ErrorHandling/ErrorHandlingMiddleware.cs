@@ -23,7 +23,7 @@ namespace ThreadboxApi.Web.ErrorHandling
             if (context.Response.StatusCode > 399 && context.Response.StatusCode < 600)
             {
                 var problemDetails = problemDetailsService.GetProblemDetails(context.Response.StatusCode);
-                context.Response.ContentType = "application/problem+json";
+                context.Response.ContentType = "application/problem+json; charset=utf-8";
                 await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
                 return;
             }
