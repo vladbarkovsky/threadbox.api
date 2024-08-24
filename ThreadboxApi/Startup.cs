@@ -72,7 +72,7 @@ namespace ThreadboxApi
         {
             app.UseMiddleware<TraceIdLoggingMidleware>();
             ErrorHandlingStartup.Configure(app);
-            SecurityStartup.Configure(app, _webHostEnvironment);
+            SecurityStartup.Configure(app, _configuration, _webHostEnvironment);
             NSwagStartup.Configure(app, _webHostEnvironment);
             app.UseRouting();
             app.UseHealthChecks("/health");

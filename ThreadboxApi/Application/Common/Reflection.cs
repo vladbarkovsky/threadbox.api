@@ -36,7 +36,7 @@ namespace ThreadboxApi.Application.Common
         /// </summary>
         public static void GenerateTypeScriptPermissions()
         {
-            using var writer = new StreamWriter($@"..\..\threadbox.front\api-permissions.ts");
+            using var writer = new StreamWriter(@"..\..\threadbox.front\api-permissions.ts");
 
             writer.WriteLine(
                 "/* tslint:disable */" + "\r\n" +
