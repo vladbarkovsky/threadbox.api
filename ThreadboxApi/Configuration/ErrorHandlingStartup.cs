@@ -26,7 +26,7 @@ namespace ThreadboxApi.Configuration
                     {
                         httpContext.Response.StatusCode = httpResponseException.StatusCode;
                         problemDetails = problemDetailsService.GetProblemDetails(httpResponseException.StatusCode);
-                        problemDetails.Detail = HtmlEncoder.Default.Encode(httpResponseException.Message);
+                        problemDetails.Detail = httpResponseException.Message;
                     }
                     else
                     {
