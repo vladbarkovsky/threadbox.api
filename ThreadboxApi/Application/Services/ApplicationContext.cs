@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using ThreadboxApi.Application.Common;
 
 namespace ThreadboxApi.Application.Services
@@ -22,15 +22,6 @@ namespace ThreadboxApi.Application.Services
             {
                 var request = _httpContextAccessor.HttpContext.Request;
                 return $"{request.Scheme}://{request.Host.ToUriComponent()}";
-            }
-        }
-
-        public string RequestInstance
-        {
-            get
-            {
-                var request = _httpContextAccessor.HttpContext.Request;
-                return request.Path + request.QueryString;
             }
         }
 

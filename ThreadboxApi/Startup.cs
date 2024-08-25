@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Reflection;
@@ -24,6 +25,7 @@ namespace ThreadboxApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            LocalizationStartup.ConfigureServices(services);
             ErrorHandlingStartup.ConfigureServices(services);
 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -50,6 +52,16 @@ namespace ThreadboxApi
 
             services.AddHttpContextAccessor();
             SecurityStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
+
+            services.AddControllers(options =>
+            {
+                var jsonInputFormatter = options.InputFormatters
+                    .OfType<SystemTextJsonInputFormatter>()
+                    .Single();
+
+                jsonInputFormatter.SupportedMediaTypes.Add("application/csp-report");
+            });
+
             NSwagStartup.ConfigureServices(services, _webHostEnvironment);
             IdentityStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
 
@@ -70,6 +82,7 @@ namespace ThreadboxApi
 
         public void Configure(IApplicationBuilder app)
         {
+            LocalizationStartup.Configure(app);
             app.UseMiddleware<TraceIdLoggingMidleware>();
             ErrorHandlingStartup.Configure(app);
             SecurityStartup.Configure(app, _configuration, _webHostEnvironment);

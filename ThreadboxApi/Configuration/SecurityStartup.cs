@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Net.Http.Headers;
+﻿using Microsoft.Net.Http.Headers;
 using ThreadboxApi.Application.Common.Constants;
 
 namespace ThreadboxApi.Configuration
@@ -43,19 +42,30 @@ namespace ThreadboxApi.Configuration
             app.UseCsp(options =>
             {
                 options
+                    .DefaultSources(s => s.None())
                     .BlockAllMixedContent()
-                    .StyleSources(s => s.Self().UnsafeInline())
-                    .FontSources(s => s.Self())
-                    .ImageSources(s => s.Self())
+                    // Razor styles, Swagger UI styles
+                    .StyleSources(s => s.Self().CustomSources("sha256-pyVPiLlnqL9OWVoJPs/E6VVF5hBecRzM2gBiarnaqAo="))
+                    // Images for Razor, images for Swagger UI
+                    .ImageSources(s => s.Self().CustomSources("data:"))
+                    // Sending forms to server from Identity UI, sending forms to client from Identity UI
                     .FormActions(s => s.Self().CustomSources(configuration[AppSettings.ClientBaseUrl]))
-                    .FrameSources(s => s.Self())
-                    .FrameAncestors(s => s.Self().CustomSources(configuration[AppSettings.ClientBaseUrl]))
-                    .ScriptSources(s => s.Self().CustomSources("sha256-fa5rxHhZ799izGRP38+h4ud5QXNT0SFaFlh4eqDumBI="));
+                    // iframe on client for authorization silent renew
+                    .FrameAncestors(s => s.CustomSources(configuration[AppSettings.ClientBaseUrl]))
+
+                    .ScriptSources(s => s.Self().CustomSources(
+                        // Script in iframe on client for authorization silent renew
+                        "sha256-fa5rxHhZ799izGRP38+h4ud5QXNT0SFaFlh4eqDumBI=",
+                        // Script in Swagger UI
+                        "sha256-jYwH+ovNhdZXLQSoSAgcVH3aaKh7DqPa3Z3LJO3icXE="));
 
                 if (webHostEnvironment.IsDevelopment())
                 {
-                    options.DefaultSources(s => s.Self().CustomSources("ws://localhost:*", "http://localhost:*"));
+                    // Browser Link, Live Reload, etc.
+                    options.ConnectSources(s => s.CustomSources("ws://localhost:*", "http://localhost:*"));
                 }
+
+                options.ReportUris(s => s.Uris("/api/Csp/CreateCspReport"));
             });
 
             if (!webHostEnvironment.IsDevelopment())

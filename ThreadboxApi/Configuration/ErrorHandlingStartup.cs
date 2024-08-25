@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -15,27 +14,27 @@ namespace ThreadboxApi.Configuration
             {
                 options.AllowStatusCode404Response = true;
 
-                options.ExceptionHandler = async httpContext =>
+                options.ExceptionHandler = async context =>
                 {
-                    var problemDetailsService = httpContext.RequestServices.GetRequiredService<ProblemDetailsService>();
-                    var exception = httpContext.Features.Get<IExceptionHandlerFeature>().Error;
+                    var problemDetailsService = context.RequestServices.GetRequiredService<ProblemDetailsService>();
+                    var exception = context.Features.Get<IExceptionHandlerFeature>().Error;
 
                     ProblemDetails problemDetails;
 
                     if (exception is HttpResponseException httpResponseException)
                     {
-                        httpContext.Response.StatusCode = httpResponseException.StatusCode;
+                        context.Response.StatusCode = httpResponseException.StatusCode;
                         problemDetails = problemDetailsService.GetProblemDetails(httpResponseException.StatusCode);
                         problemDetails.Detail = httpResponseException.Message;
                     }
                     else
                     {
-                        httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                         problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status500InternalServerError);
                     }
 
-                    httpContext.Response.ContentType = "application/problem+json; charset=utf-8";
-                    await httpContext.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
+                    context.Response.ContentType = "application/problem+json; charset=utf-8";
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
                 };
             });
 
