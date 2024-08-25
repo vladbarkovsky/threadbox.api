@@ -4,7 +4,7 @@
     {
         public class ConnectionStrings
         {
-            public const string Development = "Development";
+            public const string Database = "Database";
         }
 
         public const string ClientBaseUrl = "ClientBaseUrl";

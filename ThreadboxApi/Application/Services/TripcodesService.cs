@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.Application.Common;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Services
 {
@@ -22,7 +22,6 @@ namespace ThreadboxApi.Application.Services
         /// Otherwise returns existing tripcode if its value is equal to specified
         /// in <paramref name="tripcodeString"/>.
         /// </summary>
-        /// <exception cref="HttpResponseException"></exception>
         public async Task<Tripcode> ProcessTripcodeStringAsync(string tripcodeString, CancellationToken cancellationToken)
         {
             var fragments = tripcodeString.Split('#');

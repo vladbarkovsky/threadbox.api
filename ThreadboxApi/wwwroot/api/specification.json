@@ -158,6 +158,39 @@
         }
       }
     },
+    "/api/Csp/CreateCspReport": {
+      "post": {
+        "tags": [
+          "Csp"
+        ],
+        "operationId": "Csp_CreateCspReport",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCspReportCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Files/GetFile": {
       "get": {
         "tags": [
@@ -374,6 +407,43 @@
             }
           }
         }
+      }
+    },
+    "/api/Posts/DeletePost": {
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "operationId": "Posts_DeletePost",
+        "parameters": [
+          {
+            "name": "PostId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sections/GetSection": {
@@ -695,6 +765,54 @@
           "description": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "CreateCspReportCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "csp-report": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CspReport"
+              }
+            ]
+          }
+        }
+      },
+      "CspReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "document-uri": {
+            "type": "string",
+            "nullable": true
+          },
+          "referrer": {
+            "type": "string",
+            "nullable": true
+          },
+          "violated-directive": {
+            "type": "string",
+            "nullable": true
+          },
+          "effective-directive": {
+            "type": "string",
+            "nullable": true
+          },
+          "original-policy": {
+            "type": "string",
+            "nullable": true
+          },
+          "blocked-uri": {
+            "type": "string",
+            "nullable": true
+          },
+          "status-code": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

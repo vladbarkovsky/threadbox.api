@@ -7,7 +7,7 @@ using ThreadboxApi.Application.Files.Models;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Files.Queries
 {

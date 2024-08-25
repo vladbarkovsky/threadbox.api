@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Application.Posts.Commands;
 using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.Application.Posts.Queries;
+using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Web.Controllers
 {
@@ -15,6 +17,14 @@ namespace ThreadboxApi.Web.Controllers
 
         [HttpPost("[action]")]
         public async Task<ActionResult> CreatePost([FromForm] CreatePost.Command command)
+        {
+            await Mediator.Send(command);
+            return NoContent();
+        }
+
+        [HttpDelete("[action]")]
+        [Permission(PostsPermissions.Delete)]
+        public async Task<ActionResult> DeletePost([FromQuery] DeletePost.Command command)
         {
             await Mediator.Send(command);
             return NoContent();

@@ -3,11 +3,11 @@ using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Web.PermissionHandling
 {
-    public class PermissionsMiddleware
+    public class PermissionMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public PermissionsMiddleware(RequestDelegate next)
+        public PermissionMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -28,7 +28,7 @@ namespace ThreadboxApi.Web.PermissionHandling
             {
                 var permissionsIdentity = new ClaimsIdentity(
                     permissionClaims,
-                    nameof(PermissionsMiddleware),
+                    nameof(PermissionMiddleware),
                     "name",
                     "role");
 

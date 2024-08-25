@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.Web;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Areas.Identity.Pages.Account
 {
@@ -40,13 +40,13 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
-                throw HttpResponseException.BadRequest;
+                throw new HttpResponseException("Return URL not specified.");
             }
 
-            // FIXME: If user clicks "Back" button in browser after signing in, he gets "Bad Request" text. 
+            // FIXME: If user clicks "Back" button in browser after signing in, he gets "Bad Request" text.
             if (_signInManager.IsSignedIn(User))
             {
-                throw HttpResponseException.BadRequest;
+                throw new HttpResponseException("User is already authorized.");
             }
         }
 
@@ -54,12 +54,12 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
-                throw HttpResponseException.BadRequest;
+                throw new HttpResponseException("Return URL not specified.");
             }
 
             if (_signInManager.IsSignedIn(User))
             {
-                throw HttpResponseException.BadRequest;
+                throw new HttpResponseException("User is already authorized.");
             }
 
             var result = await _signInManager.PasswordSignInAsync(

@@ -1,12 +1,8 @@
-﻿namespace ThreadboxApi.Web
+﻿namespace ThreadboxApi.Web.ErrorHandling
 {
     public class HttpResponseException : Exception
     {
-        public static HttpResponseException BadRequest => new("Bad Request", StatusCodes.Status400BadRequest);
-        public static HttpResponseException NotFound => new("Not Found", StatusCodes.Status404NotFound);
-        public static HttpResponseException Unauthorized => new("Unauthorized", StatusCodes.Status401Unauthorized);
-
-        public int StatusCode { get; set; }
+        public int StatusCode { get; }
 
         public HttpResponseException(string message, int statusCode = StatusCodes.Status400BadRequest)
             : base(message)
@@ -14,6 +10,7 @@
             StatusCode = statusCode;
         }
 
+        // TODO: Throw 401 exceptions manually.
         public static void ThrowNotFoundIfNull<T>(T data)
         {
             if (data == null)
