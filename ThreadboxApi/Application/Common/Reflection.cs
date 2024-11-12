@@ -38,10 +38,6 @@ namespace ThreadboxApi.Application.Common
         {
             using var writer = new StreamWriter(@"..\..\threadbox.front\api-permissions.ts");
 
-            writer.WriteLine(
-                "/* tslint:disable */" + "\r\n" +
-                "/* eslint-disable */" + "\r\n");
-
             var permissionSetTypes = Assembly
                 .GetExecutingAssembly()
                 .GetTypes()
