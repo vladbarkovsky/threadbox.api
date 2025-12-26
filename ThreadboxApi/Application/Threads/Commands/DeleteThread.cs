@@ -34,7 +34,10 @@ namespace ThreadboxApi.Application.Threads.Commands
                 .Where(x => x.Id == request.ThreadId)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(thread);
+            if (thread == null)
+            {
+                throw new HttpResponseException($"File info with ID \"{request.ThreadId}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             thread.Deleted = true;
             _dbContext.Threads.Update(thread);

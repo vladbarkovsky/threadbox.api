@@ -38,15 +38,13 @@ namespace ThreadboxApi.Application.Sections.Queries
             var dto = await _dbContext.Sections
                 .Where(x => x.Id == request.Id)
                 .ProjectTo<SectionDto>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
 
-            var dto2 = await _dbContext.Sections
-                .AsNoTracking()
-                .Where(x => x.Id == request.Id)
-                .ProjectTo<SectionDto>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync();
+            if (dto == null)
+            {
+                throw new HttpResponseException($"Section with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
+            }
 
-            HttpResponseException.ThrowNotFoundIfNull(dto);
             return dto;
         }
     }

@@ -1,19 +1,20 @@
 ﻿using System.Text.Json;
+using ThreadboxApi.Application.Common;
 
 namespace ThreadboxApi.Web.ErrorHandling
 {
-    public class ErrorHandlingMiddleware
+    public class ErrorHandlingMiddleware : IMiddleware, ITransientService
     {
-        private readonly RequestDelegate _next;
+        private readonly ProblemDetailsService _problemDetailsService;
 
-        public ErrorHandlingMiddleware(RequestDelegate next)
+        public ErrorHandlingMiddleware(ProblemDetailsService problemDetailsService)
         {
-            _next = next;
+            _problemDetailsService = problemDetailsService;
         }
 
-        public async Task InvokeAsync(HttpContext context, ProblemDetailsService problemDetailsService)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            await _next(context);
+            await next(context);
 
             if (context.Response.HasStarted)
             {
@@ -22,7 +23,7 @@ namespace ThreadboxApi.Web.ErrorHandling
 
             if (context.Response.StatusCode > 399 && context.Response.StatusCode < 600)
             {
-                var problemDetails = problemDetailsService.GetProblemDetails(context.Response.StatusCode);
+                var problemDetails = _problemDetailsService.GetProblemDetails(context.Response.StatusCode);
                 context.Response.ContentType = "application/problem+json; charset=utf-8";
                 await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
                 return;

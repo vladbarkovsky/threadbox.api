@@ -38,7 +38,10 @@ namespace ThreadboxApi.Application.Boards.Commands
                 .Where(x => x.Id == request.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(board);
+            if (board == null)
+            {
+                throw new HttpResponseException($"Board with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             board.Title = request.Title;
             board.Description = request.Description;

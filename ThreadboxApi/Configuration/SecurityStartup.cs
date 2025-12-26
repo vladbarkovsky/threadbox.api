@@ -5,14 +5,14 @@ namespace ThreadboxApi.Configuration
 {
     public class SecurityStartup
     {
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public static void ConfigureServices(IServiceCollection services, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
         {
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
                 {
                     builder
-                        .WithOrigins(configuration[AppSettings.ClientBaseUrl])
+                        .WithOrigins(appSettings.ClientBaseUrl)
                         .WithMethods("PUT", "DELETE")
                         .WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
                         .Build();
@@ -30,7 +30,7 @@ namespace ThreadboxApi.Configuration
             }
         }
 
-        public static void Configure(IApplicationBuilder app, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public static void Configure(IApplicationBuilder app, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
         {
             app.UseCors();
             app.UseHttpsRedirection();
@@ -44,23 +44,18 @@ namespace ThreadboxApi.Configuration
                 options
                     .DefaultSources(s => s.None())
                     .BlockAllMixedContent()
-                    // Razor styles, Swagger UI styles
+                    // Swagger UI styles
                     .StyleSources(s => s.Self().CustomSources("sha256-pyVPiLlnqL9OWVoJPs/E6VVF5hBecRzM2gBiarnaqAo="))
-                    // Images for Razor, images for Swagger UI
+                    // Images for Swagger UI
                     .ImageSources(s => s.Self().CustomSources("data:"))
-                    // Sending forms to server from Identity UI, sending forms to client from Identity UI
-                    .FormActions(s => s.Self().CustomSources(configuration[AppSettings.ClientBaseUrl]))
-                    // iframe on client for authorization silent renew
-                    .FrameAncestors(s => s.CustomSources(configuration[AppSettings.ClientBaseUrl]))
 
                     .ScriptSources(s => s.Self().CustomSources(
-                        // Script in iframe on client for authorization silent renew
-                        "sha256-fa5rxHhZ799izGRP38+h4ud5QXNT0SFaFlh4eqDumBI=",
                         // Script in Swagger UI
                         "sha256-jYwH+ovNhdZXLQSoSAgcVH3aaKh7DqPa3Z3LJO3icXE="));
 
                 if (webHostEnvironment.IsDevelopment())
                 {
+                    // TODO: Check if required.
                     // Browser Link, Live Reload, etc.
                     options.ConnectSources(s => s.CustomSources("ws://localhost:*", "http://localhost:*"));
                 }

@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -39,7 +40,11 @@ namespace ThreadboxApi.Application.Files.Queries
                 .Where(x => x.Id == request.FileInfoId)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(fileInfo);
+            if (fileInfo == null)
+            {
+                throw new HttpResponseException($"File info with ID \"{request.FileInfoId}\" not found.", StatusCodes.Status404NotFound);
+            }
+
             var data = await _fileStorage.GetFileAsync(fileInfo.Path);
 
             return new FileContentResult(data, fileInfo.ContentType)

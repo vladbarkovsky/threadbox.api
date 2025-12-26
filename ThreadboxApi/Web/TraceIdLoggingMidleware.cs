@@ -1,30 +1,24 @@
 ﻿using Serilog.Context;
 using System.Diagnostics;
+using ThreadboxApi.Application.Common;
 
 namespace ThreadboxApi.Web
 {
-    public class TraceIdLoggingMidleware
+    public class TraceIdLoggingMidleware : IMiddleware, ITransientService
     {
-        private readonly RequestDelegate _next;
-
-        public TraceIdLoggingMidleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
 
             if (traceId == null)
             {
-                await _next(context);
+                await next(context);
                 return;
             }
 
             using (LogContext.PushProperty("TraceId", traceId))
             {
-                await _next(context);
+                await next(context);
             }
         }
     }

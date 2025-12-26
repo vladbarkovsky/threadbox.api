@@ -2,20 +2,27 @@
 {
     public class AppSettings
     {
-        public class ConnectionStrings
+        public ConnectionStringsOptions ConnectionStrings { get; set; }
+
+        public class ConnectionStringsOptions
         {
-            public const string Database = "Database";
+            public string Database { get; set; }
         }
 
-        public const string ClientBaseUrl = "ClientBaseUrl";
+        public string BaseUrl { get; set; }
+        public string ClientBaseUrl { get; set; }
 
-        public class DefaultAdminCredentials
+        public DefaultAdminCredentialsOptions DefaultAdminCredentials { get; set; }
+
+        public class DefaultAdminCredentialsOptions
         {
-            private const string Prefix = "DefaultAdminCredentials";
-            public const string UserName = $"{Prefix}:UserName";
-            public const string Password = $"{Prefix}:Password";
+            public string UserName { get; set; }
+            public string Password { get; set; }
         }
 
-        public const string RegistrationKeyExpirationTimeSeconds = "RegistrationKeyExpirationTimeSeconds";
+        public int AccessTokenLifetimeSeconds { get; set; }
+        public int AbsoluteRefreshTokenLifetimeSeconds { get; set; }
+        public int RegistrationKeyLifetimeSeconds { get; set; }
+        public string ClientSecret { get; set; }
     }
 }

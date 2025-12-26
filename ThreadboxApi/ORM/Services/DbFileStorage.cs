@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web.ErrorHandling;
@@ -14,20 +15,23 @@ namespace ThreadboxApi.ORM.Services
             _dbContext = dbContext;
         }
 
-        public async Task<byte[]> GetFileAsync(string filePath)
+        public async Task<byte[]> GetFileAsync(string path, CancellationToken cancellationToken)
         {
             var data = await _dbContext.DbFiles
                 .AsNoTracking()
-                .Where(x => x.Path == filePath)
+                .Where(x => x.Path == path)
                 .Select(x => x.Data)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(data);
+            if (data == null)
+            {
+                throw new HttpResponseException($"Data of file with path \"{path}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             return data;
         }
 
-        public Task SaveFileAsync(string path, byte[] data)
+        public Task SaveFileAsync(string path, byte[] data, CancellationToken cancellationToken)
         {
             var dbFile = new DbFile
             {
@@ -39,13 +43,17 @@ namespace ThreadboxApi.ORM.Services
             return Task.CompletedTask;
         }
 
-        public async Task DeleteFileAsync(string path)
+        public async Task DeleteFileAsync(string path, CancellationToken cancellationToken)
         {
             var dbFile = await _dbContext.DbFiles
                 .Where(x => x.Path == path)
-                .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(dbFile);
+            if (dbFile == null)
+            {
+                throw new HttpResponseException($"File with path \"{path}\" not found.", StatusCodes.Status404NotFound);
+            }
+
             _dbContext.DbFiles.Remove(dbFile);
         }
     }

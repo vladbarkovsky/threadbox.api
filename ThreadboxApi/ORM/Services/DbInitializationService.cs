@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Serilog;
 using System.Security.Claims;
 using System.Text.Json;
@@ -18,7 +19,7 @@ namespace ThreadboxApi.ORM.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IConfiguration _configuration;
+        private readonly IOptionsSnapshot<AppSettings> _appSettings;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileStorage _fileStorage;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -29,7 +30,7 @@ namespace ThreadboxApi.ORM.Services
         public DbInitializationService(
             ApplicationDbContext dbContext,
             IWebHostEnvironment webHostEnvironment,
-            IConfiguration configuration,
+            IOptionsSnapshot<AppSettings> appSettings,
             UserManager<ApplicationUser> userManager,
             IFileStorage fileStorage,
             RoleManager<IdentityRole> roleManager,
@@ -37,7 +38,7 @@ namespace ThreadboxApi.ORM.Services
         {
             _dbContext = dbContext;
             _webHostEnvironment = webHostEnvironment;
-            _configuration = configuration;
+            _appSettings = appSettings;
             _userManager = userManager;
             _fileStorage = fileStorage;
             _roleManager = roleManager;
@@ -113,10 +114,10 @@ namespace ThreadboxApi.ORM.Services
         {
             var admin = new ApplicationUser
             {
-                UserName = _configuration[AppSettings.DefaultAdminCredentials.UserName]
+                UserName = _appSettings.Value.DefaultAdminCredentials.UserName
             };
 
-            await _userManager.CreateAsync(admin, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.CreateAsync(admin, _appSettings.Value.DefaultAdminCredentials.Password);
             await _userManager.AddToRoleAsync(admin, AdminRole.Name);
 
             if (!_webHostEnvironment.IsDevelopment())
@@ -129,7 +130,7 @@ namespace ThreadboxApi.ORM.Services
                 UserName = "manager"
             };
 
-            await _userManager.CreateAsync(manager, _configuration[AppSettings.DefaultAdminCredentials.Password]);
+            await _userManager.CreateAsync(manager, _appSettings.Value.DefaultAdminCredentials.Password);
             await _userManager.AddToRoleAsync(manager, ManagerRole.Name);
         }
 

@@ -46,7 +46,10 @@ namespace ThreadboxApi.Application.Files.Queries
                 .ThenInclude(x => x.FileInfo)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(post);
+            if (post == null)
+            {
+                throw new HttpResponseException($"Post with ID \"{request.PostId}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             var fileInfos = post.PostImages.Select(x => x.FileInfo);
             var files = new List<byte[]>();

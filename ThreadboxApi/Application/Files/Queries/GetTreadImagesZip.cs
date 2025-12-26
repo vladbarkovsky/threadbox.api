@@ -46,7 +46,10 @@ namespace ThreadboxApi.Application.Files.Queries
                 .ThenInclude(x => x.FileInfo)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(thread);
+            if (thread == null)
+            {
+                throw new HttpResponseException($"Thread with ID \"{request.ThreadId}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             var fileInfos = thread.ThreadImages.Select(x => x.FileInfo);
             var files = new List<byte[]>();

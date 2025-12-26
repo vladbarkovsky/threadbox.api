@@ -36,7 +36,10 @@ namespace ThreadboxApi.Application.Posts.Commands
                 .ThenInclude(x => x.FileInfo)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(post);
+            if (post == null)
+            {
+                throw new HttpResponseException($"Post with ID \"{request.PostId}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             post.Deleted = true;
 

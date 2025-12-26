@@ -1,6 +1,6 @@
 ﻿using NSwag;
 using NSwag.Generation.Processors.Security;
-using ThreadboxApi.Web.ApiSpecification;
+using ThreadboxApi.Web;
 
 namespace ThreadboxApi.Configuration
 {

@@ -39,7 +39,10 @@ namespace ThreadboxApi.Application.Boards.Queries
                 .Where(x => x.Id == request.BoardId)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            HttpResponseException.ThrowNotFoundIfNull(board);
+            if (board == null)
+            {
+                throw new HttpResponseException($"Board with ID \"{request.BoardId}\" not found.", StatusCodes.Status404NotFound);
+            }
 
             var dto = _mapper.Map<BoardDto>(board);
             return dto;

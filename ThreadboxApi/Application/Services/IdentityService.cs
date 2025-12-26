@@ -10,31 +10,29 @@ namespace ThreadboxApi.Application.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ApplicationContext _appContext;
+        private readonly ApplicationContext _applicationContext;
 
         public IdentityService(
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ApplicationContext appContext)
+            ApplicationContext applicationContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _appContext = appContext;
+            _applicationContext = applicationContext;
         }
 
-        /// <returns>authorized user permissions</returns>
         public async Task<List<string>> GetPermissionsAsync()
         {
             var permissionClaims = await GetPermissionClaimsAsync();
             return permissionClaims.Select(x => x.Value).ToList();
         }
 
-        /// <returns>authorized user permission claims</returns>
         public async Task<List<Claim>> GetPermissionClaimsAsync()
         {
             var permissionClaims = new List<Claim>();
 
-            var user = await _userManager.FindByIdAsync(_appContext.UserId);
+            var user = await _userManager.FindByIdAsync(_applicationContext.UserId);
             var roles = await _userManager.GetRolesAsync(user);
 
             if (!roles.Any())
