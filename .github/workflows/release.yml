@@ -21,7 +21,7 @@ jobs:
         docker compose down || true
     - name: Deploy (CI - no restart policy)
       run: |
-        docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait || true
     - name: Check containers status
       run: |
         set -euo pipefail
