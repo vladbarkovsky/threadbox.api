@@ -6,19 +6,55 @@ jobs:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
-    - name: Docker
-      working-directory: ThreadboxApi
+    - working-directory: ThreadboxApi
+    - name: Deploy containers
       run: |
-        docker compose down -v
+        set -euxo pipefail
+
+        docker compose down || true
         docker compose up -d --build
 
-        echo "Container statuses:"
+    - name: Wait
+      run: sleep 10
+
+    - name: Check containers
+      run: |
+        set -euo pipefail
+
+        echo "==== CONTAINER STATUS ===="
         docker compose ps
 
-        for container in postgres threadbox-api nginx; do
-          echo "Logs for $container:"
-          docker compose logs --no-color --tail=200 $container || true
+        FAILED=0
+
+        for SERVICE in $(docker compose config --services); do
+          CONTAINER=$(docker compose ps -q $SERVICE)
+
+          echo ""
+          echo "==== Checking $SERVICE ===="
+
+          STATUS=$(docker inspect -f '{{.State.Status}}' $CONTAINER)
+          EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' $CONTAINER)
+
+          echo "Status: $STATUS"
+          echo "Exit code: $EXIT_CODE"
+
+          echo "---- Logs for $SERVICE ----"
+          docker logs $CONTAINER --tail=100 || true
+
+          if [ "$STATUS" != "running" ]; then
+            echo "$SERVICE is not running."
+            FAILED=1
+          fi
         done
+
+        if [ "$FAILED" -ne 0 ]; then
+          echo ""
+          echo "One or more containers failed."
+          exit 1
+        fi
+
+        echo ""
+        echo "Deploy completed successfully."
       env:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
