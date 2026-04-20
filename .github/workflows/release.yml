@@ -22,7 +22,7 @@ jobs:
     - name: Deploy (CI - no restart policy)
       run: |
         set -euo pipefail
-        docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
+        docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
     - name: Check containers status
       run: |
         set -euo pipefail
@@ -45,8 +45,10 @@ jobs:
             continue
           fi
 
+          STATUS=$(docker inspect -f '{{.State.Status}}' "$CONTAINER")
           EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' "$CONTAINER")
           
+          echo "Status: $STATUS"
           echo "Exit code: $EXIT_CODE"
           
           echo "---------------- Logs for $SERVICE ----------------"
