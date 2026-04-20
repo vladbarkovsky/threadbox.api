@@ -6,30 +6,6 @@ jobs:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
-    - name: Extracting SSL certificate
-      env:
-        SSL_PFX_BASE64: ${{ secrets.SSL_PFX_BASE64 }}
-        SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
-      run: |
-        rm -rf certs
-        mkdir -p certs
-        printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
-
-        openssl pkcs12 -in certs/cert.pfx \
-          -nocerts \
-          -nodes \
-          -out certs/cert.key \
-          -passin env:SSL_PASSWORD
-
-        openssl pkcs12 -in certs/cert.pfx \
-          -clcerts \
-          -nokeys \
-          -out certs/cert.crt \
-          -passin env:SSL_PASSWORD
-
-        chmod 600 certs/cert.pfx
-        chmod 600 certs/cert.key
-        chmod 600 certs/cert.crt
     - name: Docker
       working-directory: ThreadboxApi
       run: |

@@ -89,10 +89,7 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
-                identityServerBuilder.AddSigningCredential(new X509Certificate2(
-                    Path.Combine(webHostEnvironment.ContentRootPath, "certs", "cert.pfx"),
-                    appSettings.SslPassword,
-                    X509KeyStorageFlags.DefaultKeySet));
+                identityServerBuilder.AddSigningCredential(new X509Certificate2("/certs/cert.pfx", appSettings.SslPassword));
             }
 
             // Disabling JWT token claims mapping by ASP.NET Identity.
