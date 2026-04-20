@@ -36,6 +36,12 @@ jobs:
       run: |
         set -euxo pipefail
         docker compose up --progress plain up --build
+        docker compose ps
+
+        for container in postgres threadbox-api nginx; do
+          echo "Logs for $container:"
+          docker compose logs --no-color --tail=200 $svc || true
+        done
       env:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
