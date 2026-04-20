@@ -100,6 +100,7 @@ namespace ThreadboxApi.Configuration
                 {
                     Console.WriteLine("EX: " + ex.Message);
                     Console.WriteLine("INNER: " + ex.InnerException?.Message);
+                    Console.WriteLine("INNER: " + ex.InnerException?.InnerException?.Message);
                     Console.WriteLine(ex.ToString());
                     throw;
                 }
