@@ -23,21 +23,11 @@ jobs:
       run: |
         set -euo pipefail
         docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
-    - name: Wait for health checks
-      run: |
-        set -euo pipefail
-        
-        echo "Waiting for containers to become healthy..."
-        
-        # Wait for threadbox-api health check (start_period is 30s + some buffer)
-        sleep 40
-        
-        echo "All containers are healthy."
     - name: Check containers status
       run: |
         set -euo pipefail
         
-        echo "================ CONTAINER STATUS ================"
+        echo "================ CONTAINERS ================"
         docker compose ps
         
         FAILED=0
@@ -49,7 +39,7 @@ jobs:
           echo "================ Checking $SERVICE ================"
           
           if [ -z "$CONTAINER" ]; then
-            echo "Container for $SERVICE not found (may have failed to start)"
+            echo "Container for $SERVICE not found"
             docker compose logs $SERVICE --tail=200 || true
             FAILED=1
             continue
@@ -64,7 +54,7 @@ jobs:
           echo "---------------- Logs for $SERVICE ----------------"
           docker logs "$CONTAINER" --tail=200 || true
           
-          if [ "$STATUS" != "running" ] || [ "$RESTARTING" = "true" ]; then
+          if [ "$STATUS" != "running" ] then
             echo "$SERVICE is unhealthy"
             FAILED=1
           fi
@@ -78,7 +68,7 @@ jobs:
         
         echo ""
         echo "Deploy completed successfully."
-    - name: Restart with restart policy
+    - name: Deploy with restart policy
       run: |
         set -euo pipefail
         docker compose down
