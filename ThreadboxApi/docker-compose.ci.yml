@@ -1,0 +1,7 @@
+﻿services:
+  postgres:
+    restart: "no"
+  threadbox-api:
+    restart: "no"
+  nginx:
+    restart: "no"
