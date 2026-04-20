@@ -20,6 +20,11 @@ jobs:
         ls -la certs
         file certs/cert.pfx || true
         echo "Extracting key..."
+        echo "PFX size:"
+        ls -lh certs/cert.pfx
+
+        echo "First bytes (hex):"
+        hexdump -C certs/cert.pfx | head
 
         openssl pkcs12 -in certs/cert.pfx -nocerts -nodes \
           -out certs/cert.key \
