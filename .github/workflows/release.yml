@@ -11,6 +11,7 @@ jobs:
         SSL_PFX_BASE64: ${{ secrets.SSL_PFX_BASE64 }}
         SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
       run: |
+        set -euxo pipefail
         rm -rf certs
         mkdir -p certs
         printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
@@ -33,7 +34,11 @@ jobs:
     - name: Docker
       working-directory: ThreadboxApi
       run: |
+        set -euxo pipefail
         docker compose up -d --build
+
+        exho "Container statuses:"
+        docker compose ps
 
         for container in postgres threadbox-api nginx; do
           echo "Logs for $container:"
