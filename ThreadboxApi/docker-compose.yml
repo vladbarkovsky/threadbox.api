@@ -12,7 +12,7 @@
       - pgdata:/var/lib/postgresql/data
   api:
     build:
-      context: .
+      context: threadbox.api/ThreadboxApi
       dockerfile: Dockerfile
     container_name: threadbox-api
     restart: unless-stopped
