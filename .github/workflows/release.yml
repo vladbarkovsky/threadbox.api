@@ -16,18 +16,17 @@ jobs:
         mkdir -p certs
         printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
 
-        file certs/cert.pfx
-        openssl pkcs12 -info -in certs/cert.pfx -passin pass:"$SSL_PASSWORD"
-        ls -lh certs/cert.pfx
-        hexdump -C certs/cert.pfx | head -n 5
+        openssl pkcs12 -in certs/cert.pfx \
+            -nocerts \
+            -nodes \
+            -out certs/cert.key \
+            -passin env:SSL_PASSWORD
 
-        openssl pkcs12 -in certs/cert.pfx -nocerts -nodes \
-          -out certs/cert.key \
-          -passin pass:"$SSL_PASSWORD"
-
-        openssl pkcs12 -in certs/cert.pfx -clcerts -nokeys \
-          -out certs/cert.crt \
-          -passin pass:"$SSL_PASSWORD"
+          openssl pkcs12 -in certs/cert.pfx \
+            -clcerts \
+            -nokeys \
+            -out certs/cert.crt \
+            -passin env:SSL_PASSWORD
 
         chmod 600 certs/cert.pfx
         chmod 600 certs/cert.key
