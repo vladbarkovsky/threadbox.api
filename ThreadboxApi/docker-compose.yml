@@ -1,7 +1,6 @@
 ﻿services:
   postgres:
     image: postgres:18
-    container_name: postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: threadbox_api
@@ -10,11 +9,10 @@
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-  threadbox_api:
+  threadbox-api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: threadbox-api
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Release
@@ -31,7 +29,6 @@
       - postgres
   nginx:
     image: nginx:alpine
-    container_name: nginx
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -39,6 +36,6 @@
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs:/certs:ro
     depends_on:
-      - api
+      - threadbox-api
 volumes:
   pgdata:
