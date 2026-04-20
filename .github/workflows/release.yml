@@ -1,20 +1,12 @@
 name: Release
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to run workflow on'
-        required: true
-        default: 'main'
 jobs:
   build:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.inputs.branch }}
-    
-    - name: Prepare SSL certificates
+    - name: Extracting SSL certificate
       env:
         SSL_PFX_BASE64: ${{ secrets.SSL_PFX_BASE64 }}
         SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
@@ -33,10 +25,9 @@ jobs:
         chmod 600 certs/cert.pfx
         chmod 600 certs/cert.key
         chmod 600 certs/cert.crt
-    - name: Deploy
+    - name: Docker
       run: |
-        docker-compose down
-        docker-compose up -d --build
+        docker compose up -d --build
       env:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
