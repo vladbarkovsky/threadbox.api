@@ -35,12 +35,12 @@ jobs:
       working-directory: ThreadboxApi
       run: |
         set -euxo pipefail
-        docker compose up --progress plain up --build
+        docker compose up -d --build
         docker compose ps
 
         for container in postgres threadbox-api nginx; do
           echo "Logs for $container:"
-          docker compose logs --no-color --tail=200 $svc || true
+          docker compose logs --no-color --tail=200 $container || true
         done
       env:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
