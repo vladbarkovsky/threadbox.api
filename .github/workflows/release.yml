@@ -9,20 +9,21 @@ jobs:
         working-directory: ThreadboxApi
     steps:
     - uses: actions/checkout@v3
-    - name: Deploy containers
+    - name: Clean containers
       run: |
         set -euo pipefail
-
         docker compose down || true
+    - name: Deploy (CI)
+      run: |
+        set -euo pipefail
         docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
     - name: Wait
       run: sleep 10
-
     - name: Check containers
       run: |
         set -euo pipefail
 
-        echo "==== CONTAINER STATUS ===="
+        echo "================ CONTAINER STATUS ================"
         docker compose ps
 
         FAILED=0
@@ -31,21 +32,25 @@ jobs:
           CONTAINER=$(docker compose ps -q $SERVICE)
 
           echo ""
-          echo "==== Checking $SERVICE ===="
+          echo "================ Checking $SERVICE ================"
 
-          STATUS=$(docker inspect -f '{{.State.Status}}' $CONTAINER)
-          EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' $CONTAINER)
+          STATUS=$(docker inspect -f '{{.State.Status}}' "$CONTAINER")
+          RESTARTING=$(docker inspect -f '{{.State.Restarting}}' "$CONTAINER")
+          EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' "$CONTAINER")
+          RESTARTS=$(docker inspect -f '{{.RestartCount}}' "$CONTAINER")
 
           echo "Status: $STATUS"
+          echo "Restarting: $RESTARTING"
           echo "Exit code: $EXIT_CODE"
+          echo "Restarts: $RESTARTS"
 
-          echo "---- Logs for $SERVICE ----"
-          docker logs $CONTAINER --tail=100 || true
+          echo "---------------- Logs for $SERVICE ----------------"
+          docker logs $CONTAINER --tail=200 || true
 
-          if [ "$STATUS" != "running" ]; then
-            echo "$SERVICE is not running."
-            FAILED=1
-          fi
+          if [ "$STATUS" != "running" ] || [ "$RESTARTING" = "true" ] || [ "$EXIT_CODE" != "0" ] && [ "$EXIT_CODE" != "" ]; then
+              echo "$SERVICE is unhealthy"
+              FAILED=1
+            fi
         done
 
         if [ "$FAILED" -ne 0 ]; then
