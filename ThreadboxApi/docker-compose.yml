@@ -24,7 +24,7 @@
     expose:
       - "8080"
     volumes:
-      - ./certs:/certs:ro
+      - /etc/threadbox/certs:/certs:ro
     depends_on:
       - postgres
   nginx:
@@ -34,7 +34,7 @@
       - "5000:5000"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certs:/certs:ro
+      - /etc/threadbox/certs:/certs:ro
     depends_on:
       - threadbox-api
 volumes:
