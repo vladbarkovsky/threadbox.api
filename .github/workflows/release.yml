@@ -17,7 +17,7 @@ jobs:
         printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
 
         file certs/cert.pfx
-        openssl pkcs12 -info -in cert.pfx
+        openssl pkcs12 -info -in certs/cert.pfx
         ls -lh certs/cert.pfx
         hexdump -C certs/cert.pfx | head -n 5
 
