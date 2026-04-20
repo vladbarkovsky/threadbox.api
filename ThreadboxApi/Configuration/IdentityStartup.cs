@@ -89,13 +89,20 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
-                var bytes = File.ReadAllBytes("/certs/cert.pfx");
-                Console.WriteLine(bytes.Length);
-
-                identityServerBuilder.AddSigningCredential(new X509Certificate2(
-                    "/certs/cert.pfx",
-                    appSettings.SslPassword,
-                     X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
+                try
+                {
+                    identityServerBuilder.AddSigningCredential(new X509Certificate2(
+                        "/certs/cert.pfx",
+                        appSettings.SslPassword,
+                         X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("EX: " + ex.Message);
+                    Console.WriteLine("INNER: " + ex.InnerException?.Message);
+                    Console.WriteLine(ex.ToString());
+                    throw;
+                }
             }
 
             // Disabling JWT token claims mapping by ASP.NET Identity.
