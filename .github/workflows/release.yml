@@ -33,6 +33,7 @@ jobs:
     - name: Docker
       working-directory: ThreadboxApi
       run: |
+        docker compose down -v
         docker compose up -d --build
 
         echo "Container statuses:"
