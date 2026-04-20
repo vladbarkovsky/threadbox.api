@@ -1,0 +1,42 @@
+﻿services:
+  postgres:
+    image: postgres:18
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: threadbox_api
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: threadbox-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Release
+      ASPNETCORE_URLS: http://+:8080
+      CONNECTION_STRINGS__DATABASE: ${CONNECTION_STRINGS__DATABASE}
+      DEFAULT_ADMIN_CREDENTIALS__PASSWORD: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
+      OIDC_BFF_CLIENT_SECRET: ${OIDC_BFF_CLIENT_SECRET}
+      SSL_PASSWORD: ${SSL_PASSWORD}
+    expose:
+      - "8080"
+    volumes:
+      - ./certs:/certs:ro
+    depends_on:
+      - postgres
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/certs:ro
+    depends_on:
+      - api

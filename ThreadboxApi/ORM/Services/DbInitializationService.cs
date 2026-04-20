@@ -114,7 +114,7 @@ namespace ThreadboxApi.ORM.Services
         {
             var admin = new ApplicationUser
             {
-                UserName = _appSettings.Value.DefaultAdminCredentials.UserName
+                UserName = _appSettings.Value.DefaultAdminCredentials.Username
             };
 
             await _userManager.CreateAsync(admin, _appSettings.Value.DefaultAdminCredentials.Password);

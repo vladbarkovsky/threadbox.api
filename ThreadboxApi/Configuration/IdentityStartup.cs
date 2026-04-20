@@ -1,21 +1,21 @@
 ﻿using IdentityServer4;
 using IdentityServer4.Models;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography.X509Certificates;
 using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Web.Bff;
 using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Configuration
 {
     public class IdentityStartup
     {
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public static void ConfigureServices(IServiceCollection services, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
         {
             services
                 .AddDefaultIdentity<ApplicationUser>(options =>
@@ -26,17 +26,62 @@ namespace ThreadboxApi.Configuration
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var identityServerBuilder = services
-            .AddIdentityServer()
-            .AddAspNetIdentity<ApplicationUser>()
-            .AddApiResources()
-            .AddIdentityResources()
-            .AddClients()
-            .AddOperationalStore<ApplicationDbContext>(options =>
-            {
-                options.EnableTokenCleanup = true;
-            })
-            .AddResourceStore<InMemoryResourcesStore>()
-            .AddClientStore<InMemoryClientStore>();
+                .AddIdentityServer()
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddInMemoryIdentityResources(new IdentityResource[]
+                {
+                    new IdentityResources.OpenId(),
+                    new IdentityResources.Profile()
+                })
+                .AddInMemoryApiResources(new ApiResource[]
+                {
+                    new ApiResource("threadbox_api", "Threadbox API")
+                    {
+                        Scopes = { "threadbox_api.access" }
+                    }
+                })
+                .AddInMemoryClients(new Client[]
+                {
+                    new Client
+                    {
+                        ClientId = "bff",
+                        ClientName = "BFF",
+                        AllowedGrantTypes = GrantTypes.Code,
+                        AllowOfflineAccess = true,
+
+                        AllowedScopes =
+                        {
+                            IdentityServerConstants.StandardScopes.OpenId,
+                            IdentityServerConstants.StandardScopes.Profile,
+                            IdentityServerConstants.StandardScopes.OfflineAccess,
+                            "threadbox_api.access"
+                        },
+
+                        PostLogoutRedirectUris =
+                        {
+                            appSettings.BaseUrl + "/bff/sign-out-redirect-callback"
+                        },
+
+                        RedirectUris =
+                        {
+                            appSettings.BaseUrl + "/bff/sign-in-redirect-callback",
+                        },
+
+                        RequirePkce = false,
+
+                        ClientSecrets =
+                        {
+                            new Secret(appSettings.OidcBffClientSecret.Sha256())
+                        },
+
+                        AccessTokenLifetime = 1_800,
+                        AbsoluteRefreshTokenLifetime = appSettings.AbsoluteRefreshTokenLifetimeSeconds
+                    }
+                })
+                .AddOperationalStore<ApplicationDbContext>(options =>
+                {
+                    options.EnableTokenCleanup = true;
+                });
 
             if (webHostEnvironment.IsDevelopment())
             {
@@ -44,90 +89,11 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
-                // Use SSL certificate.
+                identityServerBuilder.AddSigningCredential(new X509Certificate2(
+                    Path.Combine(webHostEnvironment.ContentRootPath, "certs", "cert.pfx"),
+                    appSettings.SslPassword,
+                    X509KeyStorageFlags.DefaultKeySet));
             }
-
-            services.Configure<ApiAuthorizationOptions>(options =>
-            {
-                options.ApiScopes = new ApiScopeCollection(new List<ApiScope>
-                {
-                    new ApiScope("threadbox_api.access", "Threadbox API access"),
-                });
-
-                options.ApiResources = new ApiResourceCollection(new List<ApiResource>
-                {
-                    /// Based on <see cref="ApiResourceCollection.AddIdentityServerJwt(string, Action{ApiResourceBuilder})"/>
-                    new ApiResource
-                    {
-                        /// Required for <see cref="AuthenticationBuilderExtensions.AddIdentityServerJwt(AuthenticationBuilder)"/>
-                        Name = webHostEnvironment.ApplicationName + "API",
-
-                        DisplayName = "Threadbox API",
-                            Scopes = { "threadbox_api.access" },
-
-                        Properties =
-                        {
-                            { "Clients", "angular_client" },
-                        }
-                    }
-                });
-
-                options.IdentityResources = new IdentityResourceCollection(new List<IdentityResource>
-                {
-                    new IdentityResources.OpenId(),
-                    new IdentityResources.Profile()
-                });
-
-                options.Clients = new ClientCollection(new List<Client>
-                {
-                    /// Based on <see cref="ClientCollection.AddSPA(string, Action{ClientBuilder})"/>
-                    new Client
-                    {
-                        ClientId = "angular_client",
-                        ClientName = "Angular client",
-                        AllowedCorsOrigins = { configuration[AppSettings.ClientBaseUrl] },
-                        AllowedGrantTypes = GrantTypes.Code,
-
-                        AllowedScopes =
-                        {
-                            IdentityServerConstants.StandardScopes.OpenId,
-                            IdentityServerConstants.StandardScopes.Profile,
-
-                            // This scope is required for silent renew through refresh tokens.
-                            // Regardless of this scope client still uses iframe for silent renew.
-                            // TODO: Investigate iframe and refresh token security aspects and choose more appropriate
-                            // silent renew mechanism. If it will be refresh tokens, fix problem described above.
-                            // IdentityServerConstants.StandardScopes.OfflineAccess,
-
-                            "threadbox_api.access"
-                        },
-
-                        AllowOfflineAccess = true,
-
-                        PostLogoutRedirectUris =
-                        {
-                            configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-out-redirect-callback"
-                        },
-
-                        RedirectUris =
-                        {
-                            configuration[AppSettings.ClientBaseUrl] + "/authorization/sign-in-redirect-callback",
-                            configuration[AppSettings.ClientBaseUrl] + "/assets/authorization/sign-in-silent-callback.html"
-                        },
-
-                        Properties =
-                        {
-                            { "Profile", "SPA" }
-                        },
-
-                        AllowAccessTokensViaBrowser = true,
-                        ProtocolType = IdentityServerConstants.ProtocolTypes.OpenIdConnect,
-                        RefreshTokenExpiration = TokenExpiration.Absolute,
-                        RefreshTokenUsage = TokenUsage.OneTimeOnly,
-                        RequireClientSecret = false
-                    }
-                });
-            });
 
             // Disabling JWT token claims mapping by ASP.NET Identity.
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -141,6 +107,8 @@ namespace ThreadboxApi.Configuration
 
         public static void Configure(IApplicationBuilder app)
         {
+            app.UseMiddleware<AccessTokenRefreshMiddleware>();
+            app.UseMiddleware<AccessTokenMiddleware>();
             app.UseAuthentication();
             app.UseMiddleware<PermissionMiddleware>();
             app.UseIdentityServer();

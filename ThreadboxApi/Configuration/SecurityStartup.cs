@@ -12,7 +12,7 @@ namespace ThreadboxApi.Configuration
                 options.AddDefaultPolicy(builder =>
                 {
                     builder
-                        .WithOrigins(appSettings.ClientBaseUrl)
+                        .WithOrigins(appSettings.FrontendBaseUrl)
                         .WithMethods("PUT", "DELETE")
                         .WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
                         .Build();

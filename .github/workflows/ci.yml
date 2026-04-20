@@ -1,4 +1,4 @@
-name: Build and Test Backend
+name: Release
 on:
   workflow_dispatch:
     inputs:
@@ -10,17 +10,36 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.inputs.branch }}
-      - name: Setup .NET 6 SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.inputs.branch }}
+    
+    - name: Prepare SSL certificates
+      env:
+        SSL_PFX_BASE64: ${{ secrets.SSL_PFX_BASE64 }}
+        SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
+      run: |
+        mkdir -p certs
+        printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
+
+        openssl pkcs12 -in certs/cert.pfx -nocerts -nodes \
+          -out certs/cert.key \
+          -passin pass:$SSL_PASSWORD
+
+        openssl pkcs12 -in certs/cert.pfx -clcerts -nokeys \
+          -out certs/cert.crt \
+          -passin pass:$SSL_PASSWORD
+
+        chmod 600 certs/cert.pfx
+        chmod 600 certs/cert.key
+        chmod 600 certs/cert.crt
+    - name: Deploy
+      run: |
+        docker-compose down
+        docker-compose up -d --build
+      env:
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
+        DEFAULT_ADMIN_CREDENTIALS__PASSWORD: ${{ secrets.DEFAULT_ADMIN_CREDENTIALS__PASSWORD }}
+        OIDC_BFF_CLIENT_SECRET: ${{ secrets.OIDC_BFF_CLIENT_SECRET }}
+        SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}

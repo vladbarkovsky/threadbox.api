@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -25,12 +26,15 @@ namespace ThreadboxApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AppSettings>(_configuration);
+            var appSettings = _configuration.Get<AppSettings>();
+
             LocalizationStartup.ConfigureServices(services);
             ErrorHandlingStartup.ConfigureServices(services);
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(_configuration.GetConnectionString(AppSettings.ConnectionStrings.Database));
+                options.UseNpgsql(appSettings.ConnectionStrings.Database);
 
                 // Throw exceptions in case of performance issues with single queries.
                 // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries.
@@ -51,7 +55,7 @@ namespace ThreadboxApi
                 .WithTransientLifetime());
 
             services.AddHttpContextAccessor();
-            SecurityStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
+            SecurityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
 
             services.AddControllers(options =>
             {
@@ -63,7 +67,7 @@ namespace ThreadboxApi
             });
 
             NSwagStartup.ConfigureServices(services, _webHostEnvironment);
-            IdentityStartup.ConfigureServices(services, _configuration, _webHostEnvironment);
+            IdentityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
 
             services.AddMediatR(configuration =>
             {
@@ -78,14 +82,21 @@ namespace ThreadboxApi
             {
                 services.AddDatabaseDeveloperPageExceptionFilter();
             }
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            var appSettings = _configuration.Get<AppSettings>();
+
             LocalizationStartup.Configure(app);
             app.UseMiddleware<TraceIdLoggingMidleware>();
             ErrorHandlingStartup.Configure(app);
-            SecurityStartup.Configure(app, _configuration, _webHostEnvironment);
+            SecurityStartup.Configure(app, appSettings, _webHostEnvironment);
             NSwagStartup.Configure(app, _webHostEnvironment);
             app.UseRouting();
             app.UseHealthChecks("/health");
@@ -102,6 +113,8 @@ namespace ThreadboxApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseForwardedHeaders();
         }
     }
 }

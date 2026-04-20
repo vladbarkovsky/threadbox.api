@@ -12,6 +12,24 @@ namespace ThreadboxApi
         {
             var host = Host
                 .CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile(
+                        "appsettings.json",
+                        optional: false,
+                        reloadOnChange: true);
+                    config.AddJsonFile(
+                        $"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json",
+                        optional: true,
+                        reloadOnChange: true);
+
+                    config.AddEnvironmentVariables();
+
+                    if (args != null)
+                    {
+                        config.AddCommandLine(args);
+                    }
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
