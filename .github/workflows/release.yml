@@ -35,13 +35,7 @@ jobs:
       working-directory: ThreadboxApi
       run: |
         set -euxo pipefail
-        docker compose up -d --build
-        echo "Running containers:"
-        docker ps
-        echo "nginx logs:"
-        docker logs nginx || true
-        echo "threadbox-api logs:"
-        docker logs threadbox-api || true
+        docker compose up --progress plain up --build
       env:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
