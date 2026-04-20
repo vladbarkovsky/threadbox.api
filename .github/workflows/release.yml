@@ -32,6 +32,7 @@ jobs:
         chmod 600 certs/cert.key
         chmod 600 certs/cert.crt
     - name: Docker
+      working-directory: ThreadboxApi
       run: |
         set -euxo pipefail
         pwd
