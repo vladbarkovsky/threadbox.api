@@ -34,12 +34,12 @@ jobs:
         for SERVICE in $(docker compose config --services); do
           CONTAINER=$(docker compose ps -q $SERVICE)
           
-          echo ""
+          echo
           echo "================ Checking $SERVICE ================"
           
           if [ -z "$CONTAINER" ]; then
             echo "Container for $SERVICE not found"
-            echo ""
+            echo
             echo "---------------- Logs for $SERVICE ----------------"
             docker compose logs $SERVICE --tail=200 || true
             FAILED=1
@@ -62,12 +62,12 @@ jobs:
         done
         
         if [ "$FAILED" -ne 0 ]; then
-          echo ""
+          echo
           echo "One or more containers failed."
           exit 1
         fi
         
-        echo ""
+        echo
         echo "Deploy completed successfully."
     - name: Deploy with restart policy
       run: |
