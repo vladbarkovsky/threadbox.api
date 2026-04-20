@@ -55,7 +55,7 @@ jobs:
           echo "---------------- Logs for $SERVICE ----------------"
           docker logs "$CONTAINER" --tail=200 || true
           
-          if [ $STATUS != "running" || $EXIT_CODE != 0 ]; then
+          if [[ $STATUS != "running" || "$EXIT_CODE" -ne 0 ]]; then
             echo "$SERVICE is unhealthy"
             FAILED=1
           fi
