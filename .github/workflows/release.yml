@@ -1,27 +1,28 @@
 name: Release
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: self-hosted
     defaults:
       run:
         working-directory: ThreadboxApi
-
+    env:
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
+      DEFAULT_ADMIN_CREDENTIALS__PASSWORD: ${{ secrets.DEFAULT_ADMIN_CREDENTIALS__PASSWORD }}
+      OIDC_BFF_CLIENT_SECRET: ${{ secrets.OIDC_BFF_CLIENT_SECRET }}
+      SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
     steps:
     - uses: actions/checkout@v3
-    
     - name: Clean containers
       run: |
         set -euo pipefail
         docker compose down || true
-    
     - name: Deploy (CI - no restart policy)
       run: |
         set -euo pipefail
         docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
-    
     - name: Wait for health checks
       run: |
         set -euo pipefail
@@ -45,7 +46,6 @@ jobs:
         done
         
         echo "All containers are healthy."
-    
     - name: Check containers status
       run: |
         set -euo pipefail
@@ -88,13 +88,6 @@ jobs:
         
         echo ""
         echo "Deploy completed successfully."
-      env:
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        CONNECTION_STRINGS__DATABASE: ${{ secrets.CONNECTION_STRINGS__DATABASE }}
-        DEFAULT_ADMIN_CREDENTIALS__PASSWORD: ${{ secrets.DEFAULT_ADMIN_CREDENTIALS__PASSWORD }}
-        OIDC_BFF_CLIENT_SECRET: ${{ secrets.OIDC_BFF_CLIENT_SECRET }}
-        SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
-    
     - name: Restart with restart policy
       run: |
         set -euo pipefail
