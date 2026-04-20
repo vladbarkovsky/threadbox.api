@@ -34,7 +34,7 @@ namespace ThreadboxApi
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(appSettings.ConnectionStrings.Database);
+                options.UseNpgsql(appSettings.ConnectionStrings.Postgres);
 
                 // Throw exceptions in case of performance issues with single queries.
                 // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries.

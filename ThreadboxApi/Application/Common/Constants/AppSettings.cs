@@ -6,7 +6,7 @@
 
         public class ConnectionStringsOptions
         {
-            public string Database { get; set; }
+            public string Postgres { get; set; }
         }
 
         public string BaseUrl { get; set; }
