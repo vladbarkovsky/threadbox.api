@@ -89,6 +89,15 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
+                // Логируем переменные окружения
+                foreach (var key in Environment.GetEnvironmentVariables().Keys)
+                {
+                    if (key.ToString()?.Contains("PASSWORD", StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        Console.WriteLine($"ENV: {key} = [hidden]");
+                    }
+                }
+
                 identityServerBuilder.AddSigningCredential(new X509Certificate2("/certs/cert.pfx", appSettings.SslPassword));
             }
 

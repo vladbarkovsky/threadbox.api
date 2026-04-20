@@ -15,6 +15,17 @@ jobs:
       SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
     steps:
     - uses: actions/checkout@v3
+    - name: Debug environment variables
+      run: |
+        echo "SSL_PASSWORD is set: ${{ secrets.SSL_PASSWORD != '' }}"
+        echo "All env vars:"
+        env | grep -i ssl || echo "No SSL vars found"
+    - name: Debug SSL_PASSWORD
+      run: |
+        echo "=== Checking SSL_PASSWORD ==="
+        echo "Value from secrets: [hidden]"
+        echo "Env var in shell: $SSL_PASSWORD"
+        echo "Length: ${#SSL_PASSWORD}"
     - name: Clean containers
       run: |
         set -euo pipefail
