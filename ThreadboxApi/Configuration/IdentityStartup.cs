@@ -89,16 +89,13 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
-                // Логируем переменные окружения
-                foreach (var key in Environment.GetEnvironmentVariables().Keys)
-                {
-                    if (key.ToString()?.Contains("PASSWORD", StringComparison.OrdinalIgnoreCase) == true)
-                    {
-                        Console.WriteLine($"ENV: {key} = [hidden]");
-                    }
-                }
+                var bytes = File.ReadAllBytes("/certs/cert.pfx");
+                Console.WriteLine(bytes.Length);
 
-                identityServerBuilder.AddSigningCredential(new X509Certificate2("/certs/cert.pfx", appSettings.SslPassword));
+                identityServerBuilder.AddSigningCredential(new X509Certificate2(
+                    "/certs/cert.pfx",
+                    appSettings.SslPassword,
+                     X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
             }
 
             // Disabling JWT token claims mapping by ASP.NET Identity.
