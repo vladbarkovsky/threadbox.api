@@ -40,3 +40,5 @@
       - ./certs:/certs:ro
     depends_on:
       - api
+volumes:
+  pgdata:

@@ -17,16 +17,16 @@ jobs:
         printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
 
         openssl pkcs12 -in certs/cert.pfx \
-            -nocerts \
-            -nodes \
-            -out certs/cert.key \
-            -passin env:SSL_PASSWORD
+          -nocerts \
+          -nodes \
+          -out certs/cert.key \
+          -passin env:SSL_PASSWORD
 
-          openssl pkcs12 -in certs/cert.pfx \
-            -clcerts \
-            -nokeys \
-            -out certs/cert.crt \
-            -passin env:SSL_PASSWORD
+        openssl pkcs12 -in certs/cert.pfx \
+          -clcerts \
+          -nokeys \
+          -out certs/cert.crt \
+          -passin env:SSL_PASSWORD
 
         chmod 600 certs/cert.pfx
         chmod 600 certs/cert.key
@@ -35,8 +35,6 @@ jobs:
       working-directory: ThreadboxApi
       run: |
         set -euxo pipefail
-        pwd
-        ls -la
         docker compose up -d --build
         echo "Running containers:"
         docker ps
