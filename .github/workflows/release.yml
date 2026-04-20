@@ -40,7 +40,7 @@ jobs:
         exho "Container statuses:"
         docker compose ps
 
-        for container in postgres threadbox-api nginx; do
+        for container in postgres threadbox_api nginx; do
           echo "Logs for $container:"
           docker compose logs --no-color --tail=200 $container || true
         done
