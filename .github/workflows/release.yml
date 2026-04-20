@@ -37,7 +37,7 @@ jobs:
         set -euxo pipefail
         docker compose up -d --build
 
-        exho "Container statuses:"
+        echo "Container statuses:"
         docker compose ps
 
         for container in postgres threadbox_api nginx; do
