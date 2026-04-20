@@ -17,10 +17,10 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Release
       ASPNETCORE_URLS: http://+:8080
-      AppSettings__ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
-      AppSettings__DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
-      AppSettings__OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
-      AppSettings__SslPassword: ${SSL_PASSWORD}
+      ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
+      DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
+      OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
+      SslPassword: ${SSL_PASSWORD}
     expose:
       - "8080"
     volumes:
