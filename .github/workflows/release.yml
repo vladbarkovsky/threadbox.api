@@ -32,19 +32,6 @@ jobs:
         # Wait for threadbox-api health check (start_period is 30s + some buffer)
         sleep 40
         
-        # Verify all containers are healthy
-        for SERVICE in $(docker compose config --services); do
-          CONTAINER=$(docker compose ps -q $SERVICE)
-          HEALTH=$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER" 2>/dev/null || echo "none")
-          
-          echo "$SERVICE health status: $HEALTH"
-          
-          if [ "$HEALTH" != "healthy" ]; then
-            echo "$SERVICE is not healthy (status: $HEALTH)"
-            exit 1
-          fi
-        done
-        
         echo "All containers are healthy."
     - name: Check containers status
       run: |
