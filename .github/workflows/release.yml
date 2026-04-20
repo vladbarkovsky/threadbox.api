@@ -16,17 +16,27 @@ jobs:
         mkdir -p certs
         echo "Extracting PFX certificate from base64 string..."
         printf "%s" "$SSL_PFX_BASE64" | base64 -d > certs/cert.pfx
+        echo "Check PFX file:"
+        ls -la certs
+        file certs/cert.pfx || true
         echo "Extracting key..."
 
         openssl pkcs12 -in certs/cert.pfx -nocerts -nodes \
           -out certs/cert.key \
-          -passin pass:$SSL_PASSWORD
+          -passin pass: $SSL_PASSWORD
 
         echo "Extracting crt..."
 
         openssl pkcs12 -in certs/cert.pfx -clcerts -nokeys \
           -out certs/cert.crt \
           -passin pass:$SSL_PASSWORD
+
+        echo "Final files:"
+        ls -la certs
+
+        echo "Preview cert:"
+        openssl x509 -in certs/cert.crt -text -noout | head -n 20
+
 
         chmod 600 certs/cert.pfx
         chmod 600 certs/cert.key
