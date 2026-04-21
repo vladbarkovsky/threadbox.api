@@ -39,7 +39,7 @@ namespace ThreadboxApi
                     loggerConfiguration
                         .WriteTo.File(
                             restrictedToMinimumLevel: LogEventLevel.Warning,
-                            path: "Logs/.log",
+                            path: hostBuilderContext.Configuration["LogPath"],
                             formatter: new MessageTemplateTextFormatter("[{Timestamp:HH:mm:ss.fff} {Level:u3}] {TraceId} {SourceContext}: {Message}{NewLine}{Exception}"),
                             rollingInterval: RollingInterval.Day,
                             retainedFileCountLimit: 7)

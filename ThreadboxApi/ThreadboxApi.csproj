@@ -59,13 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="appsettings.Release.json">
-      <IsTransformFile>true</IsTransformFile>
-      <DependentUpon>appsettings.json</DependentUpon>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="appsettings.json">
       <TransformOnBuild>true</TransformOnBuild>
     </Content>

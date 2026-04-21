@@ -9,14 +9,22 @@
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
+      - /etc/threadbox/certs:/certs:ro
+      - /etc/threadbox/pg_hba.conf:/pg_hba.conf:ro
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/certs/cert.crt
+      -c ssl_key_file=/certs/cert.key
+      -c pg_hba_file=/pg_hba.conf
   threadbox-api:
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      ASPNETCORE_ENVIRONMENT: Release
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5000
       ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
       DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
       OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
@@ -25,6 +33,7 @@
       - "8080"
     volumes:
       - /etc/threadbox/certs:/certs:ro
+      - /var/log/threadbox/api:/logs:ro
     depends_on:
       - postgres
   nginx:
