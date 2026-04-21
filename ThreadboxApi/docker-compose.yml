@@ -16,7 +16,7 @@
       -c ssl=on
       -c ssl_cert_file=/certs/cert.crt
       -c ssl_key_file=/certs/cert.key
-      -c pg_hba_file=/pg_hba.conf
+      -c hba_file=/pg_hba.conf
   threadbox-api:
     build:
       context: .
