@@ -13,7 +13,7 @@ namespace ThreadboxApi.Configuration
                 {
                     builder
                         .WithOrigins(appSettings.FrontendBaseUrl)
-                        .WithMethods("PUT", "DELETE")
+                        .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                         .WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
                         .Build();
                 });
@@ -34,33 +34,14 @@ namespace ThreadboxApi.Configuration
         {
             app.UseCors();
             app.UseHttpsRedirection();
-            app.UseXContentTypeOptions();
-            app.UseReferrerPolicy(options => options.NoReferrer());
-            app.UseXXssProtection(options => options.Disabled());
-            app.UseXfo(options => options.Deny());
 
-            app.UseCsp(options =>
+            app.Use(async (context, next) =>
             {
-                options
-                    .DefaultSources(s => s.None())
-                    .BlockAllMixedContent()
-                    // Swagger UI styles
-                    .StyleSources(s => s.Self().CustomSources("sha256-pyVPiLlnqL9OWVoJPs/E6VVF5hBecRzM2gBiarnaqAo="))
-                    // Images for Swagger UI
-                    .ImageSources(s => s.Self().CustomSources("data:"))
+                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+                context.Response.Headers["X-Frame-Options"] = "DENY";
 
-                    .ScriptSources(s => s.Self().CustomSources(
-                        // Script in Swagger UI
-                        "sha256-jYwH+ovNhdZXLQSoSAgcVH3aaKh7DqPa3Z3LJO3icXE="));
-
-                if (webHostEnvironment.IsDevelopment())
-                {
-                    // TODO: Check if required.
-                    // Browser Link, Live Reload, etc.
-                    options.ConnectSources(s => s.CustomSources("ws://localhost:*", "http://localhost:*"));
-                }
-
-                options.ReportUris(s => s.Uris("/api/Csp/CreateCspReport"));
+                await next();
             });
 
             if (!webHostEnvironment.IsDevelopment())
