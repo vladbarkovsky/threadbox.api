@@ -34,13 +34,10 @@ namespace ThreadboxApi.Configuration
         {
             app.UseSwaggerUi3(settings =>
             {
-                settings.Path = "/api";
-                settings.DocumentPath = "/api/specification.json";
+                var prefix = webHostEnvironment.IsDevelopment() ? string.Empty : "/threadbox-api";
 
-                settings.TransformToExternalPath = (internalPath, request) =>
-                {
-                    return request.PathBase + internalPath;
-                };
+                settings.Path = prefix + "/api";
+                settings.DocumentPath = prefix + "/api/specification.json";
             });
         }
     }

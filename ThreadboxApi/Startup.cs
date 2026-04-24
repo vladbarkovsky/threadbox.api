@@ -83,13 +83,16 @@ namespace ThreadboxApi
                 services.AddDatabaseDeveloperPageExceptionFilter();
             }
 
-            services.Configure<ForwardedHeadersOptions>(options =>
+            if (!_webHostEnvironment.IsDevelopment())
             {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedHost |
-                    ForwardedHeaders.XForwardedProto |
-                    ForwardedHeaders.XForwardedFor;
-            });
+                services.Configure<ForwardedHeadersOptions>(options =>
+                {
+                    options.ForwardedHeaders =
+                        ForwardedHeaders.XForwardedHost |
+                        ForwardedHeaders.XForwardedProto |
+                        ForwardedHeaders.XForwardedFor;
+                });
+            }
         }
 
         public void Configure(IApplicationBuilder app)
@@ -117,8 +120,11 @@ namespace ThreadboxApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseForwardedHeaders();
-            app.UsePathBase("/threadbox-api");
+            if (!_webHostEnvironment.IsDevelopment())
+            {
+                app.UseForwardedHeaders();
+                app.UsePathBase("/threadbox-api");
+            }
         }
     }
 }
