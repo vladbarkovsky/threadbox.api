@@ -34,9 +34,8 @@ namespace ThreadboxApi.Configuration
         {
             app.UseSwaggerUi3(settings =>
             {
-                settings.Path = "/api";
-                settings.DocumentPath = "/api/specification.json";
-                //settings.TransformToExternalPath = (internalPath, request) => request.PathBase.Add(internalPath);
+                settings.Path = "/api-specification";
+                settings.DocumentPath = "/api-specification.json";
             });
         }
     }

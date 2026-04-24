@@ -99,11 +99,6 @@ namespace ThreadboxApi
         {
             var appSettings = _configuration.Get<AppSettings>();
 
-            LocalizationStartup.Configure(app);
-            app.UseMiddleware<TraceIdLoggingMidleware>();
-            ErrorHandlingStartup.Configure(app);
-            SecurityStartup.Configure(app, appSettings, _webHostEnvironment);
-
             if (_webHostEnvironment.IsProduction())
             {
                 app.UseForwardedHeaders();
@@ -118,6 +113,10 @@ namespace ThreadboxApi
                 endpoints.MapRazorPages();
             });
 
+            SecurityStartup.Configure(app, appSettings, _webHostEnvironment);
+            LocalizationStartup.Configure(app);
+            app.UseMiddleware<TraceIdLoggingMidleware>();
+            ErrorHandlingStartup.Configure(app);
             app.UseHealthChecks("/health");
             IdentityStartup.Configure(app);
             app.UseStaticFiles();
