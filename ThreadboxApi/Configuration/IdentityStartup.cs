@@ -89,11 +89,11 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
-                Console.WriteLine($"Password length: {appSettings.SslPassword.Length}");
+                Console.WriteLine($"Password length: {appSettings.PfxPassword.Length}");
 
                 identityServerBuilder.AddSigningCredential(new X509Certificate2(
-                    "/certs/cert.pfx",
-                    appSettings.SslPassword,
+                    "/certs/raspberrypi.local.pfx",
+                    appSettings.PfxPassword,
                         X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
 
             }

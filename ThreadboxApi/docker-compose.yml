@@ -6,17 +6,11 @@
       POSTGRES_USER: threadbox_api
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
-      - /etc/threadbox/certs:/certs:ro
-      - /etc/threadbox/pg_hba.conf:/pg_hba.conf:ro
-    command: >
-      postgres
-      -c ssl=on
-      -c ssl_cert_file=/certs/cert.crt
-      -c ssl_key_file=/certs/cert.key
-      -c hba_file=/pg_hba.conf
+      - /opt/postgres/pg_hba.conf:/pg_hba.conf:ro
+    command: postgres -c hba_file=/pg_hba.conf
   threadbox-api:
     build:
       context: .
@@ -28,22 +22,24 @@
       ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
       DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
       OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
-      SslPassword: ${SSL_PASSWORD}
+      PfxPassword: ${PFX_PASSWORD}
     expose:
-      - "8080"
+      - "5000"
     volumes:
-      - /etc/threadbox/certs:/certs:ro
-      - /var/log/threadbox/api:/logs:ro
+      - /opt/raspberrypi.local.pfx:/certs/raspberrypi.local.pfx:ro
+      - /var/log/threadbox/api:/logs
     depends_on:
       - postgres
   nginx:
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "127.0.0.1:8080:8080"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - /etc/threadbox/certs:/certs:ro
+      - ./nginx-locations.conf:/etc/nginx/includes/locations.conf:ro
+      - /etc/ssl/certs/raspberrypi.local_fullchain.crt:/certs/raspberrypi.local_fullchain.crt:ro
+      - /etc/ssl/private/raspberrypi.local.key:/certs/raspberrypi.local.key:ro
     depends_on:
       - threadbox-api
 volumes:

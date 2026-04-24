@@ -22,6 +22,6 @@
 
         public int AbsoluteRefreshTokenLifetimeSeconds { get; set; }
         public string OidcBffClientSecret { get; set; }
-        public string SslPassword { get; set; }
+        public string PfxPassword { get; set; }
     }
 }
