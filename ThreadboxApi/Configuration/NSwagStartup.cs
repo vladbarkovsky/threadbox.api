@@ -36,8 +36,8 @@ namespace ThreadboxApi.Configuration
             {
                 var prefix = webHostEnvironment.IsDevelopment() ? string.Empty : "/threadbox-api";
 
-                settings.Path = prefix + "/api";
-                settings.DocumentPath = prefix + "/api/specification.json";
+                settings.Path = prefix + "api";
+                settings.DocumentPath = prefix + "api/specification.json";
                 settings.TransformToExternalPath = (internalPath, request) => request.PathBase + internalPath;
             });
         }
