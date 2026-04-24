@@ -103,11 +103,14 @@ namespace ThreadboxApi
             app.UseMiddleware<TraceIdLoggingMidleware>();
             ErrorHandlingStartup.Configure(app);
             SecurityStartup.Configure(app, appSettings, _webHostEnvironment);
-            NSwagStartup.Configure(app, _webHostEnvironment);
+
+            if (_webHostEnvironment.IsProduction())
+            {
+                app.UseForwardedHeaders();
+                app.UsePathBase("/threadbox-api");
+            }
+
             app.UseRouting();
-            app.UseHealthChecks("/health");
-            IdentityStartup.Configure(app);
-            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
@@ -115,16 +118,16 @@ namespace ThreadboxApi
                 endpoints.MapRazorPages();
             });
 
+            app.UseHealthChecks("/health");
+            IdentityStartup.Configure(app);
+            app.UseStaticFiles();
+
             if (_webHostEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            if (!_webHostEnvironment.IsDevelopment())
-            {
-                app.UseForwardedHeaders();
-                app.UsePathBase("/threadbox-api");
-            }
+            NSwagStartup.Configure(app, _webHostEnvironment);
         }
     }
 }

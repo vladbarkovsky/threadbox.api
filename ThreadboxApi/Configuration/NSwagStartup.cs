@@ -38,6 +38,7 @@ namespace ThreadboxApi.Configuration
 
                 settings.Path = prefix + "/api";
                 settings.DocumentPath = prefix + "/api/specification.json";
+                settings.TransformToExternalPath = (internalPath, request) => request.PathBase + internalPath;
             });
         }
     }
