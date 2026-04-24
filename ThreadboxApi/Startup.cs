@@ -85,7 +85,10 @@ namespace ThreadboxApi
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedHost |
+                    ForwardedHeaders.XForwardedProto |
+                    ForwardedHeaders.XForwardedFor;
             });
         }
 
@@ -115,6 +118,7 @@ namespace ThreadboxApi
             }
 
             app.UseForwardedHeaders();
+            app.UsePathBase("/threadbox-api");
         }
     }
 }
