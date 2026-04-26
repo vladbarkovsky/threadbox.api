@@ -10,8 +10,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Bring up Docker container
-        run: |
-          IMAGE_TAG=${{ inputs.image_tag }} docker compose up -d threadbox-api
+        run: IMAGE_TAG=${{ inputs.image_tag }} docker compose up -d
       - name: Health check
         run: |
           for i in {1..10}; do
