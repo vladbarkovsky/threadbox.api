@@ -13,7 +13,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Add dotnet to PATH
-       run: echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
+      run: echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
     - name: Check PATH
       run: echo $PATH
     - name: Restore
