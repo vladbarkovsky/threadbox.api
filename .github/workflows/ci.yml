@@ -9,7 +9,6 @@ jobs:
         working-directory: ThreadboxApi
     env:
       DOTNET_ROOT: /home/pi/.dotnet
-      PATH: /home/pi/.dotnet:$PATH
     steps:
     - name: Checkout
       uses: actions/checkout@v4
