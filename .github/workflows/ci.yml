@@ -4,14 +4,16 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+    env:
+      DOTNET_ROOT: /home/pi/.dotnet
     defaults:
       run:
         working-directory: ThreadboxApi
-    env:
-      DOTNET_ROOT: /home/pi/.dotnet
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Add dotnet to PATH
+       run: echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
     - name: Check PATH
       run: echo $PATH
     - name: Restore
