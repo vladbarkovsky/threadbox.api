@@ -1,0 +1,28 @@
+name: CD
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Docker image tag (commit SHA)"
+        required: true
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Bring up Docker container
+        run: |
+          IMAGE_TAG=${{ inputs.image_tag }} docker compose up -d threadbox-api
+      - name: Health check
+        run: |
+          for i in {1..10}; do
+            if curl -f http://localhost:8080/health; then
+              echo "Application is healthy."
+              exit 0
+            else
+              echo "Waiting..."
+              sleep 5
+            fi
+          done
+          echo "Health check failed."
+          docker logs threadbox-api
+          exit 1

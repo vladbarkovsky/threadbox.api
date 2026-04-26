@@ -1,0 +1,22 @@
+name: Deploy Infra
+on:
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: ThreadboxApi
+    env:
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Ensure Docker network created
+        run: |
+          docker network inspect threadbox-network >/dev/null 2>&1 || \
+          docker network create threadbox-network
+      - name: Bring up containers
+        run: docker compose -f docker-compose.infra.yml up -d
+      - name: Check containers status
+        run: docker compose -f docker-compose.infra.yml ps

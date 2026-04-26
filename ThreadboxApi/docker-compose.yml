@@ -1,48 +1,22 @@
-﻿services:
-  postgres:
-    image: postgres:18
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: threadbox_api
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "127.0.0.1:5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql
-      - /opt/postgres/pg_hba.conf:/pg_hba.conf:ro
-    command: postgres -c hba_file=/pg_hba.conf
+services:
   threadbox-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:5000
-      ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
-      DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
-      OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
-      PfxPassword: ${PFX_PASSWORD}
-    expose:
-      - "5000"
-    volumes:
-      - /opt/raspberrypi.local.pfx:/certs/raspberrypi.local.pfx:ro
-      - /var/log/threadbox/api:/logs
-    depends_on:
-      - postgres
-  nginx:
-    image: nginx:alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "127.0.0.1:8080:8080"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx-locations.conf:/etc/nginx/includes/locations.conf:ro
-      - /etc/ssl/certs/raspberrypi.local_fullchain.crt:/certs/raspberrypi.local_fullchain.crt:ro
-      - /etc/ssl/private/raspberrypi.local.key:/certs/raspberrypi.local.key:ro
-    depends_on:
-      - threadbox-api
-volumes:
-  pgdata:
+      image: threadbox-api:${IMAGE_TAG}
+      restart: unless-stopped
+      environment:
+        ASPNETCORE_ENVIRONMENT: Production
+        ASPNETCORE_URLS: http://+:5000
+        ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
+        DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
+        OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
+        PfxPassword: ${PFX_PASSWORD}
+      expose:
+        - "5000"
+      volumes:
+        - /opt/raspberrypi.local.pfx:/certs/raspberrypi.local.pfx:ro
+        - /var/log/threadbox/api:/logs
+      networks:
+        - threadbox
+networks:
+  threadbox:
+    external: true
+    name: threadbox-network

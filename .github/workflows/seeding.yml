@@ -13,7 +13,7 @@ jobs:
       DEFAULT_ADMIN_CREDENTIALS__PASSWORD: ${{ secrets.DEFAULT_ADMIN_CREDENTIALS__PASSWORD }}
       OIDC_BFF_CLIENT_SECRET: ${{ secrets.OIDC_BFF_CLIENT_SECRET }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Clean containers
       run: |
         set -euo pipefail
