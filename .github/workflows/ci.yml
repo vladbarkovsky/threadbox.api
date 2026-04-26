@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    -name: Check PATH
+    - name: Check PATH
       run: echo $PATH
     - name: Restore
       run: dotnet restore
