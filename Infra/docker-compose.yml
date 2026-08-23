@@ -25,6 +25,7 @@ services:
       - ./nginx-locations.conf:/etc/nginx/includes/locations.conf:ro
       - /etc/ssl/certs/raspberrypi.local_fullchain.crt:/certs/raspberrypi.local_fullchain.crt:ro
       - /etc/ssl/private/raspberrypi.local.key:/certs/raspberrypi.local.key:ro
+      - /var/www/threadbox-front:/var/www/threadbox-front:ro
     networks:
       - threadbox
 volumes:

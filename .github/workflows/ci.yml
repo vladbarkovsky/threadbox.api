@@ -28,4 +28,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Build Docker image
-      run: docker build -t threadbox-api:${{ github.sha }} .
+      run: docker build -t threadbox-api:${GITHUB_SHA} .
