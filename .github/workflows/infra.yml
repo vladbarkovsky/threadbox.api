@@ -17,6 +17,8 @@ jobs:
           docker network inspect threadbox-network >/dev/null 2>&1 || \
           docker network create threadbox-network
       - name: Bring up containers
-        run: docker compose -f docker-compose.yml up -d
+        run: |
+          docker compose -f docker-compose.yml up -d postgres
+          docker compose -f docker-compose.yml up -d --force-recreate nginx
       - name: Check containers status
         run: docker compose -f docker-compose.yml ps
