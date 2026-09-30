@@ -46,5 +46,11 @@ namespace ThreadboxApi.Application.Services
             permissionClaims.AddRange(claims.Where(x => x.Type == PermissionConstants.ClaimType));
             return permissionClaims;
         }
+
+        public async Task<string> GetUserNameAsync()
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(_applicationContext.UserId);
+            return user.UserName;
+        }
     }
 }

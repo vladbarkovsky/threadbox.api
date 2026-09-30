@@ -14,18 +14,6 @@ namespace ThreadboxApi.Application.Services
         }
 
         /// <summary>
-        /// Base URL of API
-        /// </summary>
-        public string BaseUrl
-        {
-            get
-            {
-                var request = _httpContextAccessor.HttpContext.Request;
-                return $"{request.Scheme}://{request.Host.ToUriComponent()}";
-            }
-        }
-
-        /// <summary>
         /// <see cref="IdentityUser{TKey}.Id"/> contained in the authorization token.
         /// </summary>
         // IdentityServer stores user ID in subject claim

@@ -21,10 +21,13 @@ services:
       - "443:443"
       - "127.0.0.1:8080:8080"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx-locations.conf:/etc/nginx/includes/locations.conf:ro
-      - /etc/ssl/certs/raspberrypi.local_fullchain.crt:/certs/raspberrypi.local_fullchain.crt:ro
-      - /etc/ssl/private/raspberrypi.local.key:/certs/raspberrypi.local.key:ro
+      - ./nginx:/etc/nginx/conf.d:ro
+      - /etc/ssl/certs/thread-box.com.crt:/certs/thread-box.com.crt:ro
+      - /etc/ssl/private/thread-box.com.key:/certs/thread-box.com.key:ro
+      - /etc/ssl/certs/app.thread-box.com.crt:/certs/app.thread-box.com.crt:ro
+      - /etc/ssl/private/app.thread-box.com.key:/certs/app.thread-box.com.key:ro
+      - /etc/ssl/certs/api.thread-box.com.crt:/certs/api.thread-box.com.crt:ro
+      - /etc/ssl/private/api.thread-box.com.key:/certs/api.thread-box.com.key:ro
       - /var/www/threadbox-front:/var/www/threadbox-front:ro
     networks:
       - threadbox

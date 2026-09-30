@@ -61,7 +61,7 @@ namespace ThreadboxApi.Application.Bff.Commands
                     ClientId = "bff",
                     ClientSecret = _appSettings.Value.OidcBffClientSecret,
                     Code = request.Code,
-                    RedirectUri = _appSettings.Value.BaseUrl + "/post-login-redirect-callback"
+                    RedirectUri = _appSettings.Value.BaseUrl + "/api/bff/post-login-redirect-callback"
                 },
                 cancellationToken);
 

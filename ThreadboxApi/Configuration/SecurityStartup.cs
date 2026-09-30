@@ -15,6 +15,7 @@ namespace ThreadboxApi.Configuration
                         .WithOrigins(appSettings.FrontendBaseUrl)
                         .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                         .WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
+                        .AllowCredentials()
                         .Build();
                 });
             });

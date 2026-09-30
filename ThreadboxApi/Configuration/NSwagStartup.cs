@@ -32,6 +32,11 @@ namespace ThreadboxApi.Configuration
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
         {
+            app.UseOpenApi(settings =>
+            {
+                settings.Path = "/api-specification.json";
+            });
+
             app.UseSwaggerUi3(settings =>
             {
                 settings.Path = "/api";

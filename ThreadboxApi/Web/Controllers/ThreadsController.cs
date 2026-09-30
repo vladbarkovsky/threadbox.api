@@ -8,6 +8,7 @@ using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Web.Controllers
 {
+    [Route("api/threads")]
     public class ThreadsController : MediatRController
     {
         [HttpPost("[action]")]

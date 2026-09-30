@@ -35,10 +35,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.20.0" />
-    <PackageReference Include="NSwag.MSBuild" Version="13.20.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Scrutor" Version="4.2.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
 
@@ -62,8 +58,4 @@
       <TransformOnBuild>true</TransformOnBuild>
     </Content>
   </ItemGroup>
-  
-  <Target Name="NSwag" AfterTargets="Build" Condition="$(Configuration) == 'Debug'">
-    <Exec Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" />
-  </Target>
 </Project>

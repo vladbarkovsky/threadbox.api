@@ -29,6 +29,7 @@ namespace ThreadboxApi.ORM.Services
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostImage> PostImages { get; set; }
         public DbSet<Tripcode> Tripcodes { get; set; }
+        public DbSet<BffSession> BffSessions { get; set; }
 
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
@@ -126,6 +127,7 @@ namespace ThreadboxApi.ORM.Services
                 .Entries()
                 .Where(x =>
                     x.Entity is not AuditLog &&
+                    x.Entity is not BffSession &&
                     x.State != EntityState.Detached &&
                     x.State != EntityState.Unchanged)
 

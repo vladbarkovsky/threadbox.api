@@ -19,10 +19,10 @@ namespace ThreadboxApi.Application.Bff.Commands
             _appSettings = appSettings;
         }
 
-        public Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            _bffService.ClearTokens();
-            return Task.FromResult(new RedirectResult(_appSettings.CurrentValue.FrontendBaseUrl));
+            await _bffService.ClearTokensAsync(cancellationToken);
+            return new RedirectResult(_appSettings.CurrentValue.FrontendBaseUrl);
         }
     }
 }

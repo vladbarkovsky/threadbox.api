@@ -5,6 +5,7 @@ using ThreadboxApi.Application.Boards.Queries;
 
 namespace ThreadboxApi.Web.Controllers
 {
+    [Route("api/boards")]
     public class BoardsController : MediatRController
     {
         [HttpGet("[action]")]

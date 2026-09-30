@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
@@ -11,32 +10,22 @@ namespace ThreadboxApi.Application.Bff.Commands
     {
         public class Command : IRequest<RedirectResult> { }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptionsSnapshot<AppSettings> _appSettings;
 
-        public Logout(IHttpContextAccessor httpContextAccessor, IOptionsSnapshot<AppSettings> appSettings)
+        public Logout(IOptionsSnapshot<AppSettings> appSettings)
         {
-            _httpContextAccessor = httpContextAccessor;
             _appSettings = appSettings;
         }
 
-        public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
+        public Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            var idToken = await _httpContextAccessor.HttpContext.GetTokenAsync("id_token");
-
-            var redirectUrl = new UriBuilder(_appSettings.Value.BaseUrl)
+            Dictionary<string, string> query = new Dictionary<string, string>
             {
-                Path = "/connect/endsession",
+                { "post_logout_redirect_uri", _appSettings.Value.BaseUrl + "/api/bff/post-logout-redirect-callback" }
             };
 
-            var query = new Dictionary<string, string>
-            {
-                { "id_token_hint", idToken },
-                { "post_logout_redirect_uri", _appSettings.Value.FrontendBaseUrl + "/bff/sign-out-redirect-callback" }
-            };
-
-            redirectUrl.Query = QueryHelpers.AddQueryString(redirectUrl.Query, query).TrimStart('?');
-            return new RedirectResult(redirectUrl.ToString());
+            string redirectUrl = QueryHelpers.AddQueryString(_appSettings.Value.BaseUrl + "/connect/endsession", query);
+            return Task.FromResult(new RedirectResult(redirectUrl));
         }
     }
 }

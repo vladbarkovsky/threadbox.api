@@ -7,6 +7,7 @@ using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Web.Controllers
 {
+    [Route("api/posts")]
     public class PostsController : MediatRController
     {
         [HttpGet("[action]")]

@@ -3,6 +3,7 @@ using ThreadboxApi.Application.Files.Queries;
 
 namespace ThreadboxApi.Web.Controllers
 {
+    [Route("api/files")]
     public class FilesController : MediatRController
     {
         [HttpGet("[action]")]

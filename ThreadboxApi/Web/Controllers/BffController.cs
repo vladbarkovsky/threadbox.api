@@ -4,12 +4,13 @@ using ThreadboxApi.Application.Bff.Commands;
 
 namespace ThreadboxApi.Web.Controllers
 {
+    [Route("api/bff")]
     public class BffController : MediatRController
     {
         [HttpGet("login")]
-        public async Task<ActionResult> Login([FromBody] Login.Command command)
+        public async Task<ActionResult> Login()
         {
-            return await Mediator.Send(command);
+            return await Mediator.Send(new Login.Command());
         }
 
         [HttpGet("post-login-redirect-callback")]

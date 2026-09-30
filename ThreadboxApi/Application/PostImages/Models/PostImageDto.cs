@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Options;
+using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.Application.Common.Mapping.Interfaces;
-using ThreadboxApi.Application.Services;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web;
 
@@ -14,17 +15,17 @@ namespace ThreadboxApi.Application.PostImages.Models
         public void Mapping(Profile profile)
         {
             profile.CreateMap<PostImage, PostImageDto>()
-                .ForMember(d => d.Url, o => o.MapFrom<PostImageDtoUrlResolver>());
+                .ForMember<string>(destination => destination.Url, options => options.MapFrom<PostImageDtoUrlResolver>());
         }
     }
 
     public class PostImageDtoUrlResolver : IValueResolver<PostImage, PostImageDto, string>
     {
-        private readonly ApplicationContext _appContext;
+        private readonly IOptionsSnapshot<AppSettings> _appSettings;
 
-        public PostImageDtoUrlResolver(ApplicationContext appContext)
+        public PostImageDtoUrlResolver(IOptionsSnapshot<AppSettings> appSettings)
         {
-            _appContext = appContext;
+            _appSettings = appSettings;
         }
 
         public string Resolve(
@@ -33,7 +34,7 @@ namespace ThreadboxApi.Application.PostImages.Models
             string destMember,
             ResolutionContext context)
         {
-            return string.Format(WebConstants.FileUrl, _appContext.BaseUrl, source.FileInfoId);
+            return string.Format(WebConstants.FileUrl, _appSettings.Value.BaseUrl, source.FileInfoId);
         }
     }
 }

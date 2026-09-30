@@ -33,6 +33,10 @@ namespace ThreadboxApi.Configuration
                     new IdentityResources.OpenId(),
                     new IdentityResources.Profile()
                 })
+                .AddInMemoryApiScopes(new ApiScope[]
+                {
+                    new ApiScope("threadbox_api.access")
+                })
                 .AddInMemoryApiResources(new ApiResource[]
                 {
                     new ApiResource("threadbox_api", "Threadbox API")
@@ -59,12 +63,12 @@ namespace ThreadboxApi.Configuration
 
                         PostLogoutRedirectUris =
                         {
-                            appSettings.BaseUrl + "/bff/sign-out-redirect-callback"
+                            appSettings.BaseUrl + "/api/bff/post-logout-redirect-callback"
                         },
 
                         RedirectUris =
                         {
-                            appSettings.BaseUrl + "/bff/sign-in-redirect-callback",
+                            appSettings.BaseUrl + "/api/bff/post-login-redirect-callback"
                         },
 
                         RequirePkce = false,
@@ -89,12 +93,10 @@ namespace ThreadboxApi.Configuration
             }
             else
             {
-                Console.WriteLine($"Password length: {appSettings.PfxPassword.Length}");
-
                 identityServerBuilder.AddSigningCredential(new X509Certificate2(
-                    "/certs/raspberrypi.local.pfx",
-                    appSettings.PfxPassword,
-                        X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
+                    "/certs/signing.pfx",
+                    appSettings.SigningPfxPassword,
+                    X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
 
             }
 

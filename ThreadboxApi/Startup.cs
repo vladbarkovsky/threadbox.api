@@ -34,11 +34,9 @@ namespace ThreadboxApi
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseNpgsql(appSettings.ConnectionStrings.Postgres);
-
-                // Throw exceptions in case of performance issues with single queries.
-                // See https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries.
-                options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+                options
+                    .UseNpgsql(appSettings.ConnectionStrings.Postgres)
+                    .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
             });
 
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
@@ -55,6 +53,7 @@ namespace ThreadboxApi
                 .WithTransientLifetime());
 
             services.AddHttpContextAccessor();
+            services.AddHttpClient();
             SecurityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
 
             services.AddControllers(options =>
@@ -102,17 +101,9 @@ namespace ThreadboxApi
             if (_webHostEnvironment.IsProduction())
             {
                 app.UseForwardedHeaders();
-                app.UsePathBase("/threadbox-api");
             }
 
             app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-            });
-
             SecurityStartup.Configure(app, appSettings, _webHostEnvironment);
             LocalizationStartup.Configure(app);
             app.UseMiddleware<TraceIdLoggingMidleware>();
@@ -127,6 +118,12 @@ namespace ThreadboxApi
             }
 
             NSwagStartup.Configure(app, _webHostEnvironment);
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+            });
         }
     }
 }

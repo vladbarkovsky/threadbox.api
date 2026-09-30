@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.Bff.Commands
 {
@@ -22,7 +23,7 @@ namespace ThreadboxApi.Application.Bff.Commands
 
         public Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            var state = Guid.NewGuid().ToString();
+            string state = Guid.NewGuid().ToString();
 
             _httpContextAccessor.HttpContext.Response.Cookies.Append("bff_state", state, new CookieOptions
             {
@@ -32,29 +33,25 @@ namespace ThreadboxApi.Application.Bff.Commands
                 Expires = DateTimeOffset.UtcNow.AddMinutes(5)
             });
 
-            var redirectUrl = new UriBuilder(_appSettings.Value.BaseUrl)
-            {
-                Path = "/connect/authorize",
-            };
-
-            var scopes = new string[]
+            string[] scopes = new string[]
             {
                 IdentityServerConstants.StandardScopes.OpenId,
                 IdentityServerConstants.StandardScopes.Profile,
                 IdentityServerConstants.StandardScopes.OfflineAccess,
-                "threadbox_api.access",
+                "threadbox_api.access"
             };
 
-            var query = new Dictionary<string, string>
+            Dictionary<string, string> query = new Dictionary<string, string>
             {
-                { "redirect_uri", _appSettings.Value.BaseUrl + "/bff/post-login-redirect-callback" },
+                { "client_id", "bff" },
+                { "redirect_uri", _appSettings.Value.BaseUrl + "/api/bff/post-login-redirect-callback" },
                 { "response_type", "code" },
                 { "scope", string.Join(" ", scopes) },
                 { "state", state }
             };
 
-            redirectUrl.Query = QueryHelpers.AddQueryString(redirectUrl.Query, query).TrimStart('?');
-            return Task.FromResult(new RedirectResult(redirectUrl.ToString()));
+            string redirectUrl = QueryHelpers.AddQueryString(_appSettings.Value.BaseUrl + "/connect/authorize", query);
+            return Task.FromResult(new RedirectResult(redirectUrl));
         }
     }
 }

@@ -3,6 +3,7 @@ using ThreadboxApi.Application.Csp.Commands;
 
 namespace ThreadboxApi.Web.Controllers
 {
+    [Route("api/csp")]
     public class CspController : MediatRController
     {
         [HttpPost("[action]")]

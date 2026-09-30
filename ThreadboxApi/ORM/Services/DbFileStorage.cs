@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web.ErrorHandling;
@@ -17,18 +16,18 @@ namespace ThreadboxApi.ORM.Services
 
         public async Task<byte[]> GetFileAsync(string path, CancellationToken cancellationToken)
         {
-            var data = await _dbContext.DbFiles
+            byte[] fileData = await _dbContext.DbFiles
                 .AsNoTracking()
-                .Where(x => x.Path == path)
-                .Select(x => x.Data)
+                .Where(bool (DbFile dbFile) => dbFile.Path == path)
+                .Select(byte[] (DbFile dbFile) => dbFile.Data)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            if (data == null)
+            if (fileData == null)
             {
                 throw new HttpResponseException($"Data of file with path \"{path}\" not found.", StatusCodes.Status404NotFound);
             }
 
-            return data;
+            return fileData;
         }
 
         public Task SaveFileAsync(string path, byte[] data, CancellationToken cancellationToken)
@@ -45,8 +44,8 @@ namespace ThreadboxApi.ORM.Services
 
         public async Task DeleteFileAsync(string path, CancellationToken cancellationToken)
         {
-            var dbFile = await _dbContext.DbFiles
-                .Where(x => x.Path == path)
+            DbFile dbFile = await _dbContext.DbFiles
+                .Where(bool (DbFile dbFile) => dbFile.Path == path)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (dbFile == null)

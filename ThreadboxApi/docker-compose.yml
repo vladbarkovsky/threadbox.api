@@ -6,13 +6,12 @@ services:
         ASPNETCORE_ENVIRONMENT: Production
         ASPNETCORE_URLS: http://+:5000
         ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
-        DefaultAdminCredentials__Password: ${DEFAULT_ADMIN_CREDENTIALS__PASSWORD}
         OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
-        PfxPassword: ${PFX_PASSWORD}
+        SigningPfxPassword: ${SIGNING_PFX_PASSWORD}
       expose:
         - "5000"
       volumes:
-        - /opt/raspberrypi.local.pfx:/certs/raspberrypi.local.pfx:ro
+        - /opt/signing.pfx:/certs/signing.pfx:ro
         - /var/log/threadbox/api:/logs
       networks:
         - threadbox

@@ -1,4 +1,5 @@
 ﻿using Askmethat.Aspnet.JsonLocalizer.Extensions;
+using Askmethat.Aspnet.JsonLocalizer.JsonOptions;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
@@ -11,11 +12,11 @@ namespace ThreadboxApi.Configuration
 
         public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddJsonLocalization(options =>
+            services.AddJsonLocalization(void (JsonLocalizationOptions options) =>
             {
                 options.ResourcesPath = @"Application\Common\Translations";
-                options.LocalizationMode = Askmethat.Aspnet.JsonLocalizer.JsonOptions.LocalizationMode.I18n;
-                options.SupportedCultureInfos = SupportedLanguages.Select(x => new CultureInfo(x)).ToHashSet();
+                options.LocalizationMode = LocalizationMode.I18n;
+                options.SupportedCultureInfos = SupportedLanguages.Select(CultureInfo (string language) => new CultureInfo(language)).ToHashSet();
                 options.DefaultCulture = new CultureInfo(DefaultLanguage);
                 options.DefaultUICulture = new CultureInfo(DefaultLanguage);
             });
@@ -23,7 +24,7 @@ namespace ThreadboxApi.Configuration
 
         public static void Configure(IApplicationBuilder app)
         {
-            app.UseRequestLocalization(options =>
+            app.UseRequestLocalization(void (RequestLocalizationOptions options) =>
             {
                 options
                     .AddInitialRequestCultureProvider(new AcceptLanguageHeaderRequestCultureProvider())

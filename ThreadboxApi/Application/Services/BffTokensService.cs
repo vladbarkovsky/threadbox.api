@@ -1,97 +1,173 @@
 ﻿using IdentityModel.Client;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using ThreadboxApi.Application.Bff.Models;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Services
 {
     public class BffTokensService : IScopedService
     {
-        private readonly IDistributedCache _distributedCache;
+        private const string SessionCookieName = "bff_session_id";
+
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IDateTimeService _dateTimeService;
         private readonly IOptionsMonitor<AppSettings> _appSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public BffTokensService(
-            IDistributedCache distributedCache,
+            ApplicationDbContext dbContext,
+            IDateTimeService dateTimeService,
             IOptionsMonitor<AppSettings> appSettings,
             IHttpContextAccessor httpContextAccessor)
         {
-            _distributedCache = distributedCache;
+            _dbContext = dbContext;
+            _dateTimeService = dateTimeService;
             _appSettings = appSettings;
             _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task SetTokensAsync(TokenResponse tokenResponse, CancellationToken cancellationToken = default)
         {
-            ClearTokens();
-            var sessionId = Guid.NewGuid().ToString();
+            await ClearTokensAsync(cancellationToken);
 
-            var sessionLifetime = TimeSpan.FromSeconds(tokenResponse.RefreshToken == null ?
-                tokenResponse.ExpiresIn :
-                _appSettings.CurrentValue.AbsoluteRefreshTokenLifetimeSeconds);
+            DateTimeOffset utcNow = _dateTimeService.UtcNow;
+            DateTimeOffset sessionExpiresAt = utcNow.AddSeconds(_appSettings.CurrentValue.AbsoluteRefreshTokenLifetimeSeconds);
 
-            await _distributedCache.SetStringAsync(
-                sessionId,
-                JsonSerializer.Serialize(new Tokens
-                {
-                    AccessToken = tokenResponse.AccessToken,
-                    ExpiresAt = DateTimeOffset.UtcNow.AddSeconds(tokenResponse.ExpiresIn),
-                    RefreshToken = tokenResponse.RefreshToken
-                }),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(tokenResponse.RefreshToken == null ?
-                        tokenResponse.ExpiresIn :
-                        _appSettings.CurrentValue.AbsoluteRefreshTokenLifetimeSeconds)
+            var session = new BffSession
+            {
+                Id = Guid.NewGuid(),
+                AccessToken = tokenResponse.AccessToken,
+                AccessTokenExpiresAt = utcNow.AddSeconds(tokenResponse.ExpiresIn),
+                RefreshToken = tokenResponse.RefreshToken,
+                SessionExpiresAt = sessionExpiresAt
+            };
 
-                },
-                cancellationToken);
+            _dbContext.BffSessions.Add(session);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             _httpContextAccessor.HttpContext.Response.Cookies.Append(
-                "bff_session_id",
-                tokenResponse.AccessToken,
+                SessionCookieName,
+                session.Id.ToString(),
                 new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.Strict,
-                    MaxAge = sessionLifetime
+                    MaxAge = sessionExpiresAt - utcNow
                 });
         }
 
         public async Task<Tokens> GetTokensAsync(CancellationToken cancellationToken = default)
         {
-            var sessionId = _httpContextAccessor.HttpContext.Request.Cookies["bff_session_id"];
+            Guid? sessionId = ReadSessionIdFromCookie();
 
-            if (string.IsNullOrWhiteSpace(sessionId))
+            if (sessionId == null)
             {
                 return null;
             }
 
-            var tokensJson = await _distributedCache.GetStringAsync(sessionId, cancellationToken);
+            BffSession session = await _dbContext.BffSessions
+                .FirstOrDefaultAsync(bool (BffSession x) => x.Id == sessionId.Value, cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(tokensJson))
+            if (session == null)
             {
+                DeleteSessionCookie();
                 return null;
             }
 
-            return JsonSerializer.Deserialize<Tokens>(tokensJson);
+            if (session.SessionExpiresAt <= _dateTimeService.UtcNow)
+            {
+                _dbContext.BffSessions.Remove(session);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                DeleteSessionCookie();
+                return null;
+            }
+
+            return new Tokens
+            {
+                AccessToken = session.AccessToken,
+                ExpiresAt = session.AccessTokenExpiresAt,
+                RefreshToken = session.RefreshToken
+            };
         }
 
-        public void ClearTokens()
+        public async Task UpdateTokensAsync(TokenResponse tokenResponse, CancellationToken cancellationToken = default)
         {
-            var sessionId = _httpContextAccessor.HttpContext.Request.Cookies["bff_session_id"];
+            Guid? sessionId = ReadSessionIdFromCookie();
 
-            if (string.IsNullOrWhiteSpace(sessionId))
+            if (!sessionId.HasValue)
             {
                 return;
             }
 
-            _distributedCache.Remove(sessionId);
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_session_id");
+            BffSession session = await _dbContext.BffSessions.FirstOrDefaultAsync(
+                bool (BffSession bffSession) => bffSession.Id == sessionId.Value,
+                cancellationToken);
+
+            if (session == null)
+            {
+                return;
+            }
+
+            session.AccessToken = tokenResponse.AccessToken;
+            session.AccessTokenExpiresAt = _dateTimeService.UtcNow.AddSeconds(tokenResponse.ExpiresIn);
+
+            if (!string.IsNullOrWhiteSpace(tokenResponse.RefreshToken))
+            {
+                session.RefreshToken = tokenResponse.RefreshToken;
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task ClearTokensAsync(CancellationToken cancellationToken = default)
+        {
+            Guid? sessionId = ReadSessionIdFromCookie();
+
+            if (!sessionId.HasValue)
+            {
+                return;
+            }
+
+            BffSession session = await _dbContext.BffSessions.FirstOrDefaultAsync(
+                bool (BffSession x) => x.Id == sessionId.Value,
+                cancellationToken);
+
+            if (session != null)
+            {
+                _dbContext.BffSessions.Remove(session);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+            }
+
+            DeleteSessionCookie();
+        }
+
+        private Guid? ReadSessionIdFromCookie()
+        {
+            string sessionId = _httpContextAccessor.HttpContext.Request.Cookies[SessionCookieName];
+
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                return null;
+            }
+
+            if (!Guid.TryParse(sessionId, out Guid parsedSessionId))
+            {
+                DeleteSessionCookie();
+                return null;
+            }
+
+            return parsedSessionId;
+        }
+
+        private void DeleteSessionCookie()
+        {
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete(SessionCookieName);
         }
     }
 }

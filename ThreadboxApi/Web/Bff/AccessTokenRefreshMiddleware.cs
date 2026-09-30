@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.Application.Services;
+using ThreadboxApi.Application.Services.Interfaces;
 
 namespace ThreadboxApi.Web.Bff
 {
@@ -11,40 +12,50 @@ namespace ThreadboxApi.Web.Bff
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly BffTokensService _bffService;
         private readonly IOptionsSnapshot<AppSettings> _appSettings;
+        private readonly IDateTimeService _dateTimeService;
 
         public AccessTokenRefreshMiddleware(
             IHttpClientFactory httpClientFactory,
             BffTokensService bffService,
-            IOptionsSnapshot<AppSettings> appSettings)
+            IOptionsSnapshot<AppSettings> appSettings,
+            IDateTimeService dateTimeService)
         {
             _httpClientFactory = httpClientFactory;
             _bffService = bffService;
             _appSettings = appSettings;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var tokens = await _bffService.GetTokensAsync();
 
-            if (tokens == null || DateTimeOffset.UtcNow.AddMinutes(2) < tokens.ExpiresAt)
+            if (tokens == null || _dateTimeService.UtcNow.AddMinutes(2) < tokens.ExpiresAt)
             {
                 await next(context);
                 return;
             }
 
-            var client = _httpClientFactory.CreateClient();
-
-            var tokenResponse = await client.RequestRefreshTokenAsync(new RefreshTokenRequest
+            using (HttpClient httpClient = _httpClientFactory.CreateClient())
             {
-                Address = _appSettings + "/connect/token",
-                ClientId = "bff",
-                ClientSecret = _appSettings.Value.OidcBffClientSecret,
-                RefreshToken = tokens.RefreshToken
-            });
+                TokenResponse tokenResponse = await httpClient.RequestRefreshTokenAsync(
+                    new RefreshTokenRequest
+                    {
+                        Address = _appSettings.Value.BaseUrl + "/connect/token",
+                        ClientId = "bff",
+                        ClientSecret = _appSettings.Value.OidcBffClientSecret,
+                        RefreshToken = tokens.RefreshToken
+                    },
+                    context.RequestAborted);
 
-            if (tokenResponse.IsError)
-            {
-                _bffService.ClearTokens();
+                if (tokenResponse.IsError)
+                {
+                    await _bffService.ClearTokensAsync(context.RequestAborted);
+                }
+                else
+                {
+                    await _bffService.UpdateTokensAsync(tokenResponse, context.RequestAborted);
+                }
             }
 
             await next(context);

@@ -2,7 +2,6 @@ using Serilog;
 using Serilog.Formatting.Display;
 using Serilog.Events;
 using ThreadboxApi.ORM.Services;
-using ThreadboxApi.Application.Common;
 
 namespace ThreadboxApi
 {
@@ -10,52 +9,46 @@ namespace ThreadboxApi
     {
         private static async Task Main(string[] args)
         {
-            var host = Host
+            using IHost host = Host
                 .CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
+                .ConfigureAppConfiguration(void (HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder) =>
                 {
-                    config.AddJsonFile(
+                    configurationBuilder.AddJsonFile(
                         "appsettings.json",
                         optional: false,
                         reloadOnChange: true);
-                    config.AddJsonFile(
-                        $"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json",
+                    configurationBuilder.AddJsonFile(
+                        $"appsettings.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json",
                         optional: true,
                         reloadOnChange: true);
 
-                    config.AddEnvironmentVariables();
+                    configurationBuilder.AddEnvironmentVariables();
 
                     if (args != null)
                     {
-                        config.AddCommandLine(args);
+                        configurationBuilder.AddCommandLine(args);
                     }
                 })
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureWebHostDefaults(void (IWebHostBuilder builder) => builder.UseStartup<Startup>())
+                .UseSerilog(void (HostBuilderContext hostBuilderContext, LoggerConfiguration configuration) =>
                 {
-                    webBuilder.UseStartup<Startup>();
-                })
-                .UseSerilog((hostBuilderContext, loggerConfiguration) =>
-                {
-                    loggerConfiguration
-                        .WriteTo.File(
-                            restrictedToMinimumLevel: LogEventLevel.Warning,
-                            path: hostBuilderContext.Configuration["LogPath"],
-                            formatter: new MessageTemplateTextFormatter("[{Timestamp:HH:mm:ss.fff} {Level:u3}] {TraceId} {SourceContext}: {Message}{NewLine}{Exception}"),
-                            rollingInterval: RollingInterval.Day,
-                            retainedFileCountLimit: 7)
-                        .WriteTo.Console()
-                        .Enrich.FromLogContext();
+                    configuration.WriteTo.File(
+                        restrictedToMinimumLevel: LogEventLevel.Warning,
+                        path: hostBuilderContext.Configuration["LogPath"],
+                        formatter: new MessageTemplateTextFormatter("[{Timestamp:HH:mm:ss.fff} {Level:u3}] {TraceId} {SourceContext}: {Message}{NewLine}{Exception}"),
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 7);
+
+                    configuration.WriteTo.Console();
+                    configuration.Enrich.FromLogContext();
                 })
                 .Build();
 
-            using var scope = host.Services.CreateScope();
-            var services = scope.ServiceProvider;
-            var dbInitializationService = services.GetRequiredService<DbInitializationService>();
-            await dbInitializationService.EnsureInitializedAsync();
-
-#if DEBUG
-            Reflection.GenerateTypeScriptPermissions();
-#endif
+            using (IServiceScope scope = host.Services.CreateScope())
+            {
+                RoleService roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
+                await roleService.SynchronizeRolesAsync();
+            }
 
             await host.RunAsync();
         }
