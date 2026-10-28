@@ -2,7 +2,7 @@
 {
     public class ArchivableFile
     {
-        public string Name { get; set; }
-        public byte[] Data { get; set; }
+        public string Name { get; init; }
+        public byte[] Data { get; init; }
     }
 }

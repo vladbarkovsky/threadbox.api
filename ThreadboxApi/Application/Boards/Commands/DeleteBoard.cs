@@ -1,22 +1,29 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Entities.Interfaces;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {
-    public class DeleteBoard : IRequestHandler<DeleteBoard.Command, Unit>
+    public class DeleteBoard : IRequestHandler<DeleteBoard.Command, NoContentResult>
     {
-        public class Command : IRequest<Unit>
+        public class Command : IRequest<NoContentResult>, IConsistentCommand
         {
-            public Guid BoardId { get; set; }
+            [FromRoute]
+            public Guid Id { get; init; }
+            [FromQuery]
+            public uint? RowVersion { get; init; }
 
-            public class Validator : AbstractValidator<Command>
+            public class Validator : ConsistentCommandValidatorTemplate<Command>
             {
-                public Validator()
+                protected override void Configure()
                 {
-                    RuleFor(x => x.BoardId).NotEmpty();
+                    RuleFor(x => x.Id).NotEmpty();
                 }
             }
         }
@@ -28,23 +35,23 @@ namespace ThreadboxApi.Application.Boards.Commands
             _dbContext = dbContext;
         }
 
-        async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken)
+        async Task<NoContentResult> IRequestHandler<Command, NoContentResult>.Handle(Command request, CancellationToken cancellationToken)
         {
-            var board = await _dbContext.Boards
-                .Where(x => x.Id == request.BoardId)
+            Board board = await _dbContext.Boards
+                .Where(x => x.Id == request.Id)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (board == null)
             {
-                throw new HttpResponseException($"Board with ID \"{request.BoardId}\" not found.", StatusCodes.Status404NotFound);
+                throw new HttpResponseException($"Board with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
             }
 
             board.Deleted = true;
 
-            _dbContext.Update(board);
+            _dbContext.SetOriginalRowVersion(board, request.RowVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return new NoContentResult();
         }
     }
 }

@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Services.Interfaces;
-using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -13,7 +12,7 @@ namespace ThreadboxApi.Application.Files.Queries
     {
         public class Query : IRequest<FileContentResult>
         {
-            public Guid FileInfoId { get; set; }
+            public Guid FileInfoId { get; init; }
 
             public class Validator : AbstractValidator<Query>
             {
@@ -35,7 +34,7 @@ namespace ThreadboxApi.Application.Files.Queries
 
         public async Task<FileContentResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            var fileInfo = await _dbContext.FileInfos
+            ORM.Entities.FileInfo fileInfo = await _dbContext.FileInfos
                 .AsNoTracking()
                 .Where(x => x.Id == request.FileInfoId)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -45,7 +44,7 @@ namespace ThreadboxApi.Application.Files.Queries
                 throw new HttpResponseException($"File info with ID \"{request.FileInfoId}\" not found.", StatusCodes.Status404NotFound);
             }
 
-            var data = await _fileStorage.GetFileAsync(fileInfo.Path);
+            byte[] data = await _fileStorage.GetFileAsync(fileInfo.Path, cancellationToken);
 
             return new FileContentResult(data, fileInfo.ContentType)
             {

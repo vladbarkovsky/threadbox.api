@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using ThreadboxApi.Application.Bff.Commands;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -73,6 +74,17 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, "Invalid user name or password.");
                 return Page();
             }
+
+            Response.Cookies.Append(
+                ContinueLogin.OfflineAccessCookieName,
+                Input.OfflineAccess ? "true" : "false",
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+                });
 
             return Redirect(returnUrl);
         }

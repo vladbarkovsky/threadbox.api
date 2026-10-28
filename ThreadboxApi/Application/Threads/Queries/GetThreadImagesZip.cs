@@ -9,13 +9,13 @@ using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
-namespace ThreadboxApi.Application.Files.Queries
+namespace ThreadboxApi.Application.Threads.Queries
 {
-    public class GetTreadImagesZip : IRequestHandler<GetTreadImagesZip.Query, FileContentResult>
+    public class GetThreadImagesZip : IRequestHandler<GetThreadImagesZip.Query, FileContentResult>
     {
         public class Query : IRequest<FileContentResult>
         {
-            public Guid ThreadId { get; set; }
+            public Guid ThreadId { get; init; }
 
             public class Validator : AbstractValidator<Query>
             {
@@ -30,7 +30,7 @@ namespace ThreadboxApi.Application.Files.Queries
         private readonly IFileStorage _fileStorage;
         private readonly ZipService _zipService;
 
-        public GetTreadImagesZip(ApplicationDbContext dbContext, IFileStorage fileStorage, ZipService zipService)
+        public GetThreadImagesZip(ApplicationDbContext dbContext, IFileStorage fileStorage, ZipService zipService)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;
@@ -51,23 +51,23 @@ namespace ThreadboxApi.Application.Files.Queries
                 throw new HttpResponseException($"Thread with ID \"{request.ThreadId}\" not found.", StatusCodes.Status404NotFound);
             }
 
-            var fileInfos = thread.ThreadImages.Select(x => x.FileInfo);
+            IEnumerable<ORM.Entities.FileInfo> fileInfos = thread.ThreadImages.Select(x => x.FileInfo);
             var files = new List<byte[]>();
 
-            /// NOTE: We don't use <see cref="Task.WhenAll(IEnumerable{Task})"/>,
-            /// because current file storage implementation interacts with database.
             foreach (var fileInfo in fileInfos)
             {
-                files.Add(await _fileStorage.GetFileAsync(fileInfo.Path));
+                files.Add(await _fileStorage.GetFileAsync(fileInfo.Path, cancellationToken));
             }
 
-            var archivableFiles = fileInfos.Zip(files, (fileInfo, file) => new ArchivableFile
-            {
-                Name = fileInfo.Name,
-                Data = file
-            });
+            IEnumerable<ArchivableFile> archivableFiles = fileInfos.Zip(
+                second: files,
+                resultSelector: ArchivableFile (ORM.Entities.FileInfo fileInfo, byte[] file) => new ArchivableFile
+                {
+                    Name = fileInfo.Name,
+                    Data = file
+                });
 
-            var archive = await _zipService.ArchiveAsync(archivableFiles);
+            byte[] archive = await _zipService.ArchiveAsync(archivableFiles);
 
             return new FileContentResult(archive, MediaTypeNames.Application.Zip)
             {

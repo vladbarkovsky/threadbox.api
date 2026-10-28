@@ -10,10 +10,10 @@ namespace ThreadboxApi.Application.Bff.Commands
     {
         public class Command : IRequest<RedirectResult> { }
 
-        private readonly BffTokensService _bffService;
-        private readonly IOptionsMonitor<AppSettings> _appSettings;
+        private readonly BffService _bffService;
+        private readonly IOptionsSnapshot<AppSettings> _appSettings;
 
-        public PostLogoutRedirectCallback(BffTokensService bffService, IOptionsMonitor<AppSettings> appSettings)
+        public PostLogoutRedirectCallback(BffService bffService, IOptionsSnapshot<AppSettings> appSettings)
         {
             _bffService = bffService;
             _appSettings = appSettings;
@@ -22,7 +22,7 @@ namespace ThreadboxApi.Application.Bff.Commands
         public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
             await _bffService.ClearTokensAsync(cancellationToken);
-            return new RedirectResult(_appSettings.CurrentValue.FrontendBaseUrl);
+            return new RedirectResult(_appSettings.Value.FrontendBaseUrl);
         }
     }
 }

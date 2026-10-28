@@ -1,12 +1,12 @@
 using MediatR;
+using ThreadboxApi.Application.Identity.Models;
 using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Application.Identity.Queries
 {
     public class GetUserSession : IRequestHandler<GetUserSession.Query, UserSession>
     {
-        public class Query : IRequest<UserSession>
-        { }
+        public class Query : IRequest<UserSession> { }
 
         private readonly IdentityService _identityService;
 
@@ -17,12 +17,7 @@ namespace ThreadboxApi.Application.Identity.Queries
 
         public async Task<UserSession> Handle(Query request, CancellationToken cancellationToken)
         {
-            string userName = await _identityService.GetUserNameAsync();
-
-            return new UserSession
-            {
-                UserName = userName
-            };
+            return await _identityService.GetUserSessionAsync();
         }
     }
 }

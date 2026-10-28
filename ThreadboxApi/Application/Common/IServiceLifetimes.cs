@@ -1,11 +1,8 @@
 ﻿namespace ThreadboxApi.Application.Common
 {
-    public interface ITransientService
-    { }
+    public interface ITransientService { }
 
-    public interface IScopedService
-    { }
+    public interface IScopedService { }
 
-    public interface ISingletonService
-    { }
+    public interface ISingletonService { }
 }

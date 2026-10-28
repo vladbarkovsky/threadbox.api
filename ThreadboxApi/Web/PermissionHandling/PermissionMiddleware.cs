@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using System.Security.Claims;
 using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Web.PermissionHandling
@@ -14,9 +15,7 @@ namespace ThreadboxApi.Web.PermissionHandling
 
         public async Task InvokeAsync(HttpContext context, IdentityService identityService)
         {
-            // We need to add permission claims only for HTTP requests with JWT authorization.
-            // HTTP requests with JWT authorization result in the creation of Identity with authentication type "AuthenticationTypes.Federation"
-            if (context.User.Identity.AuthenticationType != "AuthenticationTypes.Federation")
+            if (context.User.Identity.AuthenticationType != IdentityServerJwtConstants.IdentityServerJwtBearerScheme)
             {
                 await _next(context);
                 return;
@@ -27,10 +26,10 @@ namespace ThreadboxApi.Web.PermissionHandling
             if (permissionClaims.Any())
             {
                 var permissionsIdentity = new ClaimsIdentity(
-                    permissionClaims,
-                    nameof(PermissionMiddleware),
-                    "name",
-                    "role");
+                    claims: permissionClaims,
+                    authenticationType: nameof(PermissionMiddleware),
+                    nameType: "name",
+                    roleType: "role");
 
                 context.User.AddIdentity(permissionsIdentity);
             }

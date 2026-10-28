@@ -1,5 +1,4 @@
 ﻿namespace ThreadboxApi.ORM.Entities
 {
-    public class RegistrationKey : BaseEntity
-    { }
+    public class RegistrationKey : BaseEntity { }
 }

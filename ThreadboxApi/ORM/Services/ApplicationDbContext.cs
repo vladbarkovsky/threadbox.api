@@ -1,7 +1,9 @@
-﻿using AutoMapper.Internal;
+using AutoMapper.Internal;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Text.Json;
@@ -43,7 +45,6 @@ namespace ThreadboxApi.ORM.Services
 
         public override int SaveChanges()
         {
-            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChanges();
@@ -51,7 +52,6 @@ namespace ThreadboxApi.ORM.Services
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
-            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
@@ -59,7 +59,6 @@ namespace ThreadboxApi.ORM.Services
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChanges(acceptAllChangesOnSuccess);
@@ -67,82 +66,76 @@ namespace ThreadboxApi.ORM.Services
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            SyncRowVersion();
             AddAuditInfo();
             CreateAuditLogs();
             return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public void SetOriginalRowVersion<TEntity>(TEntity entity, uint? rowVersion)
+            where TEntity : class, IConsistent
+        {
+            if (!rowVersion.HasValue)
+            {
+                throw new InvalidOperationException(
+                    "RowVersion is null. This should never happen. Please find the author of this joke.");
+            }
+
+            PropertyEntry<TEntity, uint> propertyEntry = Entry(entity).Property(uint (TEntity entity) => entity.RowVersion);
+            propertyEntry.OriginalValue = rowVersion.Value;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            ConfigureQueryFilters(modelBuilder);
-        }
-
-        // TODO: Test if needed.
-        private void SyncRowVersion()
-        {
-            ChangeTracker
-                .Entries<IConsistent>()
-                .AsParallel()
-                .ForAll(entry =>
-                {
-                    var propertyEntry = entry.Property(x => x.RowVersion);
-
-                    // Ensuring that the original value will came from the client - not from the database.
-                    propertyEntry.OriginalValue = propertyEntry.CurrentValue;
-                });
+            ConfigureDeleteFilters(modelBuilder);
         }
 
         private void AddAuditInfo()
         {
-            var utcNow = _dateTimeService.UtcNow;
+            DateTimeOffset utcNow = _dateTimeService.UtcNow;
 
             ChangeTracker
                 .Entries<IAuditable>()
-                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified)
+                .Where(bool (EntityEntry<IAuditable> entry) => entry.State == EntityState.Added || entry.State == EntityState.Modified)
                 .AsParallel()
-                .ForAll(x =>
+                .ForAll(void (EntityEntry<IAuditable> entry) =>
                 {
-                    var entity = x.Entity;
+                    IAuditable entity = entry.Entity;
 
-                    if (x.State == EntityState.Added)
+                    if (entry.State == EntityState.Added)
                     {
                         entity.CreatedAt = utcNow;
-                        entity.CreatedById = _appContext.UserId;
+                        entity.CreatedById = _appContext.CurrentUserId;
                     }
 
-                    if (x.State == EntityState.Modified)
+                    if (entry.State == EntityState.Modified)
                     {
                         entity.UpdatedAt = utcNow;
-                        entity.UpdatedById = _appContext.UserId;
+                        entity.UpdatedById = _appContext.CurrentUserId;
                     }
                 });
         }
 
         private void CreateAuditLogs()
         {
-            var entries = ChangeTracker
+            EntityEntry[] entries = ChangeTracker
                 .Entries()
-                .Where(x =>
-                    x.Entity is not AuditLog &&
-                    x.Entity is not BffSession &&
-                    x.State != EntityState.Detached &&
-                    x.State != EntityState.Unchanged)
+                .Where(bool (EntityEntry entry) =>
+                    entry.Entity is not AuditLog &&
+                    entry.State != EntityState.Detached &&
+                    entry.State != EntityState.Unchanged)
+                .ToArray();
 
-                /// Preventing <see cref="InvalidOperationException"/> with message 'Collection was modified; enumeration operation may not execute.'
-                .ToList();
+            DateTimeOffset utcNow = _dateTimeService.UtcNow;
 
-            var utcNow = _dateTimeService.UtcNow;
-
-            foreach (var entry in entries)
+            foreach (EntityEntry entry in entries)
             {
                 var auditLog = new AuditLog()
                 {
                     EntityName = entry.Entity.GetType().Name,
                     CreatedAt = utcNow,
-                    UserId = _appContext.UserId
+                    UserId = _appContext.CurrentUserId
                 };
 
                 var primaryKeys = new Dictionary<string, string>();
@@ -150,36 +143,37 @@ namespace ThreadboxApi.ORM.Services
                 var newValues = new Dictionary<string, object>();
                 var affectedProperties = new List<string>();
 
-                foreach (var property in entry.Properties)
+                foreach (PropertyEntry propertyEntry in entry.Properties)
                 {
-                    var propertyName = property.Metadata.Name;
+                    string propertyName = propertyEntry.Metadata.Name;
 
-                    if (property.Metadata.IsPrimaryKey())
+                    if (propertyEntry.Metadata.IsPrimaryKey())
                     {
-                        primaryKeys[propertyName] = property.CurrentValue.ToString();
+                        primaryKeys[propertyName] = propertyEntry.CurrentValue.ToString();
                     }
 
                     switch (entry.State)
                     {
                         case EntityState.Added:
                             auditLog.Operation = AuditLogOperation.Create;
-                            newValues[propertyName] = property.CurrentValue;
+                            newValues[propertyName] = propertyEntry.CurrentValue;
                             break;
 
                         case EntityState.Modified:
-                            if (property.IsModified)
+                            if (!propertyEntry.IsModified)
                             {
-                                auditLog.Operation = AuditLogOperation.Update;
-                                oldValues[propertyName] = property.OriginalValue;
-                                newValues.Add(propertyName, property.CurrentValue);
-                                affectedProperties.Add(propertyName);
+                                break;
                             }
 
+                            auditLog.Operation = AuditLogOperation.Update;
+                            oldValues[propertyName] = propertyEntry.OriginalValue;
+                            newValues.Add(propertyName, propertyEntry.CurrentValue);
+                            affectedProperties.Add(propertyName);
                             break;
 
                         case EntityState.Deleted:
                             auditLog.Operation = AuditLogOperation.Delete;
-                            oldValues[propertyName] = property.OriginalValue;
+                            oldValues[propertyName] = propertyEntry.OriginalValue;
                             break;
                     }
                 }
@@ -193,21 +187,22 @@ namespace ThreadboxApi.ORM.Services
             }
         }
 
-        public void ConfigureQueryFilterForDeletedEntities<TEntity>(ModelBuilder modelBuilder) where TEntity : class, IDeletable
+        public void ConfigureDeleteFilter<TEntity>(ModelBuilder modelBuilder)
+            where TEntity : class, IDeletable
         {
-            modelBuilder.Entity<TEntity>().HasQueryFilter(x => !x.Deleted);
+            modelBuilder.Entity<TEntity>().HasQueryFilter(bool (TEntity entity) => !entity.Deleted);
         }
 
-        private void ConfigureQueryFilters(ModelBuilder modelBuilder)
+        private void ConfigureDeleteFilters(ModelBuilder modelBuilder)
         {
-            var entityTypes = modelBuilder.Model.GetEntityTypes().Select(x => x.ClrType);
-            var deletableEntityTypes = entityTypes.Where(x => typeof(IDeletable).IsAssignableFrom(x));
-            var methodInfo = typeof(ApplicationDbContext).GetMethod(nameof(ConfigureQueryFilterForDeletedEntities));
+            IEnumerable<Type> entityTypes = modelBuilder.Model.GetEntityTypes().Select(Type (IMutableEntityType type) => type.ClrType);
+            IEnumerable<Type> deletableEntityTypes = entityTypes.Where(bool (Type type) => typeof(IDeletable).IsAssignableFrom(type));
+            MethodInfo methodInfo = typeof(ApplicationDbContext).GetMethod(nameof(ConfigureDeleteFilter));
 
-            foreach (var entityType in deletableEntityTypes)
+            foreach (Type entityType in deletableEntityTypes)
             {
-                var method = methodInfo.MakeGenericMethod(entityType);
-                method.Invoke(this, new object[] { modelBuilder });
+                MethodInfo genericMethodInfo = methodInfo.MakeGenericMethod(entityType);
+                genericMethodInfo.Invoke(this, new object[] { modelBuilder });
             }
         }
     }

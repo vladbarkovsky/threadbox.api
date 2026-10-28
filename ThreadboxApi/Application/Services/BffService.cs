@@ -1,4 +1,4 @@
-﻿using IdentityModel.Client;
+using IdentityModel.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ThreadboxApi.Application.Bff.Models;
@@ -10,7 +10,7 @@ using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Services
 {
-    public class BffTokensService : IScopedService
+    public class BffService : IScopedService
     {
         private const string SessionCookieName = "bff_session_id";
 
@@ -19,7 +19,7 @@ namespace ThreadboxApi.Application.Services
         private readonly IOptionsMonitor<AppSettings> _appSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BffTokensService(
+        public BffService(
             ApplicationDbContext dbContext,
             IDateTimeService dateTimeService,
             IOptionsMonitor<AppSettings> appSettings,
@@ -36,30 +36,41 @@ namespace ThreadboxApi.Application.Services
             await ClearTokensAsync(cancellationToken);
 
             DateTimeOffset utcNow = _dateTimeService.UtcNow;
-            DateTimeOffset sessionExpiresAt = utcNow.AddSeconds(_appSettings.CurrentValue.AbsoluteRefreshTokenLifetimeSeconds);
+            DateTimeOffset accessTokenExpiresAt = utcNow.AddSeconds(tokenResponse.ExpiresIn);
+            bool hasRefreshToken = !string.IsNullOrWhiteSpace(tokenResponse.RefreshToken);
+
+            DateTimeOffset sessionExpiresAt = hasRefreshToken
+                ? utcNow.AddSeconds(_appSettings.CurrentValue.AbsoluteRefreshTokenLifetimeSeconds)
+                : accessTokenExpiresAt;
 
             var session = new BffSession
             {
                 Id = Guid.NewGuid(),
                 AccessToken = tokenResponse.AccessToken,
-                AccessTokenExpiresAt = utcNow.AddSeconds(tokenResponse.ExpiresIn),
-                RefreshToken = tokenResponse.RefreshToken,
+                AccessTokenExpiresAt = accessTokenExpiresAt,
+                RefreshToken = hasRefreshToken ? tokenResponse.RefreshToken : null,
                 SessionExpiresAt = sessionExpiresAt
             };
 
             _dbContext.BffSessions.Add(session);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            };
+
+            if (hasRefreshToken)
+            {
+                cookieOptions.MaxAge = sessionExpiresAt - utcNow;
+            }
+
             _httpContextAccessor.HttpContext.Response.Cookies.Append(
                 SessionCookieName,
                 session.Id.ToString(),
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    MaxAge = sessionExpiresAt - utcNow
-                });
+                cookieOptions);
         }
 
         public async Task<Tokens> GetTokensAsync(CancellationToken cancellationToken = default)
@@ -72,7 +83,7 @@ namespace ThreadboxApi.Application.Services
             }
 
             BffSession session = await _dbContext.BffSessions
-                .FirstOrDefaultAsync(bool (BffSession x) => x.Id == sessionId.Value, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == sessionId.Value, cancellationToken);
 
             if (session == null)
             {
@@ -82,8 +93,10 @@ namespace ThreadboxApi.Application.Services
 
             if (session.SessionExpiresAt <= _dateTimeService.UtcNow)
             {
-                _dbContext.BffSessions.Remove(session);
+                session.Deleted = true;
+                _dbContext.Update(session);
                 await _dbContext.SaveChangesAsync(cancellationToken);
+
                 DeleteSessionCookie();
                 return null;
             }
@@ -105,9 +118,8 @@ namespace ThreadboxApi.Application.Services
                 return;
             }
 
-            BffSession session = await _dbContext.BffSessions.FirstOrDefaultAsync(
-                bool (BffSession bffSession) => bffSession.Id == sessionId.Value,
-                cancellationToken);
+            BffSession session = await _dbContext.BffSessions
+                .FirstOrDefaultAsync(x => x.Id == sessionId.Value, cancellationToken);
 
             if (session == null)
             {
@@ -134,13 +146,13 @@ namespace ThreadboxApi.Application.Services
                 return;
             }
 
-            BffSession session = await _dbContext.BffSessions.FirstOrDefaultAsync(
-                bool (BffSession x) => x.Id == sessionId.Value,
-                cancellationToken);
+            BffSession session = await _dbContext.BffSessions
+                .FirstOrDefaultAsync(x => x.Id == sessionId.Value, cancellationToken);
 
             if (session != null)
             {
-                _dbContext.BffSessions.Remove(session);
+                session.Deleted = true;
+                _dbContext.Update(session);
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
 

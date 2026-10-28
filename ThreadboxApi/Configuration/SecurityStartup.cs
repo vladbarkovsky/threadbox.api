@@ -1,4 +1,5 @@
-﻿using Microsoft.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.Net.Http.Headers;
 using ThreadboxApi.Application.Common.Constants;
 
 namespace ThreadboxApi.Configuration
@@ -7,11 +8,11 @@ namespace ThreadboxApi.Configuration
     {
         public static void ConfigureServices(IServiceCollection services, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
         {
-            services.AddCors(options =>
+            services.AddCors(void (CorsOptions options) =>
             {
-                options.AddDefaultPolicy(builder =>
+                options.AddDefaultPolicy(void (CorsPolicyBuilder policyBuilder) =>
                 {
-                    builder
+                    policyBuilder
                         .WithOrigins(appSettings.FrontendBaseUrl)
                         .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                         .WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType)
@@ -31,12 +32,16 @@ namespace ThreadboxApi.Configuration
             }
         }
 
-        public static void Configure(IApplicationBuilder app, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
         {
-            app.UseCors();
+            if (!webHostEnvironment.IsDevelopment())
+            {
+                app.UseHsts();
+            }
+
             app.UseHttpsRedirection();
 
-            app.Use(async (context, next) =>
+            app.Use(async (HttpContext context, Func<Task> next) =>
             {
                 context.Response.Headers["X-Content-Type-Options"] = "nosniff";
                 context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
@@ -44,11 +49,11 @@ namespace ThreadboxApi.Configuration
 
                 await next();
             });
+        }
 
-            if (!webHostEnvironment.IsDevelopment())
-            {
-                app.UseHsts();
-            }
+        public static void ConfigureCors(IApplicationBuilder app)
+        {
+            app.UseCors();
         }
     }
 }

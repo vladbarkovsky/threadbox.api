@@ -13,7 +13,7 @@ namespace ThreadboxApi.Application.Sections.Queries
     {
         public class Query : IRequest<SectionDto>
         {
-            public Guid Id { get; set; }
+            public Guid Id { get; init; }
 
             public class Validator : AbstractValidator<Query>
             {
@@ -35,17 +35,17 @@ namespace ThreadboxApi.Application.Sections.Queries
 
         public async Task<SectionDto> Handle(Query request, CancellationToken cancellationToken)
         {
-            var dto = await _dbContext.Sections
+            SectionDto section = await _dbContext.Sections
                 .Where(x => x.Id == request.Id)
                 .ProjectTo<SectionDto>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            if (dto == null)
+            if (section == null)
             {
                 throw new HttpResponseException($"Section with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
             }
 
-            return dto;
+            return section;
         }
     }
 }

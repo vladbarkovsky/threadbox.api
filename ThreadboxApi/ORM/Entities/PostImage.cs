@@ -1,6 +1,8 @@
-﻿namespace ThreadboxApi.ORM.Entities
+﻿using ThreadboxApi.ORM.Entities.Interfaces;
+
+namespace ThreadboxApi.ORM.Entities
 {
-    public class PostImage : BaseEntity
+    public class PostImage : BaseEntity, IFileDto
     {
         public Guid FileInfoId { get; set; }
         public FileInfo FileInfo { get; set; }

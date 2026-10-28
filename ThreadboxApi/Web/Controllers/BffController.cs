@@ -1,35 +1,44 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Bff.Commands;
 
 namespace ThreadboxApi.Web.Controllers
 {
-    [Route("api/bff")]
-    public class BffController : MediatRController
+    [Route("bff")]
+    public sealed class BffController : ApplicationController
     {
+        public BffController(ISender sender) : base(sender) { }
+
         [HttpGet("login")]
-        public async Task<ActionResult> Login()
+        public async Task<RedirectResult> Login()
         {
-            return await Mediator.Send(new Login.Command());
+            return await _sender.Send(new Login.Command());
+        }
+
+        [HttpGet("continue-login")]
+        public async Task<RedirectResult> ContinueLogin()
+        {
+            return await _sender.Send(new ContinueLogin.Command());
         }
 
         [HttpGet("post-login-redirect-callback")]
-        public async Task<ActionResult> PostLoginRedirectCallback([FromQuery] PostLoginRedirectCallback.Command query)
+        public async Task<RedirectResult> PostLoginRedirectCallback([FromQuery] PostLoginRedirectCallback.Command query)
         {
-            return await Mediator.Send(query);
+            return await _sender.Send(query);
         }
 
         [HttpGet("logout")]
         [Authorize]
-        public async Task<ActionResult> Logout()
+        public async Task<RedirectResult> Logout()
         {
-            return await Mediator.Send(new Logout.Command());
+            return await _sender.Send(new Logout.Command());
         }
 
         [HttpGet("post-logout-redirect-callback")]
-        public async Task<ActionResult> PostLogoutRedirectCallback()
+        public async Task<RedirectResult> PostLogoutRedirectCallback()
         {
-            return await Mediator.Send(new PostLogoutRedirectCallback.Command());
+            return await _sender.Send(new PostLogoutRedirectCallback.Command());
         }
     }
 }

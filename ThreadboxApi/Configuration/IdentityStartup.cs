@@ -1,6 +1,9 @@
 ﻿using IdentityServer4;
+using IdentityServer4.EntityFramework.Options;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,14 +21,14 @@ namespace ThreadboxApi.Configuration
         public static void ConfigureServices(IServiceCollection services, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
         {
             services
-                .AddDefaultIdentity<ApplicationUser>(options =>
+                .AddDefaultIdentity<ApplicationUser>(void (IdentityOptions options) =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                 })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            var identityServerBuilder = services
+            IIdentityServerBuilder identityServerBuilder = services
                 .AddIdentityServer()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddInMemoryIdentityResources(new IdentityResource[]
@@ -52,7 +55,6 @@ namespace ThreadboxApi.Configuration
                         ClientName = "BFF",
                         AllowedGrantTypes = GrantTypes.Code,
                         AllowOfflineAccess = true,
-
                         AllowedScopes =
                         {
                             IdentityServerConstants.StandardScopes.OpenId,
@@ -60,29 +62,24 @@ namespace ThreadboxApi.Configuration
                             IdentityServerConstants.StandardScopes.OfflineAccess,
                             "threadbox_api.access"
                         },
-
                         PostLogoutRedirectUris =
                         {
-                            appSettings.BaseUrl + "/api/bff/post-logout-redirect-callback"
+                            appSettings.BaseUrl + "/bff/post-logout-redirect-callback"
                         },
-
                         RedirectUris =
                         {
-                            appSettings.BaseUrl + "/api/bff/post-login-redirect-callback"
+                            appSettings.BaseUrl + "/bff/post-login-redirect-callback"
                         },
-
                         RequirePkce = false,
-
                         ClientSecrets =
                         {
                             new Secret(appSettings.OidcBffClientSecret.Sha256())
                         },
-
                         AccessTokenLifetime = 1_800,
                         AbsoluteRefreshTokenLifetime = appSettings.AbsoluteRefreshTokenLifetimeSeconds
                     }
                 })
-                .AddOperationalStore<ApplicationDbContext>(options =>
+                .AddOperationalStore<ApplicationDbContext>(void (OperationalStoreOptions options )=>
                 {
                     options.EnableTokenCleanup = true;
                 });
@@ -94,9 +91,9 @@ namespace ThreadboxApi.Configuration
             else
             {
                 identityServerBuilder.AddSigningCredential(new X509Certificate2(
-                    "/certs/signing.pfx",
-                    appSettings.SigningPfxPassword,
-                    X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable));
+                    fileName: "/certs/signing.pfx",
+                    password: appSettings.SigningPfxPassword,
+                    keyStorageFlags: X509KeyStorageFlags.EphemeralKeySet));
 
             }
 
@@ -104,20 +101,28 @@ namespace ThreadboxApi.Configuration
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddAuthentication().AddIdentityServerJwt();
-            services.AddAuthorization();
 
-            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
-            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+            services.PostConfigure<JwtBearerOptions>(
+                name: IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+                configureOptions: void (JwtBearerOptions options) =>
+                {
+                    options.TokenValidationParameters.AuthenticationType = IdentityServerJwtConstants.IdentityServerJwtBearerScheme;
+                });
+
+            services
+                .AddAuthorization()
+                .AddSingleton<IAuthorizationHandler, PermissionHandler>()
+                .AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
         }
 
         public static void Configure(IApplicationBuilder app)
         {
-            app.UseMiddleware<AccessTokenRefreshMiddleware>();
-            app.UseMiddleware<AccessTokenMiddleware>();
-            app.UseAuthentication();
-            app.UseMiddleware<PermissionMiddleware>();
-            app.UseIdentityServer();
-            app.UseAuthorization();
+            app
+                .UseMiddleware<AccessTokenRefreshMiddleware>()
+                .UseMiddleware<AccessTokenMiddleware>()
+                .UseIdentityServer()
+                .UseMiddleware<PermissionMiddleware>()
+                .UseAuthorization();
         }
     }
 }

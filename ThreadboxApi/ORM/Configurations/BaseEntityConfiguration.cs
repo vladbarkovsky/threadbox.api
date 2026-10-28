@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThreadboxApi.ORM.Entities;
 
@@ -12,8 +12,10 @@ namespace ThreadboxApi.ORM.Configurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.CreatedAt).IsRequired();
 
-            // TODO: Investigate, test.
-            builder.Property(x => x.RowVersion).IsRowVersion();
+            builder.Property(x => x.RowVersion)
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .IsRowVersion();
 
             builder.HasOne(x => x.CreatedBy)
                 .WithMany()

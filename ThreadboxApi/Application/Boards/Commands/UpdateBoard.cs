@@ -1,22 +1,36 @@
-﻿using FluentValidation;
+using AutoMapper;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Boards.Models;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Entities.Interfaces;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Boards.Commands
 {
-    public class UpdateBoard : IRequestHandler<UpdateBoard.Command, Unit>
+    public class UpdateBoard : IRequestHandler<UpdateBoard.Command, BoardDto>
     {
-        public class Command : IRequest<Unit>
+        public class Command : IRequest<BoardDto>, IConsistentCommand
         {
-            public Guid Id { get; set; }
-            public string Title { get; set; }
-            public string Description { get; set; }
+            [FromRoute]
+            public Guid Id { get; init; }
 
-            public class Validator : AbstractValidator<Command>
+            [FromBody]
+            public string Title { get; init; }
+
+            [FromBody]
+            public string Description { get; init; }
+
+            [FromBody]
+            public uint? RowVersion { get; init; }
+
+            public class Validator : ConsistentCommandValidatorTemplate<Command>
             {
-                public Validator()
+                protected override void Configure()
                 {
                     RuleFor(x => x.Id).NotEmpty();
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
@@ -26,15 +40,17 @@ namespace ThreadboxApi.Application.Boards.Commands
         }
 
         private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public UpdateBoard(ApplicationDbContext dbContext)
+        public UpdateBoard(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<BoardDto> Handle(Command request, CancellationToken cancellationToken)
         {
-            var board = await _dbContext.Boards
+            Board board = await _dbContext.Boards
                 .Where(x => x.Id == request.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -46,9 +62,10 @@ namespace ThreadboxApi.Application.Boards.Commands
             board.Title = request.Title;
             board.Description = request.Description;
 
-            _dbContext.Boards.Update(board);
+            _dbContext.SetOriginalRowVersion(board, request.RowVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return Unit.Value;
+
+            return _mapper.Map<BoardDto>(board);
         }
     }
 }

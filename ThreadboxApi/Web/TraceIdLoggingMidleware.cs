@@ -8,13 +8,7 @@ namespace ThreadboxApi.Web
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
-
-            if (traceId == null)
-            {
-                await next(context);
-                return;
-            }
+            string traceId = Activity.Current?.Id ?? context.TraceIdentifier;
 
             using (LogContext.PushProperty("TraceId", traceId))
             {

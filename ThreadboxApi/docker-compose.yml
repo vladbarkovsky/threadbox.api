@@ -8,6 +8,7 @@ services:
         ConnectionStrings__Postgres: ${CONNECTION_STRINGS__POSTGRES}
         OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
         SigningPfxPassword: ${SIGNING_PFX_PASSWORD}
+        ApiSpecificationCredentials__Password: ${API_SPECIFICATION_CREDENTIALS__PASSWORD}
       expose:
         - "5000"
       volumes:

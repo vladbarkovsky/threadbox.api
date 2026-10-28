@@ -2,8 +2,8 @@
 {
     public class Tokens
     {
-        public string AccessToken { get; set; }
-        public DateTimeOffset ExpiresAt { get; set; }
-        public string RefreshToken { get; set; }
+        public string AccessToken { get; init; }
+        public DateTimeOffset ExpiresAt { get; init; }
+        public string RefreshToken { get; init; }
     }
 }

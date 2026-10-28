@@ -12,13 +12,13 @@ namespace ThreadboxApi.Application.Boards.Queries
     {
         public class Query : IRequest<BoardDto>
         {
-            public Guid BoardId { get; set; }
+            public Guid Id { get; init; }
 
             public class Validator : AbstractValidator<Query>
             {
                 public Validator()
                 {
-                    RuleFor(x => x.BoardId).NotEmpty();
+                    RuleFor(x => x.Id).NotEmpty();
                 }
             }
         }
@@ -36,12 +36,12 @@ namespace ThreadboxApi.Application.Boards.Queries
         {
             var board = await _dbContext.Boards
                 .AsNoTracking()
-                .Where(x => x.Id == request.BoardId)
+                .Where(x => x.Id == request.Id)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (board == null)
             {
-                throw new HttpResponseException($"Board with ID \"{request.BoardId}\" not found.", StatusCodes.Status404NotFound);
+                throw new HttpResponseException($"Board with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
             }
 
             var dto = _mapper.Map<BoardDto>(board);

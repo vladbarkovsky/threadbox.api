@@ -6,9 +6,9 @@ namespace ThreadboxApi.Web.Bff
 {
     public class AccessTokenMiddleware : IMiddleware, ITransientService
     {
-        private readonly BffTokensService _bffService;
+        private readonly BffService _bffService;
 
-        public AccessTokenMiddleware(BffTokensService bffService)
+        public AccessTokenMiddleware(BffService bffService)
         {
             _bffService = bffService;
         }

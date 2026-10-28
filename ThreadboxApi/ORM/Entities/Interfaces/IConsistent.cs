@@ -1,7 +1,7 @@
-﻿namespace ThreadboxApi.ORM.Entities.Interfaces
+namespace ThreadboxApi.ORM.Entities.Interfaces
 {
     public interface IConsistent
     {
-        public byte[] RowVersion { get; set; }
+        public uint RowVersion { get; set; }
     }
 }

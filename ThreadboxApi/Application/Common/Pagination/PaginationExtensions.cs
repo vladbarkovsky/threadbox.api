@@ -6,10 +6,10 @@ namespace ThreadboxApi.Application.Common.Pagination
     {
         public static async Task<PaginatedResult<T>> ToPaginatedResultAsync<T>(this IQueryable<T> query, PaginatedQuery paginatedQuery, CancellationToken cancellationToken = default)
         {
-            var pageIndex = paginatedQuery.PageIndex;
-            var pageSize = paginatedQuery.PageSize;
+            int pageIndex = paginatedQuery.PageIndex;
+            int pageSize = paginatedQuery.PageSize;
 
-            var items = await query
+            List<T> items = await query
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);

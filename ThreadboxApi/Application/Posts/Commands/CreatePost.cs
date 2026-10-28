@@ -1,24 +1,28 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Web.Controllers;
 
 namespace ThreadboxApi.Application.Posts.Commands
 {
-    public class CreatePost : IRequestHandler<CreatePost.Command, Unit>
+    public class CreatePost : IRequestHandler<CreatePost.Command, CreatedAtActionResult>
     {
-        public class Command : IRequest<Unit>
+        public class Command : IRequest<CreatedAtActionResult>
         {
-            public string Text { get; set; }
-            public Guid ThreadId { get; set; }
-            public string TripcodeString { get; set; }
+            public string Text { get; init; }
+            public Guid ThreadId { get; init; }
+            public string TripcodeString { get; init; }
 
             // NOTE: This property will be null in case we pass empty array from client,
             // because we use multipart/form-data encoding for this request.
-            public List<IFormFile> PostImages { get; set; } = new();
+            public IFormFile[] PostImages { get; init; } = Array.Empty<FormFile>();
 
             public class Validator : AbstractValidator<Command>
             {
@@ -31,10 +35,8 @@ namespace ThreadboxApi.Application.Posts.Commands
                         .When(x => !string.IsNullOrEmpty(x.TripcodeString));
 
                     RuleFor(x => x.PostImages)
-                        // TODO: Collection length validator.
-                        .Must(x => x.Count <= 5)
+                        .Must(x => x.Length <= 5)
                         .WithMessage("Maximum allowed number of files is 5.")
-
                         .ForEach(x => x.ValidateImage())
                         .WithUnique(x => x.FileName);
                 }
@@ -44,18 +46,21 @@ namespace ThreadboxApi.Application.Posts.Commands
         private readonly ApplicationDbContext _dbContext;
         private readonly IFileStorage _fileStorage;
         private readonly TripcodesService _tripcodesService;
+        private readonly IMapper _mapper;
 
         public CreatePost(
             ApplicationDbContext dbContext,
             IFileStorage fileStorage,
-            TripcodesService tripcodesService)
+            TripcodesService tripcodesService,
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _fileStorage = fileStorage;
             _tripcodesService = tripcodesService;
+            _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<CreatedAtActionResult> Handle(Command request, CancellationToken cancellationToken)
         {
             var post = new Post
             {
@@ -66,34 +71,35 @@ namespace ThreadboxApi.Application.Posts.Commands
 
             if (!string.IsNullOrEmpty(request.TripcodeString))
             {
-                post.Tripcode = await _tripcodesService.ProcessTripcodeStringAsync(
-                    request.TripcodeString,
-                    cancellationToken);
+                post.Tripcode = await _tripcodesService.ProcessTripcodeStringAsync(request.TripcodeString, cancellationToken);
             }
 
             _dbContext.Posts.Add(post);
 
-            foreach (var formFile in request.PostImages)
+            foreach (IFormFile formFile in request.PostImages)
             {
-                await SavePostImage(formFile, post.Id);
+                await SavePostImage(formFile, post.Id, cancellationToken);
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return Unit.Value;
+
+            return new CreatedAtActionResult(
+                actionName: nameof(PostController.Get),
+                controllerName: nameof(PostController),
+                routeValues: new { id = post.Id },
+                value: _mapper.Map<PostDto>(post));
         }
 
-        private async Task SavePostImage(IFormFile formFile, Guid postId)
+        private async Task SavePostImage(IFormFile formFile, Guid postId, CancellationToken cancellationToken)
         {
             var filePath = $"Images/PostImages/{postId}/{formFile.FileName}";
 
-            using var memoryStream = new MemoryStream();
-
-            // TODO: Use async version of method.
-            formFile.CopyTo(memoryStream);
-
-            var data = memoryStream.ToArray();
-
-            await _fileStorage.SaveFileAsync(filePath, data);
+            using (var memoryStream = new MemoryStream())
+            {
+                await formFile.CopyToAsync(memoryStream, cancellationToken);
+                byte[] data = memoryStream.ToArray();
+                await _fileStorage.SaveFileAsync(filePath, data, cancellationToken);
+            }
 
             var postImage = new PostImage
             {

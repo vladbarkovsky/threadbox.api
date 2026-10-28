@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Csp.Commands;
 
 namespace ThreadboxApi.Web.Controllers
 {
-    [Route("api/csp")]
-    public class CspController : MediatRController
+    [Route("csp")]
+    public sealed class CspController : ApplicationController
     {
-        [HttpPost("[action]")]
-        public async Task<ActionResult> CreateCspReport(CreateCspReport.Command command)
+        public CspController(ISender sender) : base(sender) { }
+
+        [HttpPost]
+        public async Task<NoContentResult> Create([FromBody] CreateCspReport.Command command)
         {
-            await Mediator.Send(command);
-            return NoContent();
+            return await _sender.Send(command);
         }
     }
 }

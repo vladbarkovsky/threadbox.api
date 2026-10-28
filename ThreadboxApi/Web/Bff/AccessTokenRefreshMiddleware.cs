@@ -1,5 +1,6 @@
-﻿using IdentityModel.Client;
+using IdentityModel.Client;
 using Microsoft.Extensions.Options;
+using ThreadboxApi.Application.Bff.Models;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.Application.Services;
@@ -10,27 +11,36 @@ namespace ThreadboxApi.Web.Bff
     public class AccessTokenRefreshMiddleware : IMiddleware, ITransientService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly BffTokensService _bffService;
+        private readonly BffService _bffService;
         private readonly IOptionsSnapshot<AppSettings> _appSettings;
         private readonly IDateTimeService _dateTimeService;
+        private readonly ILogger<AccessTokenRefreshMiddleware> _logger;
 
         public AccessTokenRefreshMiddleware(
             IHttpClientFactory httpClientFactory,
-            BffTokensService bffService,
+            BffService bffService,
             IOptionsSnapshot<AppSettings> appSettings,
-            IDateTimeService dateTimeService)
+            IDateTimeService dateTimeService,
+            ILogger<AccessTokenRefreshMiddleware> logger)
         {
             _httpClientFactory = httpClientFactory;
             _bffService = bffService;
             _appSettings = appSettings;
             _dateTimeService = dateTimeService;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var tokens = await _bffService.GetTokensAsync();
+            Tokens tokens = await _bffService.GetTokensAsync();
 
-            if (tokens == null || _dateTimeService.UtcNow.AddMinutes(2) < tokens.ExpiresAt)
+            if (tokens == null || string.IsNullOrWhiteSpace(tokens.RefreshToken))
+            {
+                await next(context);
+                return;
+            }
+
+            if (_dateTimeService.UtcNow.AddMinutes(2) < tokens.ExpiresAt)
             {
                 await next(context);
                 return;
@@ -46,15 +56,22 @@ namespace ThreadboxApi.Web.Bff
                         ClientSecret = _appSettings.Value.OidcBffClientSecret,
                         RefreshToken = tokens.RefreshToken
                     },
-                    context.RequestAborted);
+                    cancellationToken: context.RequestAborted);
 
                 if (tokenResponse.IsError)
                 {
-                    await _bffService.ClearTokensAsync(context.RequestAborted);
+                    _logger.LogError(
+                        tokenResponse.Exception,
+                        "Refresh token request failed. Error: {Error}. Description: {ErrorDescription}. Status code: {StatusCode}.",
+                        tokenResponse.Error,
+                        tokenResponse.ErrorDescription,
+                        (int)tokenResponse.HttpStatusCode);
+
+                    await _bffService.ClearTokensAsync(cancellationToken: context.RequestAborted);
                 }
                 else
                 {
-                    await _bffService.UpdateTokensAsync(tokenResponse, context.RequestAborted);
+                    await _bffService.UpdateTokensAsync(tokenResponse, cancellationToken: context.RequestAborted);
                 }
             }
 

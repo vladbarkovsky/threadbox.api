@@ -56,7 +56,7 @@ namespace ThreadboxApi.ORM.Services
                 IdentityRole roleToDelete = await _roleManager.FindByNameAsync(roleName);
 
                 List<IdentityRoleClaim<string>> permissionClaims = await _dbContext.RoleClaims
-                    .Where(bool (IdentityRoleClaim<string> claim) => claim.RoleId == roleToDelete.Id && claim.ClaimType == PermissionConstants.ClaimType)
+                    .Where(x => x.RoleId == roleToDelete.Id && x.ClaimType == PermissionConstants.ClaimType)
                     .ToListAsync();
 
                 _dbContext.RoleClaims.RemoveRange(permissionClaims);
@@ -91,7 +91,7 @@ namespace ThreadboxApi.ORM.Services
                 IdentityRole role = ExistingRoles.Single(bool (IdentityRole role) => role.Name == roleName);
 
                 List<IdentityRoleClaim<string>> existingPermissions = await _dbContext.RoleClaims
-                    .Where(bool (IdentityRoleClaim<string> claim) => claim.RoleId == role.Id && claim.ClaimType == PermissionConstants.ClaimType)
+                    .Where(x => x.RoleId == role.Id && x.ClaimType == PermissionConstants.ClaimType)
                     .ToListAsync();
 
                 IEnumerable<string> existingPermissionNames = existingPermissions.Select(string (IdentityRoleClaim<string> claim) => claim.ClaimValue);

@@ -1,8 +1,8 @@
 ﻿namespace ThreadboxApi.Application.Common.Pagination
 {
-    public class PaginatedQuery
+    public abstract class PaginatedQuery
     {
-        public int PageIndex { get; set; }
-        public int PageSize { get; set; }
+        public int PageIndex { get; init; }
+        public int PageSize { get; init; }
     }
 }

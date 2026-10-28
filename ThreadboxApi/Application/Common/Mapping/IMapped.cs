@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace ThreadboxApi.Application.Common.Mapping.Interfaces
+namespace ThreadboxApi.Application.Common.Mapping
 {
     /// <summary>
     /// Allows to configure mappings inside implementing class

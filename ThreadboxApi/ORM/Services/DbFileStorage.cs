@@ -53,7 +53,7 @@ namespace ThreadboxApi.ORM.Services
                 throw new HttpResponseException($"File with path \"{path}\" not found.", StatusCodes.Status404NotFound);
             }
 
-            _dbContext.DbFiles.Remove(dbFile);
+            _dbContext.Remove(dbFile);
         }
     }
 }

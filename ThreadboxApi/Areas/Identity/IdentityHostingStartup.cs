@@ -6,7 +6,7 @@ namespace ThreadboxApi.Areas.Identity
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) => { });
+            builder.ConfigureServices(void (WebHostBuilderContext context, IServiceCollection services) => { });
         }
     }
 }

@@ -15,7 +15,7 @@ namespace ThreadboxApi.Application.Common
                 .Must(x => x.Length <= 10 * 1024 * 1024)
                 .WithMessage(x => "Maximal allowed file size is 10 MB.")
                 .Must(file => MediaConstants.AllowedImageFormats.Contains(file.ContentType))
-                .WithMessage("Content-Type is not allowed.");
+                .WithMessage($"Content-Type is not allowed.");
         }
 
         public static IRuleBuilderOptions<T, IEnumerable<TObject>> WithUnique<T, TObject>(
@@ -23,22 +23,21 @@ namespace ThreadboxApi.Application.Common
             Func<TObject, object> selector)
         {
             return ruleBuilder
-                .Must((rootObject, collection, context) =>
+                .Must(bool (T rootObject, IEnumerable<TObject> collection, ValidationContext<T> context) =>
                 {
                     if (collection == null)
                     {
                         return true;
                     }
 
-                    var duplicates = collection
+                    IEnumerable<TObject> duplicates = collection
                         .GroupBy(selector)
-                        .Where(group => group.Count() > 1)
-                        .SelectMany(group => group.Skip(1))
-                        .ToList();
+                        .Where(bool (IGrouping<object, TObject> group) => group.Count() > 1)
+                        .SelectMany(IEnumerable<TObject> (IGrouping<object, TObject> group) => group.Skip(1));
 
                     if (duplicates.Any())
                     {
-                        foreach (var duplicate in duplicates)
+                        foreach (TObject duplicate in duplicates)
                         {
                             context.AddFailure($"Element '{duplicate}' is not unique.");
                         }

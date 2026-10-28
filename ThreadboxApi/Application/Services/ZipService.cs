@@ -14,11 +14,11 @@ namespace ThreadboxApi.Application.Services
 
             using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, leaveOpen: true))
             {
-                foreach (var file in archivableFiles)
+                foreach (ArchivableFile file in archivableFiles)
                 {
-                    var entry = archive.CreateEntry(file.Name);
+                    ZipArchiveEntry entry = archive.CreateEntry(file.Name);
 
-                    using var entryStream = entry.Open();
+                    using Stream entryStream = entry.Open();
                     using var fileStream = new MemoryStream(file.Data);
                     copyOperationsAsync.Add(fileStream.CopyToAsync(entryStream));
                 }

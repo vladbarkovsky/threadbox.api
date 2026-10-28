@@ -24,17 +24,18 @@ namespace ThreadboxApi.Application.Services
         /// </summary>
         public async Task<Tripcode> ProcessTripcodeStringAsync(string tripcodeString, CancellationToken cancellationToken)
         {
-            var fragments = tripcodeString.Split('#');
-            var key = fragments.First();
-            var value = fragments.Last();
+            string[] fragments = tripcodeString.Split('#');
+            string key = fragments.First();
+            string value = fragments.Last();
 
-            var tripcode = await _dbContext.Tripcodes
+            Tripcode tripcode = await _dbContext.Tripcodes
+                .AsNoTracking()
                 .Where(x => x.Key == key)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (tripcode == null)
             {
-                var salt = RandomNumberGenerator.GetBytes(16);
+                byte[] salt = RandomNumberGenerator.GetBytes(16);
 
                 tripcode = new Tripcode
                 {
@@ -54,9 +55,14 @@ namespace ThreadboxApi.Application.Services
             return tripcode;
         }
 
-        private byte[] Hash(string value, byte[] salt)
+        private static byte[] Hash(string value, byte[] salt)
         {
-            using var pbkdf2 = new Rfc2898DeriveBytes(value, salt, 10000, HashAlgorithmName.SHA256);
+            using var pbkdf2 = new Rfc2898DeriveBytes(
+                password: value,
+                salt: salt, 
+                iterations: 10000,
+                hashAlgorithm: HashAlgorithmName.SHA256);
+
             return pbkdf2.GetBytes(32);
         }
     }

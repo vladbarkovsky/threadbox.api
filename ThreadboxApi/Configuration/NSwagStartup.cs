@@ -1,4 +1,6 @@
-﻿using NSwag;
+using NSwag;
+using NSwag.AspNetCore;
+using NSwag.Generation.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using ThreadboxApi.Web;
 
@@ -8,7 +10,7 @@ namespace ThreadboxApi.Configuration
     {
         public static void ConfigureServices(IServiceCollection services, IWebHostEnvironment webHostEnvironment)
         {
-            services.AddOpenApiDocument(settings =>
+            services.AddOpenApiDocument(void (AspNetCoreOpenApiDocumentGeneratorSettings settings) =>
             {
                 settings.Title = "Threadbox API specification";
 
@@ -18,29 +20,37 @@ namespace ThreadboxApi.Configuration
                 // JWT authorization (used for Swagger UI).
                 // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs.
 
-                settings.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
-                {
-                    Type = OpenApiSecuritySchemeType.ApiKey,
-                    Name = "Authorization",
-                    In = OpenApiSecurityApiKeyLocation.Header,
-                    Description = "Type into the textbox: Bearer {your JWT token}."
-                });
+                settings.AddSecurity(
+                    name: "JWT",
+                    globalScopeNames: Enumerable.Empty<string>(),
+                    swaggerSecurityScheme: new OpenApiSecurityScheme
+                    {
+                        Type = OpenApiSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Description = "Type into the textbox: Bearer {your JWT token}."
+                    });
 
-                settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+                settings.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor(name: "JWT"));
             });
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment)
         {
-            app.UseOpenApi(settings =>
+            if (!webHostEnvironment.IsDevelopment())
             {
-                settings.Path = "/api-specification.json";
+                app.UseMiddleware<ApiSpecificationAuthorizationMiddleware>();
+            }
+
+            app.UseOpenApi(void (OpenApiDocumentMiddlewareSettings settings) =>
+            {
+                settings.Path = "/api/specification.json";
             });
 
-            app.UseSwaggerUi3(settings =>
+            app.UseSwaggerUi3(void (SwaggerUi3Settings settings) =>
             {
                 settings.Path = "/api";
-                settings.DocumentPath = "/api-specification.json";
+                settings.DocumentPath = "/api/specification.json";
             });
         }
     }

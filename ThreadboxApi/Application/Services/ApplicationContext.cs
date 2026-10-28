@@ -18,6 +18,6 @@ namespace ThreadboxApi.Application.Services
         /// </summary>
         // IdentityServer stores user ID in subject claim
         // JWT specification: https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
-        public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("sub");
+        public string CurrentUserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("sub");
     }
 }

@@ -19,9 +19,9 @@ namespace ThreadboxApi.Application.Bff.Commands
 
         public Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            Dictionary<string, string> query = new Dictionary<string, string>
+            var query = new Dictionary<string, string>
             {
-                { "post_logout_redirect_uri", _appSettings.Value.BaseUrl + "/api/bff/post-logout-redirect-callback" }
+                { "post_logout_redirect_uri", _appSettings.Value.BaseUrl + "/bff/post-logout-redirect-callback" }
             };
 
             string redirectUrl = QueryHelpers.AddQueryString(_appSettings.Value.BaseUrl + "/connect/endsession", query);

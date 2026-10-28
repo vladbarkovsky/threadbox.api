@@ -1,11 +1,11 @@
-﻿using ThreadboxApi.ORM.Entities.Interfaces;
+using ThreadboxApi.ORM.Entities.Interfaces;
 
 namespace ThreadboxApi.ORM.Entities
 {
     public abstract class BaseEntity : IConsistent, IDeletable, IAuditable
     {
         public Guid Id { get; set; }
-        public byte[] RowVersion { get; set; }
+        public uint RowVersion { get; set; }
         public bool Deleted { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public string CreatedById { get; set; }

@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.ORM.Configurations
 {
-    public class DbFileConfiguration : BaseEntityConfiguration<DbFile>
+    public class DbFileConfiguration : IEntityTypeConfiguration<DbFile>
     {
-        public override void Configure(EntityTypeBuilder<DbFile> builder)
+        public void Configure(EntityTypeBuilder<DbFile> builder)
         {
-            base.Configure(builder);
-
+            builder.HasKey(x => x.Id);
             builder.HasIndex(x => x.Path).IsUnique();
 
             builder

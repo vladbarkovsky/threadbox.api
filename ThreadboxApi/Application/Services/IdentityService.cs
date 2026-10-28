@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Identity.Models;
 using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.ORM.Entities;
 
@@ -22,35 +23,39 @@ namespace ThreadboxApi.Application.Services
             _applicationContext = applicationContext;
         }
 
-        public async Task<List<string>> GetPermissionsAsync()
+        public async Task<UserSession> GetUserSessionAsync()
         {
-            var permissionClaims = await GetPermissionClaimsAsync();
-            return permissionClaims.Select(x => x.Value).ToList();
+            ApplicationUser user = await _userManager.FindByIdAsync(_applicationContext.CurrentUserId);
+            List<Claim> permissionClaims = await GetPermissionClaimsAsync(user);
+
+            return new UserSession
+            {
+                Username = user.UserName,
+                Permissions = permissionClaims.Select(string (Claim claim) => claim.Value)
+            };
         }
 
         public async Task<List<Claim>> GetPermissionClaimsAsync()
         {
-            var permissionClaims = new List<Claim>();
+            ApplicationUser user = await _userManager.FindByIdAsync(_applicationContext.CurrentUserId);
+            return await GetPermissionClaimsAsync(user);
+        }
 
-            var user = await _userManager.FindByIdAsync(_applicationContext.UserId);
-            var roles = await _userManager.GetRolesAsync(user);
+        private async Task<List<Claim>> GetPermissionClaimsAsync(ApplicationUser user)
+        {
+            var permissionClaims = new List<Claim>();
+            IList<string> roles = await _userManager.GetRolesAsync(user);
 
             if (!roles.Any())
             {
                 return permissionClaims;
             }
 
-            var role = await _roleManager.FindByNameAsync(roles.First());
-            var claims = await _roleManager.GetClaimsAsync(role);
+            IdentityRole role = await _roleManager.FindByNameAsync(roles.First());
+            IList<Claim> claims = await _roleManager.GetClaimsAsync(role);
 
-            permissionClaims.AddRange(claims.Where(x => x.Type == PermissionConstants.ClaimType));
+            permissionClaims.AddRange(claims.Where(bool (Claim claim) => claim.Type == PermissionConstants.ClaimType));
             return permissionClaims;
-        }
-
-        public async Task<string> GetUserNameAsync()
-        {
-            ApplicationUser user = await _userManager.FindByIdAsync(_applicationContext.UserId);
-            return user.UserName;
         }
     }
 }

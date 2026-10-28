@@ -1,23 +1,31 @@
 ﻿using AutoMapper;
-using ThreadboxApi.Application.Common.Mapping.Interfaces;
+using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Application.PostImages.Models;
 using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Entities.Interfaces;
 
 namespace ThreadboxApi.Application.Posts.Models
 {
-    public class PostDto : IMapped
+    public class PostDto : IConsistent, IMapped
     {
-        public Guid Id { get; set; }
-        public string Text { get; set; }
-        public Guid ThreadId { get; set; }
-        public string TripcodeKey { get; set; }
-        public List<PostImageDto> PostImages { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
+        public Guid Id { get; init; }
+        public uint RowVersion { get; set; }
+        public string Text { get; init; }
+        public Guid ThreadId { get; init; }
+        public string TripcodeKey { get; init; }
+        public List<PostImageDto> PostImages { get; init; }
+        public DateTimeOffset CreatedAt { get; init; }
 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Post, PostDto>()
-                .ForMember(d => d.TripcodeKey, o => o.MapFrom((s, d) => s.Tripcode?.Key));
+                .ForMember(x => x.Id, x => x.MapFrom(x => x.Id))
+                .ForMember(x => x.RowVersion, x => x.MapFrom(x => x.RowVersion))
+                .ForMember(x => x.Text, x => x.MapFrom(x => x.Text))
+                .ForMember(x => x.ThreadId, x => x.MapFrom(x => x.ThreadId))
+                .ForMember(x => x.TripcodeKey, x => x.MapFrom((x, _) => x.Tripcode?.Key))
+                .ForMember(x => x.PostImages, x => x.MapFrom(x => x.PostImages))
+                .ForMember(x => x.CreatedAt, x => x.MapFrom(x => x.CreatedAt));
         }
     }
 }

@@ -1,22 +1,27 @@
 ﻿using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Entities;
+using ThreadboxApi.ORM.Entities.Interfaces;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Posts.Commands
 {
-    public class DeletePost : IRequestHandler<DeletePost.Command, Unit>
+    public class DeletePost : IRequestHandler<DeletePost.Command, NoContentResult>
     {
-        public class Command : IRequest<Unit>
+        public class Command : IRequest<NoContentResult>, IConsistentCommand
         {
-            public Guid PostId { get; set; }
+            public Guid Id { get; init; }
+            public uint? RowVersion { get; init; }
 
-            public class Validator : AbstractValidator<Command>
+            public class Validator : ConsistentCommandValidatorTemplate<Command>
             {
-                public Validator()
+                protected override void Configure()
                 {
-                    RuleFor(x => x.PostId).NotEmpty();
+                    RuleFor(x => x.Id).NotEmpty();
                 }
             }
         }
@@ -28,31 +33,31 @@ namespace ThreadboxApi.Application.Posts.Commands
             _dbContext = dbContext;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<NoContentResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            var post = await _dbContext.Posts
-                .Where(x => x.Id == request.PostId)
+            Post post = await _dbContext.Posts
+                .Where(x => x.Id == request.Id)
                 .Include(x => x.PostImages)
                 .ThenInclude(x => x.FileInfo)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (post == null)
             {
-                throw new HttpResponseException($"Post with ID \"{request.PostId}\" not found.", StatusCodes.Status404NotFound);
+                throw new HttpResponseException($"Post with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
             }
 
             post.Deleted = true;
 
-            foreach (var postImage in post.PostImages)
+            foreach (PostImage image in post.PostImages)
             {
-                postImage.Deleted = true;
-                postImage.FileInfo.Deleted = true;
+                image.Deleted = true;
+                image.FileInfo.Deleted = true;
             }
 
-            _dbContext.Update(post);
+            _dbContext.SetOriginalRowVersion(post, request.RowVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return new NoContentResult();
         }
     }
 }

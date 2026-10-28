@@ -5,16 +5,26 @@ using System.Globalization;
 
 namespace ThreadboxApi.Configuration
 {
-    public class LocalizationStartup
+    public static class LocalizationStartup
     {
         public const string DefaultLanguage = "en";
-        public static IReadOnlySet<string> SupportedLanguages { get; } = new HashSet<string> { "en", "lv", "ru" };
+
+        /// <summary>
+        /// <para>IETF BCP 47 language tags</para>
+        /// <para>See: <see href="https://www.rfc-editor.org/info/bcp47/"/></para>
+        /// </summary>
+        private static IReadOnlySet<string> SupportedLanguages { get; }
+
+        static LocalizationStartup()
+        {
+            SupportedLanguages = new HashSet<string> { "en", "lv", "ru" };
+        }
 
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddJsonLocalization(void (JsonLocalizationOptions options) =>
             {
-                options.ResourcesPath = @"Application\Common\Translations";
+                options.ResourcesPath = @"Translations";
                 options.LocalizationMode = LocalizationMode.I18n;
                 options.SupportedCultureInfos = SupportedLanguages.Select(CultureInfo (string language) => new CultureInfo(language)).ToHashSet();
                 options.DefaultCulture = new CultureInfo(DefaultLanguage);

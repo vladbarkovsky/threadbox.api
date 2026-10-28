@@ -6,6 +6,7 @@ using System.Net.Mime;
 using ThreadboxApi.Application.Files.Models;
 using ThreadboxApi.Application.Services;
 using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -15,7 +16,7 @@ namespace ThreadboxApi.Application.Files.Queries
     {
         public class Query : IRequest<FileContentResult>
         {
-            public Guid PostId { get; set; }
+            public Guid PostId { get; init; }
 
             public class Validator : AbstractValidator<Query>
             {
@@ -39,7 +40,7 @@ namespace ThreadboxApi.Application.Files.Queries
 
         public async Task<FileContentResult> Handle(Query request, CancellationToken cancellationToken)
         {
-            var post = await _dbContext.Posts
+            Post post = await _dbContext.Posts
                 .AsNoTracking()
                 .Where(x => x.Id == request.PostId)
                 .Include(x => x.PostImages)
@@ -51,23 +52,23 @@ namespace ThreadboxApi.Application.Files.Queries
                 throw new HttpResponseException($"Post with ID \"{request.PostId}\" not found.", StatusCodes.Status404NotFound);
             }
 
-            var fileInfos = post.PostImages.Select(x => x.FileInfo);
+            IEnumerable<ORM.Entities.FileInfo> fileInfos = post.PostImages.Select(ORM.Entities.FileInfo (PostImage image) => image.FileInfo);
             var files = new List<byte[]>();
 
-            /// NOTE: We don't use <see cref="Task.WhenAll(IEnumerable{Task})"/>,
-            /// because current file storage implementation interacts with database.
-            foreach (var fileInfo in fileInfos)
+            foreach (ORM.Entities.FileInfo fileInfo in fileInfos)
             {
-                files.Add(await _fileStorage.GetFileAsync(fileInfo.Path));
+                files.Add(await _fileStorage.GetFileAsync(fileInfo.Path, cancellationToken));
             }
 
-            var archivableFiles = fileInfos.Zip(files, (fileInfo, file) => new ArchivableFile
-            {
-                Name = fileInfo.Name,
-                Data = file
-            });
+            IEnumerable<ArchivableFile> archivableFiles = fileInfos.Zip(
+                second: files,
+                resultSelector: ArchivableFile (ORM.Entities.FileInfo fileInfo, byte[] file) => new ArchivableFile
+                {
+                    Name = fileInfo.Name,
+                    Data = file
+                });
 
-            var archive = await _zipService.ArchiveAsync(archivableFiles);
+            byte[] archive = await _zipService.ArchiveAsync(archivableFiles);
 
             return new FileContentResult(archive, MediaTypeNames.Application.Zip)
             {

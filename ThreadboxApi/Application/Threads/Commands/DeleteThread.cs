@@ -1,22 +1,29 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM.Entities.Interfaces;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Threads.Commands
 {
-    public class DeleteThread : IRequestHandler<DeleteThread.Command, Unit>
+    public class DeleteThread : IRequestHandler<DeleteThread.Command, NoContentResult>
     {
-        public class Command : IRequest<Unit>
+        public class Command : IRequest<NoContentResult>, IConsistentCommand
         {
-            public Guid ThreadId { get; set; }
+            [FromRoute]
+            public Guid Id { get; init; }
 
-            public class Validator : AbstractValidator<Command>
+            [FromBody]
+            public uint? RowVersion { get; init; }
+
+            public class Validator : ConsistentCommandValidatorTemplate<Command>
             {
-                public Validator()
+                protected override void Configure()
                 {
-                    RuleFor(x => x.ThreadId).NotEmpty();
+                    RuleFor(x => x.Id).NotEmpty();
                 }
             }
         }
@@ -28,22 +35,22 @@ namespace ThreadboxApi.Application.Threads.Commands
             _dbContext = dbContext;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<NoContentResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            var thread = await _dbContext.Threads
-                .Where(x => x.Id == request.ThreadId)
+            ORM.Entities.Thread thread = await _dbContext.Threads
+                .Where(x => x.Id == request.Id)
                 .SingleOrDefaultAsync(cancellationToken);
 
             if (thread == null)
             {
-                throw new HttpResponseException($"File info with ID \"{request.ThreadId}\" not found.", StatusCodes.Status404NotFound);
+                throw new HttpResponseException($"File info with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
             }
 
             thread.Deleted = true;
-            _dbContext.Threads.Update(thread);
+            _dbContext.SetOriginalRowVersion(thread, request.RowVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return new NoContentResult();
         }
     }
 }

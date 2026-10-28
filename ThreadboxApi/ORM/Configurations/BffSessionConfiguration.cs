@@ -10,7 +10,12 @@ namespace ThreadboxApi.ORM.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.AccessToken).IsRequired();
-            builder.Property(x => x.RefreshToken).IsRequired();
+            builder.Property(x => x.RefreshToken).IsRequired(false);
+
+            builder
+                .Property(x => x.RowVersion)
+                .HasColumnType("xid")
+                .IsRowVersion();
         }
     }
 }

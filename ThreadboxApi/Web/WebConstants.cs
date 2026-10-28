@@ -8,6 +8,6 @@ namespace ThreadboxApi.Web
         /// <summary>
         /// HTTP request URL to get file by <see cref="ORM.Entities.FileInfo"/> <br/>
         /// </summary>
-        public const string FileUrl = $"{{0}}/api/Files/{nameof(FilesController.GetFile)}?{nameof(GetFile.Query.FileInfoId)}={{1}}";
+        public const string FileUrlTemplate = $"{{0}}/api/Files/{nameof(FileController.Get)}?{nameof(GetFile.Query.FileInfoId)}={{1}}";
     }
 }

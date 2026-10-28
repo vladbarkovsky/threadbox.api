@@ -1,22 +1,33 @@
-﻿using FluentValidation;
+using AutoMapper;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Sections.Models;
+using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
 using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Sections.Commands
 {
-    public class UpdateSection : IRequestHandler<UpdateSection.Command, Unit>
+    public class UpdateSection : IRequestHandler<UpdateSection.Command, SectionDto>
     {
-        public class Command : IRequest<Unit>, IConsistent
+        public class Command : IRequest<SectionDto>, IConsistentCommand
         {
-            public Guid Id { get; set; }
-            public byte[] RowVersion { get; set; }
-            public string Title { get; set; }
+            [FromRoute]
+            public Guid Id { get; init; }
 
-            public class Validator : AbstractValidator<Command>
+            [FromBody]
+            public uint? RowVersion { get; init; }
+
+            [FromBody]
+            public string Title { get; init; }
+
+            public class Validator : ConsistentCommandValidatorTemplate<Command>
             {
-                public Validator()
+                protected override void Configure()
                 {
                     RuleFor(x => x.Id).NotEmpty();
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
@@ -25,25 +36,31 @@ namespace ThreadboxApi.Application.Sections.Commands
         }
 
         private readonly ApplicationDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public UpdateSection(ApplicationDbContext dbContext)
+        public UpdateSection(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<SectionDto> Handle(Command request, CancellationToken cancellationToken)
         {
-            var section = await _dbContext.Sections
+            Section section = await _dbContext.Sections
                 .Where(x => x.Id == request.Id)
                 .SingleOrDefaultAsync(cancellationToken);
 
-            section.RowVersion = request.RowVersion;
+            if (section == null)
+            {
+                throw new HttpResponseException($"Section with ID \"{request.Id}\" not found.", StatusCodes.Status404NotFound);
+            }
+
             section.Title = request.Title;
 
-            _dbContext.Update(section);
+            _dbContext.SetOriginalRowVersion(section, request.RowVersion);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return Unit.Value;
+            return _mapper.Map<SectionDto>(section);
         }
     }
 }

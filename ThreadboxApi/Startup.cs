@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Scrutor;
 using System.Reflection;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web;
@@ -27,33 +29,44 @@ namespace ThreadboxApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AppSettings>(_configuration);
-            var appSettings = _configuration.Get<AppSettings>();
+            AppSettings appSettings = _configuration.Get<AppSettings>();
 
             LocalizationStartup.ConfigureServices(services);
             ErrorHandlingStartup.ConfigureServices(services);
 
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(void (DbContextOptionsBuilder optionsBuilder) =>
             {
-                options
+                optionsBuilder
                     .UseNpgsql(appSettings.ConnectionStrings.Postgres)
-                    .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+                    .ConfigureWarnings(void (WarningsConfigurationBuilder configurationBuilder) =>
+                    {
+                        configurationBuilder.Throw(RelationalEventId.MultipleCollectionIncludeWarning);
+                    });
             });
 
-            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
+            services
+                .AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>();
 
-            services.Scan(scan => scan.FromAssemblyOf<Program>()
-                .AddClasses(x => x.AssignableTo<ISingletonService>())
-                .AsSelfWithInterfaces()
-                .WithSingletonLifetime()
-                .AddClasses(x => x.AssignableTo<IScopedService>())
-                .AsSelfWithInterfaces()
-                .WithScopedLifetime()
-                .AddClasses(x => x.AssignableTo<ITransientService>())
-                .AsSelfWithInterfaces()
-                .WithTransientLifetime());
+            services.Scan(void (ITypeSourceSelector selector) =>
+            {
+                selector
+                    .FromAssemblyOf<Program>()
+                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<ISingletonService>())
+                    .AsSelfWithInterfaces()
+                    .WithSingletonLifetime()
+                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<IScopedService>())
+                    .AsSelfWithInterfaces()
+                    .WithScopedLifetime()
+                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<ITransientService>())
+                    .AsSelfWithInterfaces()
+                    .WithTransientLifetime();
+            });
 
-            services.AddHttpContextAccessor();
-            services.AddHttpClient();
+            services
+                .AddHttpContextAccessor()
+                .AddHttpClient();
+
             SecurityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
 
             services.AddControllers(options =>
@@ -65,17 +78,19 @@ namespace ThreadboxApi
                 jsonInputFormatter.SupportedMediaTypes.Add("application/csp-report");
             });
 
+            services.AddRazorPages();
+
             NSwagStartup.ConfigureServices(services, _webHostEnvironment);
             IdentityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
 
-            services.AddMediatR(configuration =>
-            {
-                configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            });
-
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddFluentValidationAutoValidation();
+            services
+                .AddMediatR(void (MediatRServiceConfiguration configuration) =>
+                {
+                    configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                })
+                .AddAutoMapper(Assembly.GetExecutingAssembly())
+                .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
+                .AddFluentValidationAutoValidation();
 
             if (_webHostEnvironment.IsDevelopment())
             {
@@ -84,45 +99,43 @@ namespace ThreadboxApi
 
             if (!_webHostEnvironment.IsDevelopment())
             {
-                services.Configure<ForwardedHeadersOptions>(options =>
+                services.Configure<ForwardedHeadersOptions>(void (ForwardedHeadersOptions options) =>
                 {
                     options.ForwardedHeaders =
                         ForwardedHeaders.XForwardedHost |
                         ForwardedHeaders.XForwardedProto |
                         ForwardedHeaders.XForwardedFor;
+
+                    options.KnownNetworks.Clear();
+                    options.KnownProxies.Clear();
                 });
             }
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            var appSettings = _configuration.Get<AppSettings>();
-
-            if (_webHostEnvironment.IsProduction())
+            if (!_webHostEnvironment.IsDevelopment())
             {
                 app.UseForwardedHeaders();
             }
 
-            app.UseRouting();
-            SecurityStartup.Configure(app, appSettings, _webHostEnvironment);
-            LocalizationStartup.Configure(app);
             app.UseMiddleware<TraceIdLoggingMidleware>();
+            LocalizationStartup.Configure(app);
             ErrorHandlingStartup.Configure(app);
             app.UseHealthChecks("/health");
-            IdentityStartup.Configure(app);
+            SecurityStartup.Configure(app, _webHostEnvironment);
             app.UseStaticFiles();
-
-            if (_webHostEnvironment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseRouting();
+            SecurityStartup.ConfigureCors(app);
+            ErrorHandlingStartup.Configure(app);
+            IdentityStartup.Configure(app);
             NSwagStartup.Configure(app, _webHostEnvironment);
 
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(void (IEndpointRouteBuilder routeBuilder) =>
             {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
+                routeBuilder.MapGet("/", () => Results.Redirect("/api")).ExcludeFromDescription();
+                routeBuilder.MapControllers();
+                routeBuilder.MapRazorPages();
             });
         }
     }
