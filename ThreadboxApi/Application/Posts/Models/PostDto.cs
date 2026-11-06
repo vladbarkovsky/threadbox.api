@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Application.PostImages.Models;
 using ThreadboxApi.ORM.Entities;
@@ -8,12 +9,18 @@ namespace ThreadboxApi.Application.Posts.Models
 {
     public class PostDto : IConsistent, IMapped
     {
+        [Required]
         public Guid Id { get; init; }
+        [Required]
         public uint RowVersion { get; set; }
+        [Required]
         public string Text { get; init; }
+        [Required]
         public Guid ThreadId { get; init; }
         public string TripcodeKey { get; init; }
+        [Required]
         public List<PostImageDto> PostImages { get; init; }
+        [Required]
         public DateTimeOffset CreatedAt { get; init; }
 
         public void Mapping(Profile profile)

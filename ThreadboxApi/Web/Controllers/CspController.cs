@@ -10,6 +10,7 @@ namespace ThreadboxApi.Web.Controllers
         public CspController(ISender sender) : base(sender) { }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<NoContentResult> Create([FromBody] CreateCspReport.Command command)
         {
             return await _sender.Send(command);

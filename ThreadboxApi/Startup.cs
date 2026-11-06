@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -8,7 +9,6 @@ using Scrutor;
 using System.Reflection;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Configuration;
 using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web;
@@ -69,9 +69,11 @@ namespace ThreadboxApi
 
             SecurityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
 
-            services.AddControllers(options =>
+            services.AddControllers(void (MvcOptions options) =>
             {
-                var jsonInputFormatter = options.InputFormatters
+                options.ModelMetadataDetailsProviders.Add(new CamelCaseBindingMetadataProvider());
+
+                SystemTextJsonInputFormatter jsonInputFormatter = options.InputFormatters
                     .OfType<SystemTextJsonInputFormatter>()
                     .Single();
 
@@ -99,7 +101,7 @@ namespace ThreadboxApi
 
             if (!_webHostEnvironment.IsDevelopment())
             {
-                services.Configure<ForwardedHeadersOptions>(void (ForwardedHeadersOptions options) =>
+                services.Configure(void (ForwardedHeadersOptions options) =>
                 {
                     options.ForwardedHeaders =
                         ForwardedHeaders.XForwardedHost |

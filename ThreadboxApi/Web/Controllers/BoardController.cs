@@ -33,6 +33,7 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<NoContentResult> Delete(DeleteBoard.Command command)
         {
             return await _sender.Send(command);

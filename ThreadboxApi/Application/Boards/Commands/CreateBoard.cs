@@ -21,6 +21,7 @@ namespace ThreadboxApi.Application.Boards.Commands
             {
                 public Validator()
                 {
+                    RuleFor(x => x.SectionId).NotEmpty();
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
                     RuleFor(x => x.Description).NotEmpty().MaximumLength(2048);
                 }

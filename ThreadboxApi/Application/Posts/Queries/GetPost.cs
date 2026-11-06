@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.ORM.Entities;
@@ -13,6 +14,7 @@ namespace ThreadboxApi.Application.Posts.Queries
     {
         public sealed class Query : IRequest<PostDto>
         {
+            [FromRoute]
             public Guid Id { get; init; }
         }
 

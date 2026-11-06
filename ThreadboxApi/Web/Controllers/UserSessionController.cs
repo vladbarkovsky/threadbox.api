@@ -13,7 +13,7 @@ namespace ThreadboxApi.Web.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<UserSession> Get()
+        public async Task<UserSessionDto> Get()
         {
             return await _sender.Send(new GetUserSession.Query());
         }

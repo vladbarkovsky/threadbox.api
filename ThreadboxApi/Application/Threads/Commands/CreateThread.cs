@@ -23,7 +23,14 @@ namespace ThreadboxApi.Application.Threads.Commands
 
             // NOTE: This property will be null in case we pass empty array from client,
             // because we use multipart/form-data encoding for this request.
-            public IFormFile[] Images { get; init; } = Array.Empty<IFormFile>();
+            // NOTE: Keep a List, not IFormFile[]. NSwag 13.20 treats a file collection as multipart
+            // only when the type has an IFormFile generic argument. An array has none, so the property
+            // is emitted as a query parameter and the generated client writes "[object Object]" into the URL.
+            // The same check is still present on NSwag master.
+            // https://github.com/RicoSuter/NSwag/blob/v13.20.0/src/NSwag.Generation.AspNetCore/Processors/OperationParameterProcessor.cs#L179-L187
+            // https://github.com/RicoSuter/NSwag/blob/v13.20.0/src/NSwag.Generation.AspNetCore/Processors/OperationParameterProcessor.cs#L357-L374
+            // https://github.com/RicoSuter/NJsonSchema/blob/v10.9.0/src/NJsonSchema/Generation/DefaultReflectionService.cs#L278-L290
+            public List<IFormFile> Images { get; init; } = new List<IFormFile>();
 
             public class Validator : AbstractValidator<Command>
             {
@@ -36,7 +43,7 @@ namespace ThreadboxApi.Application.Threads.Commands
                         .ValidateTripcodeString()
                         .When(x => !string.IsNullOrEmpty(x.TripcodeString));
                     RuleFor(x => x.Images)
-                        .Must(x => x.Length <= 5)
+                        .Must(x => x.Count <= 5)
                         .WithMessage("Maximum allowed number of files is 5.")
                         .ForEach(x => x.ValidateImage())
                         .WithUnique(x => x.FileName);

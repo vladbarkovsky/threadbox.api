@@ -16,13 +16,10 @@ namespace ThreadboxApi.Application.Posts.Commands
     {
         public class Command : IRequest<CreatedAtActionResult>
         {
-            public string Text { get; init; }
             public Guid ThreadId { get; init; }
+            public string Text { get; init; }
             public string TripcodeString { get; init; }
-
-            // NOTE: This property will be null in case we pass empty array from client,
-            // because we use multipart/form-data encoding for this request.
-            public IFormFile[] PostImages { get; init; } = Array.Empty<FormFile>();
+            public List<IFormFile> PostImages { get; init; } = new List<IFormFile>();
 
             public class Validator : AbstractValidator<Command>
             {
@@ -35,7 +32,7 @@ namespace ThreadboxApi.Application.Posts.Commands
                         .When(x => !string.IsNullOrEmpty(x.TripcodeString));
 
                     RuleFor(x => x.PostImages)
-                        .Must(x => x.Length <= 5)
+                        .Must(x => x.Count <= 5)
                         .WithMessage("Maximum allowed number of files is 5.")
                         .ForEach(x => x.ValidateImage())
                         .WithUnique(x => x.FileName);

@@ -3,6 +3,7 @@ using NSwag.AspNetCore;
 using NSwag.Generation.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using ThreadboxApi.Web;
+using ZymLabs.NSwag.FluentValidation;
 
 namespace ThreadboxApi.Configuration
 {
@@ -10,8 +11,21 @@ namespace ThreadboxApi.Configuration
     {
         public static void ConfigureServices(IServiceCollection services, IWebHostEnvironment webHostEnvironment)
         {
-            services.AddOpenApiDocument(void (AspNetCoreOpenApiDocumentGeneratorSettings settings) =>
+            services.AddScoped(FluentValidationSchemaProcessor (IServiceProvider serviceProvider) =>
             {
+                IEnumerable<FluentValidationRule> validationRules = serviceProvider.GetService<IEnumerable<FluentValidationRule>>();
+                ILoggerFactory loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+
+                return new FluentValidationSchemaProcessor(serviceProvider, validationRules, loggerFactory);
+            });
+
+            services.AddOpenApiDocument(void (AspNetCoreOpenApiDocumentGeneratorSettings settings, IServiceProvider serviceProvider) =>
+            {
+                FluentValidationSchemaProcessor fluentValidationSchemaProcessor = serviceProvider.CreateScope()
+                    .ServiceProvider
+                    .GetRequiredService<FluentValidationSchemaProcessor>();
+
+                settings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
                 settings.Title = "Threadbox API specification";
 
                 // Overriding default name generation patterns.

@@ -14,7 +14,10 @@ namespace ThreadboxApi.Application.Posts.Commands
     {
         public class Command : IRequest<NoContentResult>, IConsistentCommand
         {
+            [FromRoute]
             public Guid Id { get; init; }
+
+            [FromBody]
             public uint? RowVersion { get; init; }
 
             public class Validator : ConsistentCommandValidatorTemplate<Command>

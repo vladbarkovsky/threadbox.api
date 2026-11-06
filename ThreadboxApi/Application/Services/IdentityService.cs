@@ -23,12 +23,12 @@ namespace ThreadboxApi.Application.Services
             _applicationContext = applicationContext;
         }
 
-        public async Task<UserSession> GetUserSessionAsync()
+        public async Task<UserSessionDto> GetUserSessionAsync()
         {
             ApplicationUser user = await _userManager.FindByIdAsync(_applicationContext.CurrentUserId);
             List<Claim> permissionClaims = await GetPermissionClaimsAsync(user);
 
-            return new UserSession
+            return new UserSessionDto
             {
                 Username = user.UserName,
                 Permissions = permissionClaims.Select(string (Claim claim) => claim.Value)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.ORM.Entities;
 
@@ -6,7 +7,9 @@ namespace ThreadboxApi.Application.ThreadImages.Models
 {
     public class ThreadImageDto : IMapped
     {
+        [Required]
         public Guid FileInfoId { get; init; }
+        [Required]
         public string Url { get; init; }
 
         public void Mapping(Profile profile)

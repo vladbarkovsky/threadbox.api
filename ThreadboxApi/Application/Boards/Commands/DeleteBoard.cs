@@ -16,6 +16,7 @@ namespace ThreadboxApi.Application.Boards.Commands
         {
             [FromRoute]
             public Guid Id { get; init; }
+
             [FromQuery]
             public uint? RowVersion { get; init; }
 

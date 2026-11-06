@@ -7,6 +7,7 @@ using ThreadboxApi.Application.Identity.Permissions;
 
 namespace ThreadboxApi.ORM.Services
 {
+    // TODO: Add logs.
     public class RoleService : ITransientService
     {
         private readonly ApplicationDbContext _dbContext;

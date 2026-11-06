@@ -4,9 +4,9 @@ using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Application.Identity.Queries
 {
-    public class GetUserPermissions : IRequestHandler<GetUserPermissions.Query, UserSession>
+    public class GetUserPermissions : IRequestHandler<GetUserPermissions.Query, UserSessionDto>
     {
-        public class Query : IRequest<UserSession> { }
+        public class Query : IRequest<UserSessionDto> { }
 
         private readonly IdentityService _identityService;
 
@@ -15,7 +15,7 @@ namespace ThreadboxApi.Application.Identity.Queries
             _identityService = identityService;
         }
 
-        public async Task<UserSession> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<UserSessionDto> Handle(Query request, CancellationToken cancellationToken)
         {
             return await _identityService.GetUserSessionAsync();
         }

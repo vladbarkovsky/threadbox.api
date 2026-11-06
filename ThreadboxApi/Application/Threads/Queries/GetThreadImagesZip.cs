@@ -15,6 +15,7 @@ namespace ThreadboxApi.Application.Threads.Queries
     {
         public class Query : IRequest<FileContentResult>
         {
+            [FromRoute]
             public Guid ThreadId { get; init; }
 
             public class Validator : AbstractValidator<Query>

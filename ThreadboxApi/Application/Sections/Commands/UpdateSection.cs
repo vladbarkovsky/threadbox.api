@@ -3,6 +3,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Sections.Models;
 using ThreadboxApi.ORM.Entities;
