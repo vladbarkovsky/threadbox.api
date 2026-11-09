@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ThreadboxApi.Application.Boards.Commands;
-using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Application.Sections.Commands;
 using ThreadboxApi.Application.Sections.Models;
@@ -35,16 +33,9 @@ namespace ThreadboxApi.Web.Controllers
             return await _sender.Send(command);
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPut]
         [Permission(SectionsPermissions.Manage)]
-        public async Task<SectionDto> Update(UpdateSection.Command command)
-        {
-            return await _sender.Send(command);
-        }
-
-        [HttpPost("{sectionId:guid}")]
-        [ProducesResponseType(typeof(BoardDto), StatusCodes.Status201Created)]
-        public async Task<CreatedAtActionResult> Create(CreateBoard.Command command)
+        public async Task<SectionDto> Update([FromBody] UpdateSection.Command command)
         {
             return await _sender.Send(command);
         }

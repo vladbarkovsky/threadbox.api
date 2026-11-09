@@ -44,11 +44,11 @@ namespace ThreadboxApi
                 })
                 .Build();
 
-            using (IServiceScope scope = host.Services.CreateScope())
-            {
-                RoleService roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
-                await roleService.SynchronizeRolesAsync();
-            }
+            //using (IServiceScope scope = host.Services.CreateScope())
+            //{
+            //    RoleService roleService = scope.ServiceProvider.GetRequiredService<RoleService>();
+            //    await roleService.SynchronizeRolesAsync();
+            //}
 
             await host.RunAsync();
         }

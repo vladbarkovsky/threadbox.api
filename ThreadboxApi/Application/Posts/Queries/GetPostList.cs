@@ -2,6 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Services;
@@ -10,12 +11,13 @@ namespace ThreadboxApi.Application.Posts.Queries
 {
     public class GetPostList : IRequestHandler<GetPostList.Query, PostDto[]>
     {
-        public class Query : IRequest<PostDto[]>
+        public sealed class Query : IRequest<PostDto[]>
         {
             public Guid ThreadId { get; init; }
+
             public bool All { get; init; }
 
-            public class Validator : AbstractValidator<Query>
+            public sealed class Validator : AbstractValidator<Query>
             {
                 public Validator()
                 {

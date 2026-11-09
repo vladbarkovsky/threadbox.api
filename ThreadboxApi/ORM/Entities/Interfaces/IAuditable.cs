@@ -1,12 +1,12 @@
 ﻿namespace ThreadboxApi.ORM.Entities.Interfaces
 {
-    public interface IAuditable
+    internal interface IAuditable
     {
-        public DateTimeOffset CreatedAt { get; set; }
-        public string CreatedById { get; set; }
-        public ApplicationUser CreatedBy { get; set; }
-        public DateTimeOffset? UpdatedAt { get; set; }
-        public string UpdatedById { get; set; }
-        public ApplicationUser UpdatedBy { get; set; }
+        DateTimeOffset CreatedAt { get; set; }
+        string CreatedById { get; set; }
+        ApplicationUser CreatedBy { get; set; }
+        DateTimeOffset? UpdatedAt { get; set; }
+        string UpdatedById { get; set; }
+        ApplicationUser UpdatedBy { get; set; }
     }
 }

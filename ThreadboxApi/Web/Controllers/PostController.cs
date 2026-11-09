@@ -33,10 +33,10 @@ namespace ThreadboxApi.Web.Controllers
             return await _sender.Send(command);
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Permission(PostsPermissions.Delete)]
-        public async Task<NoContentResult> Delete([FromRoute] DeletePost.Command command)
+        public async Task<NoContentResult> Delete([FromBody] DeletePost.Command command)
         {
             return await _sender.Send(command);
         }

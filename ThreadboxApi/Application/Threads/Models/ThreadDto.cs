@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.Application.ThreadImages.Models;
+using ThreadboxApi.ORM.Entities.Interfaces;
 
 namespace ThreadboxApi.Application.Threads.Models
 {
-    public class ThreadDto : IMapped
+    public class ThreadDto : IConsistent, IMapped
     {
         [Required]
         public Guid Id { get; init; }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.ORM.Services;
@@ -13,7 +12,6 @@ namespace ThreadboxApi.Application.Boards.Queries
     {
         public class Query : IRequest<BoardDto>
         {
-            [FromRoute]
             public Guid Id { get; init; }
 
             public class Validator : AbstractValidator<Query>

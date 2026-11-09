@@ -11,11 +11,10 @@ using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Threads.Queries
 {
-    public class GetThreadImagesZip : IRequestHandler<GetThreadImagesZip.Query, FileContentResult>
+    public sealed class GetThreadImagesZip : IRequestHandler<GetThreadImagesZip.Query, FileContentResult>
     {
-        public class Query : IRequest<FileContentResult>
+        public sealed class Query : IRequest<FileContentResult>
         {
-            [FromRoute]
             public Guid ThreadId { get; init; }
 
             public class Validator : AbstractValidator<Query>

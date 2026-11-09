@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Boards.Commands;
 using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.Application.Boards.Queries;
-using ThreadboxApi.Application.Common.Pagination;
-using ThreadboxApi.Application.Threads.Models;
-using ThreadboxApi.Application.Threads.Queries;
 
 namespace ThreadboxApi.Web.Controllers
 {
@@ -26,23 +23,24 @@ namespace ThreadboxApi.Web.Controllers
             return await _sender.Send(query);
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPost]
+        [ProducesResponseType(typeof(BoardDto), StatusCodes.Status201Created)]
+        public async Task<CreatedAtActionResult> Create([FromBody] CreateBoard.Command command)
+        {
+            return await _sender.Send(command);
+        }
+
+        [HttpPut]
         public async Task<BoardDto> Update([FromBody] UpdateBoard.Command command)
         {
             return await _sender.Send(command);
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<NoContentResult> Delete(DeleteBoard.Command command)
+        public async Task<NoContentResult> Delete([FromBody] DeleteBoard.Command command)
         {
             return await _sender.Send(command);
-        }
-
-        [HttpPost("{boardId:guid}/threads")]
-        public async Task<PaginatedResult<ThreadDto>> GetThreadList(GetThreadList.Query query)
-        {
-            return await _sender.Send(query);
         }
     }
 }

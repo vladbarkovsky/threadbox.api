@@ -46,7 +46,7 @@ namespace ThreadboxApi.Application.Sections.Commands
             return new CreatedAtActionResult(
                 actionName: nameof(SectionController.Get),
                 controllerName: nameof(SectionController),
-                routeValues: new { id = section.Id },
+                routeValues: null,
                 value: _mapper.Map<SectionDto>(section));
         }
     }

@@ -12,24 +12,14 @@ using ThreadboxApi.Web.Controllers;
 
 namespace ThreadboxApi.Application.Threads.Commands
 {
-    public class CreateThread : IRequestHandler<CreateThread.Command, CreatedAtActionResult>
+    public sealed class CreateThread : IRequestHandler<CreateThread.Command, CreatedAtActionResult>
     {
-        public class Command : IRequest<CreatedAtActionResult>
+        public sealed class Command : IRequest<CreatedAtActionResult>
         {
             public Guid BoardId { get; init; }
             public string Title { get; init; }
             public string Text { get; init; }
             public string TripcodeString { get; init; }
-
-            // NOTE: This property will be null in case we pass empty array from client,
-            // because we use multipart/form-data encoding for this request.
-            // NOTE: Keep a List, not IFormFile[]. NSwag 13.20 treats a file collection as multipart
-            // only when the type has an IFormFile generic argument. An array has none, so the property
-            // is emitted as a query parameter and the generated client writes "[object Object]" into the URL.
-            // The same check is still present on NSwag master.
-            // https://github.com/RicoSuter/NSwag/blob/v13.20.0/src/NSwag.Generation.AspNetCore/Processors/OperationParameterProcessor.cs#L179-L187
-            // https://github.com/RicoSuter/NSwag/blob/v13.20.0/src/NSwag.Generation.AspNetCore/Processors/OperationParameterProcessor.cs#L357-L374
-            // https://github.com/RicoSuter/NJsonSchema/blob/v10.9.0/src/NJsonSchema/Generation/DefaultReflectionService.cs#L278-L290
             public List<IFormFile> Images { get; init; } = new List<IFormFile>();
 
             public class Validator : AbstractValidator<Command>
@@ -95,13 +85,13 @@ namespace ThreadboxApi.Application.Threads.Commands
             return new CreatedAtActionResult(
                 actionName: nameof(ThreadController.Get),
                 controllerName: nameof(ThreadController),
-                routeValues: new { id = thread.Id },
+                routeValues: null,
                 value: _mapper.Map<ThreadDto>(thread));
         }
 
         private async Task SaveThreadImage(IFormFile formFile, Guid threadId, CancellationToken cancellationToken)
         {
-            var filePath = $"Images/ThreadImages/{threadId}/{formFile.FileName}";
+            string filePath = $"Images/ThreadImages/{threadId}/{formFile.FileName}";
 
             using (var memoryStream = new MemoryStream())
             {

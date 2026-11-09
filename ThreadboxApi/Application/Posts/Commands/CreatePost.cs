@@ -2,6 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.Application.Services;
@@ -16,8 +17,12 @@ namespace ThreadboxApi.Application.Posts.Commands
     {
         public class Command : IRequest<CreatedAtActionResult>
         {
+            [Required]
             public Guid ThreadId { get; init; }
+
+            [Required]
             public string Text { get; init; }
+
             public string TripcodeString { get; init; }
             public List<IFormFile> PostImages { get; init; } = new List<IFormFile>();
 
@@ -25,8 +30,9 @@ namespace ThreadboxApi.Application.Posts.Commands
             {
                 public Validator()
                 {
-                    RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.ThreadId).NotEmpty();
+                    RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
+
                     RuleFor(x => x.TripcodeString)
                         .ValidateTripcodeString()
                         .When(x => !string.IsNullOrEmpty(x.TripcodeString));
@@ -83,7 +89,7 @@ namespace ThreadboxApi.Application.Posts.Commands
             return new CreatedAtActionResult(
                 actionName: nameof(PostController.Get),
                 controllerName: nameof(PostController),
-                routeValues: new { id = post.Id },
+                routeValues: null,
                 value: _mapper.Map<PostDto>(post));
         }
 

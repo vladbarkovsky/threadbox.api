@@ -4,10 +4,10 @@ namespace ThreadboxApi.Application.Services.Interfaces
 {
     public interface IFileStorage : IScopedService
     {
-        public Task<byte[]> GetFileAsync(string filePath, CancellationToken cancellationToken = default);
+        Task<byte[]> GetFileAsync(string filePath, CancellationToken cancellationToken = default);
 
-        public Task SaveFileAsync(string path, byte[] data, CancellationToken cancellationToken = default);
+        Task SaveFileAsync(string path, byte[] data, CancellationToken cancellationToken = default);
 
-        public Task DeleteFileAsync(string filePath, CancellationToken cancellationToken = default);
+        Task DeleteFilesAsync(CancellationToken cancellationToken = default, params string[] paths);
     }
 }

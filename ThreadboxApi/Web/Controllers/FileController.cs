@@ -9,9 +9,9 @@ namespace ThreadboxApi.Web.Controllers
     {
         public FileController(ISender sender) : base(sender) { }
 
-        [HttpGet("{fileInfoId:guid}")]
+        [HttpGet]
         [ExposeContentDisposition]
-        public async Task<FileContentResult> Get([FromRoute] GetFile.Query query)
+        public async Task<FileContentResult> Get([FromQuery] GetFile.Query query)
         {
             return await _sender.Send(query);
         }

@@ -52,7 +52,7 @@ namespace ThreadboxApi.Application.Boards.Commands
             return new CreatedAtActionResult(
                 actionName: nameof(BoardController.Get),
                 controllerName: nameof(BoardController),
-                routeValues: new { id = board.Id },
+                routeValues: null,
                 value: _mapper.Map<BoardDto>(board));
         }
     }

@@ -5,7 +5,7 @@ using ThreadboxApi.ORM.Entities.Interfaces;
 
 namespace ThreadboxApi.Application.Common.Mapping
 {
-    public class FileUrlResolver<TSource, TDestination> : IValueResolver<TSource, TDestination, string>
+    public sealed class FileUrlResolver<TSource, TDestination> : IValueResolver<TSource, TDestination, string>
         where TSource : IFileDto
     {
         private readonly IOptionsSnapshot<AppSettings> _appSettings;
@@ -21,7 +21,7 @@ namespace ThreadboxApi.Application.Common.Mapping
             string destinationMember,
             ResolutionContext context)
         {
-            return _appSettings.Value.BaseUrl + "/api/files/" + source.FileInfoId;
+            return _appSettings.Value.BaseUrl + "/api/files?fileInfoId=" + source.FileInfoId;
         }
     }
 }

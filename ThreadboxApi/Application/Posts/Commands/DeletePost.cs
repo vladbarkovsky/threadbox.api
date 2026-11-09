@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Common;
+using ThreadboxApi.Application.Services.Interfaces;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
 using ThreadboxApi.ORM.Services;
@@ -14,10 +15,7 @@ namespace ThreadboxApi.Application.Posts.Commands
     {
         public class Command : IRequest<NoContentResult>, IConsistentCommand
         {
-            [FromRoute]
             public Guid Id { get; init; }
-
-            [FromBody]
             public uint? RowVersion { get; init; }
 
             public class Validator : ConsistentCommandValidatorTemplate<Command>
@@ -30,10 +28,12 @@ namespace ThreadboxApi.Application.Posts.Commands
         }
 
         private readonly ApplicationDbContext _dbContext;
+        private readonly IFileStorage _fileStorage;
 
-        public DeletePost(ApplicationDbContext dbContext)
+        public DeletePost(ApplicationDbContext dbContext, IFileStorage fileStorage)
         {
             _dbContext = dbContext;
+            _fileStorage = fileStorage;
         }
 
         public async Task<NoContentResult> Handle(Command request, CancellationToken cancellationToken)
@@ -50,6 +50,7 @@ namespace ThreadboxApi.Application.Posts.Commands
             }
 
             post.Deleted = true;
+            _dbContext.SetOriginalRowVersion(post, request.RowVersion);
 
             foreach (PostImage image in post.PostImages)
             {
@@ -57,7 +58,10 @@ namespace ThreadboxApi.Application.Posts.Commands
                 image.FileInfo.Deleted = true;
             }
 
-            _dbContext.SetOriginalRowVersion(post, request.RowVersion);
+            await _fileStorage.DeleteFilesAsync(
+                cancellationToken,
+                post.PostImages.Select(string (PostImage image) => image.FileInfo.Path).ToArray());
+
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return new NoContentResult();

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Common.Pagination;
 using ThreadboxApi.Application.Threads.Models;
@@ -13,11 +12,8 @@ namespace ThreadboxApi.Application.Threads.Queries
     {
         public class Query : PaginatedQuery, IRequest<PaginatedResult<ThreadDto>>
         {
-            [FromRoute]
             public Guid BoardId { get; init; }
-
-            [FromQuery]
-            public  string SearchText { get; init; }
+            public string SearchText { get; init; }
 
             public class Validator : PaginatedQueryValidatorTemplate<Query>
             {

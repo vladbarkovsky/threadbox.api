@@ -1,7 +1,6 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Boards.Models;
 using ThreadboxApi.Application.Common;
@@ -16,16 +15,9 @@ namespace ThreadboxApi.Application.Boards.Commands
     {
         public class Command : IRequest<BoardDto>, IConsistentCommand
         {
-            [FromRoute]
             public Guid Id { get; init; }
-
-            [FromBody]
             public string Title { get; init; }
-
-            [FromBody]
             public string Description { get; init; }
-
-            [FromBody]
             public uint? RowVersion { get; init; }
 
             public class Validator : ConsistentCommandValidatorTemplate<Command>

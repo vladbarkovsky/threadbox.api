@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using ThreadboxApi.Application.Files.Models;
 using ThreadboxApi.Application.Services;
@@ -16,7 +17,7 @@ namespace ThreadboxApi.Application.Files.Queries
     {
         public class Query : IRequest<FileContentResult>
         {
-            [FromRoute]
+            [Required]
             public Guid PostId { get; init; }
 
             public class Validator : AbstractValidator<Query>

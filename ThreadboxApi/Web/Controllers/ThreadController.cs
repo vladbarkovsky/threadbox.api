@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ThreadboxApi.Application.Common.Pagination;
 using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Application.Threads.Commands;
 using ThreadboxApi.Application.Threads.Models;
@@ -12,6 +13,12 @@ namespace ThreadboxApi.Web.Controllers
     public sealed class ThreadController : ApplicationController
     {
         public ThreadController(ISender sender) : base(sender) { }
+
+        [HttpGet]
+        public async Task<PaginatedResult<ThreadDto>> GetList([FromQuery] GetThreadList.Query query)
+        {
+            return await _sender.Send(query);
+        }
 
         [HttpGet("{id:guid}")]
         public async Task<ThreadDto> Get([FromRoute] GetThread.Query query)
@@ -26,10 +33,10 @@ namespace ThreadboxApi.Web.Controllers
             return await _sender.Send(command);
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [Permission(ThreadsPermissions.Delete)]
-        public async Task<NoContentResult> Delete([FromRoute] DeleteThread.Command command)
+        public async Task<NoContentResult> Delete([FromBody] DeleteThread.Command command)
         {
             return await _sender.Send(command);
         }
