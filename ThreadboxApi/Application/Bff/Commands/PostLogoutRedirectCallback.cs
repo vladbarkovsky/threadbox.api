@@ -22,7 +22,7 @@ namespace ThreadboxApi.Application.Bff.Commands
         public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
             await _bffService.ClearTokensAsync(cancellationToken);
-            return new RedirectResult(_appSettings.Value.FrontendBaseUrl);
+            return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/logged-out");
         }
     }
 }

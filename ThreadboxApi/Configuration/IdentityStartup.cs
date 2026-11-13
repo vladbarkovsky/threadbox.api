@@ -1,4 +1,5 @@
 ﻿using IdentityServer4;
+using IdentityServer4.Configuration;
 using IdentityServer4.EntityFramework.Options;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
@@ -29,7 +30,20 @@ namespace ThreadboxApi.Configuration
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             IIdentityServerBuilder identityServerBuilder = services
-                .AddIdentityServer()
+                .AddIdentityServer(void (IdentityServerOptions options) =>
+                {
+                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+                    options.UserInteraction.LoginUrl = "/Identity/Account/Login";
+                    options.UserInteraction.LoginReturnUrlParameter = "returnUrl";
+                    options.Endpoints.EnableCheckSessionEndpoint = false;
+                    options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
+                    options.Endpoints.EnableDiscoveryEndpoint = false;
+                    options.Endpoints.EnableEndSessionEndpoint = false;
+                    options.Endpoints.EnableIntrospectionEndpoint = false;
+                    options.Endpoints.EnableJwtRequestUri = false;
+                    options.Endpoints.EnableTokenRevocationEndpoint = false;
+                    options.Endpoints.EnableUserInfoEndpoint = false;
+                })
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddInMemoryIdentityResources(new IdentityResource[]
                 {
@@ -79,7 +93,7 @@ namespace ThreadboxApi.Configuration
                         AbsoluteRefreshTokenLifetime = appSettings.AbsoluteRefreshTokenLifetimeSeconds
                     }
                 })
-                .AddOperationalStore<ApplicationDbContext>(void (OperationalStoreOptions options )=>
+                .AddOperationalStore<ApplicationDbContext>(void (OperationalStoreOptions options) =>
                 {
                     options.EnableTokenCleanup = true;
                 });
@@ -106,6 +120,8 @@ namespace ThreadboxApi.Configuration
                 name: IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
                 configureOptions: void (JwtBearerOptions options) =>
                 {
+                    options.Audience = "threadbox_api";
+                    options.TokenValidationParameters.ValidAudience = "threadbox_api";
                     options.TokenValidationParameters.AuthenticationType = IdentityServerJwtConstants.IdentityServerJwtBearerScheme;
                 });
 

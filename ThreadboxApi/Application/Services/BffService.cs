@@ -152,7 +152,6 @@ namespace ThreadboxApi.Application.Services
             if (session != null)
             {
                 session.Deleted = true;
-                _dbContext.Update(session);
                 await _dbContext.SaveChangesAsync(cancellationToken);
             }
 
@@ -179,7 +178,14 @@ namespace ThreadboxApi.Application.Services
 
         private void DeleteSessionCookie()
         {
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete(SessionCookieName);
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete(
+                SessionCookieName,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
         }
     }
 }

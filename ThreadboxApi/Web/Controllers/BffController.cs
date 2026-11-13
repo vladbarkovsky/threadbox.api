@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Bff.Commands;
 
@@ -29,7 +28,6 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpGet("logout")]
-        [Authorize]
         public async Task<RedirectResult> Logout()
         {
             return await _sender.Send(new Logout.Command());

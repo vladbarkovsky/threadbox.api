@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.Application.Services;
+using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.Bff.Commands
 {
@@ -10,22 +12,26 @@ namespace ThreadboxApi.Application.Bff.Commands
     {
         public class Command : IRequest<RedirectResult> { }
 
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly BffService _bffService;
         private readonly IOptionsSnapshot<AppSettings> _appSettings;
 
-        public Logout(IOptionsSnapshot<AppSettings> appSettings)
+        public Logout(
+            SignInManager<ApplicationUser> signInManager,
+            BffService bffService,
+            IOptionsSnapshot<AppSettings> appSettings)
         {
+            _signInManager = signInManager;
+            _bffService = bffService;
             _appSettings = appSettings;
         }
 
-        public Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            var query = new Dictionary<string, string>
-            {
-                { "post_logout_redirect_uri", _appSettings.Value.BaseUrl + "/bff/post-logout-redirect-callback" }
-            };
+            await _bffService.ClearTokensAsync(cancellationToken);
+            await _signInManager.SignOutAsync();
 
-            string redirectUrl = QueryHelpers.AddQueryString(_appSettings.Value.BaseUrl + "/connect/endsession", query);
-            return Task.FromResult(new RedirectResult(redirectUrl));
+            return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/logged-out");
         }
     }
 }
