@@ -1,8 +1,8 @@
 ﻿namespace ThreadboxApi.Application.Identity.Permissions
 {
-    public class ThreadsPermissions : IPermissionSet
+    public class ThreadPermissions : IPermissionSet
     {
-        private const string Prefix = "Permissions";
+        private const string Prefix = "Thread";
 
         public const string Delete = $"{Prefix}.Delete";
     }

@@ -1,8 +1,8 @@
 ﻿namespace ThreadboxApi.Application.Identity.Permissions
 {
-    public class BoardsPermissions : IPermissionSet
+    public class BoardPermissions : IPermissionSet
     {
-        private const string Prefix = "Boards";
+        private const string Prefix = "Board";
 
         public const string Manage = $"{Prefix}.Manage";
     }

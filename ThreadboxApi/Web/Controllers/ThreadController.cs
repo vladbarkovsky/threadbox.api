@@ -35,7 +35,7 @@ namespace ThreadboxApi.Web.Controllers
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [Permission(ThreadsPermissions.Delete)]
+        [Permission(ThreadPermissions.Delete)]
         public async Task<NoContentResult> Delete([FromBody] DeleteThread.Command command)
         {
             return await _sender.Send(command);

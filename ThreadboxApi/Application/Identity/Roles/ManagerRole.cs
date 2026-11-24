@@ -8,8 +8,8 @@ namespace ThreadboxApi.Application.Identity.Roles
 
         public static HashSet<string> Permissions { get; } = new()
         {
-            ThreadsPermissions.Delete,
-            PostsPermissions.Delete
+            ThreadPermissions.Delete,
+            PostPermissions.Delete
         };
     }
 }

@@ -89,7 +89,7 @@ namespace ThreadboxApi.Configuration
                         {
                             new Secret(appSettings.OidcBffClientSecret.Sha256())
                         },
-                        AccessTokenLifetime = 1_800,
+                        AccessTokenLifetime = appSettings.AccessTokenLifetimeSeconds,
                         AbsoluteRefreshTokenLifetime = appSettings.AbsoluteRefreshTokenLifetimeSeconds
                     }
                 })

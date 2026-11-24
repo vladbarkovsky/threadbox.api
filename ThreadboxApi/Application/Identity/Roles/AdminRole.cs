@@ -8,10 +8,10 @@ namespace ThreadboxApi.Application.Identity.Roles
 
         public static HashSet<string> Permissions { get; } = new()
         {
-            SectionsPermissions.Manage,
-            BoardsPermissions.Manage,
-            ThreadsPermissions.Delete,
-            PostsPermissions.Delete
+            SectionPermissions.Manage,
+            BoardPermissions.Manage,
+            ThreadPermissions.Delete,
+            PostPermissions.Delete
         };
     }
 }

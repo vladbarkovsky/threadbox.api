@@ -6,6 +6,7 @@
         public string BaseUrl { get; set; }
         public string FrontendBaseUrl { get; set; }
         public DefaultAdminCredentials DefaultAdminCredentials { get; set; }
+        public int AccessTokenLifetimeSeconds { get; set; }
         public int AbsoluteRefreshTokenLifetimeSeconds { get; set; }
         public string OidcBffClientSecret { get; set; }
         public string SigningPfxPassword { get; set; }

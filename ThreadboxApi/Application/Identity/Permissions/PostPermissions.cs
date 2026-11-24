@@ -1,8 +1,8 @@
 ﻿namespace ThreadboxApi.Application.Identity.Permissions
 {
-    public class PostsPermissions : IPermissionSet
+    public class PostPermissions : IPermissionSet
     {
-        private const string Prefix = "Posts";
+        private const string Prefix = "Post";
 
         public const string Delete = $"{Prefix}.Delete";
     }

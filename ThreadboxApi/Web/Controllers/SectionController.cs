@@ -26,7 +26,7 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpPost]
-        [Permission(SectionsPermissions.Manage)]
+        [Permission(SectionPermissions.Manage)]
         [ProducesResponseType(typeof(SectionDto), StatusCodes.Status201Created)]
         public async Task<CreatedAtActionResult> Create([FromBody] CreateSection.Command command)
         {
@@ -34,7 +34,7 @@ namespace ThreadboxApi.Web.Controllers
         }
 
         [HttpPut]
-        [Permission(SectionsPermissions.Manage)]
+        [Permission(SectionPermissions.Manage)]
         public async Task<SectionDto> Update([FromBody] UpdateSection.Command command)
         {
             return await _sender.Send(command);
