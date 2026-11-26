@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Files;
 using ThreadboxApi.Application.Posts.Models;
-using ThreadboxApi.Application.Tripcode;
+using ThreadboxApi.Application.Tripcodes;
 using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Validation;

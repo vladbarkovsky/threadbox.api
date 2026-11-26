@@ -5,7 +5,7 @@ using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ServiceLifetimes;
 using ThreadboxApi.Web.ErrorHandling;
 
-namespace ThreadboxApi.Application.Tripcode
+namespace ThreadboxApi.Application.Tripcodes
 {
     public class TripcodesService : IScoped
     {

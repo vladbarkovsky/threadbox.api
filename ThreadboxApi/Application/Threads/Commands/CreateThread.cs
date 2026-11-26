@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Files;
 using ThreadboxApi.Application.Threads.Models;
-using ThreadboxApi.Application.Tripcode;
+using ThreadboxApi.Application.Tripcodes;
 using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Validation;
