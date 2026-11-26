@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Net.Http.Headers;
-using ThreadboxApi.Application.Common.Constants;
 
 namespace ThreadboxApi.Configuration
 {

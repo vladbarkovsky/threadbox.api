@@ -1,0 +1,16 @@
+.field-validation-error {
+	display: block;
+}
+
+.validation-summary-valid {
+	display: none;
+}
+
+.validation-summary-errors {
+	margin-bottom: 8px;
+
+	ul {
+		margin: 0;
+		padding-left: 16px;
+	}
+}

@@ -1,0 +1,43 @@
+html[data-theme='light'] {
+	--color-background: #c0c0c0;
+	--color-foreground: #222;
+	--color-surface: #c0c0c0;
+	--color-field: #fff;
+	--color-highlight: #fff;
+	--color-face: #dfdfdf;
+	--color-shadow: #808080;
+	--color-frame: #0a0a0a;
+	--color-title: #000080;
+	--color-title-end: #1084d0;
+	--color-title-inactive: #808080;
+	--color-title-inactive-end: #b5b5b5;
+	--color-title-foreground: #fff;
+	--color-accent: #000080;
+	--color-accent-foreground: #fff;
+	--color-focus: #000;
+	--color-disabled: #808080;
+	--color-link: #00f;
+	color-scheme: light;
+}
+
+html[data-theme='dark'] {
+	--color-background: #1e1e1e;
+	--color-foreground: #e8e8e8;
+	--color-surface: #3c3c3c;
+	--color-field: #141414;
+	--color-highlight: #767676;
+	--color-face: #555;
+	--color-shadow: #222;
+	--color-frame: #0a0a0a;
+	--color-title: #b83232;
+	--color-title-end: #e07070;
+	--color-title-inactive: #3a3a3a;
+	--color-title-inactive-end: #5e5e5e;
+	--color-title-foreground: #fff;
+	--color-accent: #b83232;
+	--color-accent-foreground: #fff;
+	--color-focus: #fff;
+	--color-disabled: #8a8a8a;
+	--color-link: #8eb6ff;
+	color-scheme: dark;
+}

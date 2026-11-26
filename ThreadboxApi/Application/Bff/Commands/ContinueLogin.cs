@@ -1,11 +1,11 @@
 using IdentityServer4;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Application.Bff.Commands
 {
@@ -26,14 +26,14 @@ namespace ThreadboxApi.Application.Bff.Commands
 
         public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
-            AuthenticateResult authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync(IdentityConstants.ApplicationScheme);
+            AuthenticateResult authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync(Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme);
 
             if (!authenticateResult.Succeeded)
             {
                 string loginUrl = QueryHelpers.AddQueryString(
-                    uri: "/Identity/Account/Login",
+                    uri: UrlConstants.SignInPath,
                     name: "returnUrl",
-                    value: "/bff/continue-login");
+                    value: UrlConstants.ContinueLoginPath);
 
                 return new RedirectResult(loginUrl);
             }
@@ -68,7 +68,7 @@ namespace ThreadboxApi.Application.Bff.Commands
             var query = new Dictionary<string, string>
             {
                 { "client_id", "bff" },
-                { "redirect_uri", _appSettings.Value.BaseUrl + "/bff/post-login-redirect-callback" },
+                { "redirect_uri", _appSettings.Value.BaseUrl + UrlConstants.PostLoginRedirectCallbackPath },
                 { "response_type", "code" },
                 { "scope", string.Join(" ", scopes) },
                 { "state", bffState }

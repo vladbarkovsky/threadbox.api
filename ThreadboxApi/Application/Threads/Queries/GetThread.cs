@@ -3,7 +3,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Threads.Models;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.ORM;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Threads.Queries

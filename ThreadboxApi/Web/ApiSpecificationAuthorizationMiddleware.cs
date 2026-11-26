@@ -2,7 +2,8 @@ using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
-using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Web
 {
@@ -17,8 +18,8 @@ namespace ThreadboxApi.Web
         {
             ProtectedRequestPaths = new HashSet<string>
             {
-                "/api/index.html",
-                "/api/specification.json"
+                UrlConstants.ApiPath + "/index.html",
+                UrlConstants.ApiSpecificationPath
             };
 
             _next = next;

@@ -5,10 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using ThreadboxApi.Application.Files.Models;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Files.Queries

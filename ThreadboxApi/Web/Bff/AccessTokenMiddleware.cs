@@ -1,10 +1,9 @@
-﻿using System.Net.Http.Headers;
-using ThreadboxApi.Application.Common;
-using ThreadboxApi.Application.Services;
+﻿using ThreadboxApi.Application.Bff;
+using ThreadboxApi.ServiceLifetimes;
 
 namespace ThreadboxApi.Web.Bff
 {
-    public class AccessTokenMiddleware : IMiddleware, ITransientService
+    public class AccessTokenMiddleware : IMiddleware, IScoped
     {
         private readonly BffService _bffService;
 

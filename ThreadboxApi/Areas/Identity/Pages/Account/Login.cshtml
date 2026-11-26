@@ -1,60 +1,37 @@
 ﻿@page
 @model LoginModel
 
-@{
-    ViewData["Title"] = "Sign in";
-}
+<div class="login-page">
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-bar-text">@Localizer["Layout_SignIn"]</div>
+        </div>
 
-<h1 class="pb-3">@ViewData["Title"]</h1>
+        <div class="window-body">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly"></div>
 
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                <div class="form-floating pb-3">
-                    <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" />
-                    <label asp-for="Input.UserName" class="form-label">@Html.DisplayNameFor(m => m.Input.UserName)</label>
-                    <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                <div class="field-row-stacked">
+                    <label asp-for="Input.UserName"></label>
+                    <input asp-for="Input.UserName" autocomplete="username" aria-required="true" />
+                    <span asp-validation-for="Input.UserName"></span>
                 </div>
 
-                <div class="form-floating pb-3">
-                    <input
-                        asp-for="Input.Password"
-                        class="form-control"
-                        autocomplete="current-password"
-                        aria-required="true"
-                        type="password"
-                    />
-
-                    <label asp-for="Input.Password" class="form-label">@Html.DisplayNameFor(m => m.Input.Password)</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                <div class="field-row-stacked">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" autocomplete="current-password" aria-required="true" type="password" />
+                    <span asp-validation-for="Input.Password"></span>
                 </div>
 
-                <div class="pb-3">
-                    <div class="checkbox">
-                        <label asp-for="Input.OfflineAccess" class="form-label">
-                            @Html.DisplayNameFor(m => m.Input.OfflineAccess)
-                            <input class="form-check-input" asp-for="Input.OfflineAccess" />
-                        </label>
-                    </div>
+                <div class="field-row">
+                    <input asp-for="Input.OfflineAccess" />
+                    <label asp-for="Input.OfflineAccess"></label>
                 </div>
 
-                <div class="pb-3">
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Sign In</button>
-                </div>
-
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
+                <div class="field-row actions">
+                    <button id="login-submit" type="submit" class="default">@Localizer["Layout_SignIn"]</button>
                 </div>
             </form>
-        </section>
+        </div>
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

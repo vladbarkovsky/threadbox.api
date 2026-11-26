@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common.Mapping;
+using ThreadboxApi.Mapping;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
 

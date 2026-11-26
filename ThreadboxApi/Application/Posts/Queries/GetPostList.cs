@@ -4,8 +4,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Posts.Models;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Posts.Queries
 {

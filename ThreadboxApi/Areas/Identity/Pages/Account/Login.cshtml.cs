@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Bff.Commands;
+using ThreadboxApi.Configuration;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -11,11 +14,21 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
+        private readonly IOptionsMonitor<AppSettings> _appSettings;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IStringLocalizer<LoginModel> _localizer;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager)
+        public LoginModel(
+            IOptionsMonitor<AppSettings> appSettings,
+            SignInManager<ApplicationUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            IStringLocalizer<LoginModel> localizer)
         {
+            _appSettings = appSettings;
             _signInManager = signInManager;
+            _userManager = userManager;
+            _localizer = localizer;
         }
 
         [BindProperty]
@@ -24,31 +37,32 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [DisplayName("User name")]
+            [Required(ErrorMessage = "Login_FieldRequired")]
+            [Display(Name = "Login_Username")]
             public string UserName { get; set; }
 
-            [Required]
-            [DisplayName("Password")]
+            [Required(ErrorMessage = "Login_FieldRequired")]
+            [Display(Name = "Login_Password")]
             public string Password { get; set; }
 
             [Required]
-            [DisplayName("Remember me")]
+            [Display(Name = "Login_RememberMe")]
             public bool OfflineAccess { get; set; }
         }
 
-        public void OnGet([FromQuery] string returnUrl)
+        public IActionResult OnGet([FromQuery] string returnUrl)
         {
             if (string.IsNullOrEmpty(returnUrl))
             {
                 throw new HttpResponseException("Return URL not specified.");
             }
 
-            // FIXME: If user clicks "Back" button in browser after signing in, he gets "Bad Request" text.
             if (_signInManager.IsSignedIn(User))
             {
-                throw new HttpResponseException("User is already authorized.");
+                return LocalRedirect(returnUrl);
             }
+
+            return Page();
         }
 
         public async Task<ActionResult> OnPostAsync([FromQuery] string returnUrl)
@@ -60,7 +74,7 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
 
             if (_signInManager.IsSignedIn(User))
             {
-                throw new HttpResponseException("User is already authorized.");
+                return LocalRedirect(returnUrl);
             }
 
             var result = await _signInManager.PasswordSignInAsync(
@@ -71,9 +85,24 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Invalid user name or password.");
+                ModelState.AddModelError(string.Empty, _localizer["Login_InvalidCredentials"]);
                 return Page();
             }
+
+            ApplicationUser user = await _userManager.FindByNameAsync(Input.UserName);
+
+            int sessionLifetimeSeconds = Input.OfflineAccess
+                ? _appSettings.CurrentValue.AbsoluteRefreshTokenLifetimeSeconds
+                : _appSettings.CurrentValue.AccessTokenLifetimeSeconds;
+
+            await _signInManager.SignInAsync(
+                user,
+                new AuthenticationProperties
+                {
+                    AllowRefresh = false,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(sessionLifetimeSeconds),
+                    IsPersistent = Input.OfflineAccess
+                });
 
             Response.Cookies.Append(
                 ContinueLogin.OfflineAccessCookieName,

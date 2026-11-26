@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Application.Posts.Models;
 using ThreadboxApi.Application.ThreadImages.Models;
+using ThreadboxApi.Mapping;
 using ThreadboxApi.ORM.Entities.Interfaces;
 
 namespace ThreadboxApi.Application.Threads.Models
@@ -11,19 +11,27 @@ namespace ThreadboxApi.Application.Threads.Models
     {
         [Required]
         public Guid Id { get; init; }
+
         [Required]
         public uint RowVersion { get; set; }
+
         [Required]
         public string Title { get; init; }
+
         [Required]
         public string Text { get; init; }
+
         public string TripcodeKey { get; init; }
+
         [Required]
         public List<PostDto> Posts { get; set; }
+
         [Required]
         public List<ThreadImageDto> ThreadImages { get; init; }
+
         [Required]
         public bool HasMorePosts { get; set; }
+
         [Required]
         public DateTimeOffset CreatedAt { get; init; }
 

@@ -1,0 +1,30 @@
+body:has(.login-page) {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+
+	main {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+	}
+}
+
+.login-page {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 100%;
+	padding: var(--page-padding);
+
+	.window {
+		box-sizing: border-box;
+		width: min(100%, 22rem);
+	}
+
+	.actions {
+		justify-content: center;
+	}
+}

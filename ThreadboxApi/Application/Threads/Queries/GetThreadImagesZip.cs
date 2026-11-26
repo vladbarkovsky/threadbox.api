@@ -3,10 +3,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
+using ThreadboxApi.Application.Files;
 using ThreadboxApi.Application.Files.Models;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Application.Services.Interfaces;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.ORM;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Threads.Queries

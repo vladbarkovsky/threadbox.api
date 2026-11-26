@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Application.Bff.Commands
 {
@@ -22,7 +22,7 @@ namespace ThreadboxApi.Application.Bff.Commands
         public async Task<RedirectResult> Handle(Command request, CancellationToken cancellationToken)
         {
             await _bffService.ClearTokensAsync(cancellationToken);
-            return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/logged-out");
+            return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.LoggedOutPath);
         }
     }
 }

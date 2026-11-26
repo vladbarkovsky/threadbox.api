@@ -6,11 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi;
+using ThreadboxApi.Application.Files;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Time;
 
 namespace Seeding
 {
@@ -64,8 +65,8 @@ namespace Seeding
 
             using (IServiceScope scope = host.Services.CreateScope())
             {
-                SeedingService databaseSeeder = scope.ServiceProvider.GetRequiredService<SeedingService>();
-                await databaseSeeder.SeedAsync();
+                SeedingService seedingService = scope.ServiceProvider.GetRequiredService<SeedingService>();
+                await seedingService.SeedAsync();
             }
 
             Console.WriteLine("Seeding completed.");

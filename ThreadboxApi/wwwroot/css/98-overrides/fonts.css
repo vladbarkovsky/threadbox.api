@@ -1,0 +1,32 @@
+@font-face {
+	font-family: Arimo;
+	src: url('../../fonts/arimo/Arimo-VariableFont_wght.ttf') format('truetype');
+	font-weight: 400 700;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: Arimo;
+	src: url('../../fonts/arimo/Arimo-Italic-VariableFont_wght.ttf') format('truetype');
+	font-weight: 400 700;
+	font-style: italic;
+	font-display: swap;
+}
+
+body,
+button,
+input,
+label,
+legend,
+li[role='tab'],
+option,
+select,
+table,
+textarea,
+ul.tree-view,
+.window,
+.title-bar {
+	font-family: Arimo, sans-serif;
+	-webkit-font-smoothing: auto;
+}

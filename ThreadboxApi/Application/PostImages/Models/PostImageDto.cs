@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common.Mapping;
+using ThreadboxApi.Mapping;
 using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.PostImages.Models
@@ -9,6 +9,7 @@ namespace ThreadboxApi.Application.PostImages.Models
     {
         [Required]
         public Guid FileInfoId { get; init; }
+
         [Required]
         public string Url { get; init; }
 

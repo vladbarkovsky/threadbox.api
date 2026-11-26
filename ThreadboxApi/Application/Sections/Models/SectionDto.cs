@@ -1,6 +1,6 @@
 using AutoMapper;
 using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common.Mapping;
+using ThreadboxApi.Mapping;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
 
@@ -10,8 +10,10 @@ namespace ThreadboxApi.Application.Sections.Models
     {
         [Required]
         public Guid Id { get; init; }
+
         [Required]
         public uint RowVersion { get; set; }
+
         [Required]
         public string Title { get; init; }
 

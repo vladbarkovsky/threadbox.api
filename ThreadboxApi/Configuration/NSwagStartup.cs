@@ -3,6 +3,7 @@ using NSwag.AspNetCore;
 using NSwag.Generation.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using ThreadboxApi.Web;
+using ThreadboxApi.Web.Constants;
 using ZymLabs.NSwag.FluentValidation;
 
 namespace ThreadboxApi.Configuration
@@ -58,13 +59,13 @@ namespace ThreadboxApi.Configuration
 
             app.UseOpenApi(void (OpenApiDocumentMiddlewareSettings settings) =>
             {
-                settings.Path = "/api/specification.json";
+                settings.Path = UrlConstants.ApiSpecificationPath;
             });
 
             app.UseSwaggerUi3(void (SwaggerUi3Settings settings) =>
             {
-                settings.Path = "/api";
-                settings.DocumentPath = "/api/specification.json";
+                settings.Path = UrlConstants.ApiPath;
+                settings.DocumentPath = UrlConstants.ApiSpecificationPath;
             });
         }
     }

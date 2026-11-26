@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ThreadboxApi.Application.Common.Pagination;
 using ThreadboxApi.Application.Identity.Permissions;
 using ThreadboxApi.Application.Threads.Commands;
 using ThreadboxApi.Application.Threads.Models;
 using ThreadboxApi.Application.Threads.Queries;
+using ThreadboxApi.Pagination;
 using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Web.Controllers

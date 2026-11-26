@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using ThreadboxApi.ORM.Services;
 
 #nullable disable
 

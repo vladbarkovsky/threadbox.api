@@ -1,0 +1,289 @@
+body {
+	font-size: 15px;
+}
+
+button,
+input,
+label,
+legend,
+li[role='tab'],
+option,
+select,
+table,
+textarea,
+ul.tree-view,
+.window,
+.title-bar {
+	font-size: 14px;
+}
+
+button,
+input[type='reset'],
+input[type='submit'] {
+	min-width: 94px;
+	min-height: 29px;
+	padding: 0 15px;
+
+	&:focus {
+		outline-offset: -5px;
+	}
+}
+
+.vertical-bar {
+	height: 25px;
+}
+
+.window {
+	padding: 4px;
+}
+
+.title-bar {
+	padding: 4px 3px 4px 4px;
+}
+
+.title-bar-text {
+	margin-right: 30px;
+}
+
+.title-bar-controls {
+	button {
+		min-width: 20px;
+		min-height: 18px;
+
+		&[aria-label='Minimize'],
+		&[aria-label].minimize {
+			background-position: bottom 4px left 7px;
+		}
+
+		&[aria-label='Maximize'],
+		&[aria-label].maximize,
+		&[aria-label='Maximize']:disabled,
+		&[aria-label].maximize:disabled {
+			background-position: top 4px left 5px;
+		}
+
+		&[aria-label='Restore'],
+		&[aria-label].restore {
+			background-position: top 4px left 6px;
+		}
+
+		&[aria-label='Help'],
+		&[aria-label].help {
+			background-position: top 4px left 7px;
+		}
+
+		&[aria-label='Close'],
+		&[aria-label].close {
+			background-position: top 5px left 6px;
+		}
+	}
+}
+
+.status-bar-field {
+	padding: 3px 4px;
+}
+
+.window-body {
+	margin: 10px;
+}
+
+fieldset {
+	padding: 12px;
+	padding-block-start: 10px;
+}
+
+table {
+	> thead > tr > * {
+		height: 21px;
+		padding: 0 8px;
+	}
+
+	> tbody > tr > * {
+		height: 18px;
+		padding: 0 8px;
+	}
+}
+
+[class^='field-row'] + [class^='field-row'] {
+	margin-top: 8px;
+}
+
+.field-row {
+	> * + * {
+		margin-left: 8px;
+	}
+}
+
+.field-row-stacked {
+	* + * {
+		margin-top: 8px;
+	}
+}
+
+input[type='radio'],
+input[type='checkbox'] {
+	& + label {
+		line-height: 16px;
+	}
+}
+
+input[type='radio'] {
+	& + label {
+		margin-left: 24px;
+	}
+
+	& + label::before {
+		top: 0;
+		left: -24px;
+		width: 16px;
+		height: 16px;
+		margin-right: 8px;
+		background-size: 16px 16px;
+		image-rendering: pixelated;
+	}
+
+	&:checked + label::after {
+		top: 5px;
+		left: -19px;
+		width: 6px;
+		height: 6px;
+		background-size: 6px 6px;
+		image-rendering: pixelated;
+	}
+}
+
+input[type='checkbox'] {
+	& + label {
+		margin-left: 24px;
+	}
+
+	& + label::before {
+		left: -24px;
+		width: 16px;
+		height: 16px;
+		margin-right: 8px;
+	}
+
+	&:checked + label::after,
+	&[disabled]:checked + label::after {
+		left: -20px;
+		width: 8px;
+		height: 8px;
+		background-size: 8px 8px;
+	}
+}
+
+input[type='radio']:active + label::before,
+input[type='radio'][disabled] + label::before {
+	background-size: 16px 16px;
+}
+
+input[type='radio'][disabled]:checked + label::after {
+	background-size: 6px 6px;
+}
+
+input[type='email'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='text'],
+input[type='url'],
+select,
+textarea {
+	padding: 4px 5px;
+}
+
+input[type='email'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='text'] {
+	height: 26px;
+}
+
+input[type='number'] {
+	height: 27px;
+	padding: 4px 5px;
+}
+
+select {
+	height: 26px;
+	padding-right: 40px;
+	background-position: top 4px right 4px;
+}
+
+ul.tree-view {
+	padding: 8px;
+
+	ul,
+	li {
+		margin-top: 4px;
+	}
+
+	ul {
+		margin-left: 20px;
+		padding-left: 20px;
+	}
+
+	ul > li::before {
+		top: 8px;
+		left: -20px;
+		width: 15px;
+	}
+
+	ul > li:last-child::after {
+		top: 9px;
+		left: -24px;
+		width: 10px;
+	}
+
+	details > summary::before {
+		width: 14px;
+		height: 14px;
+		margin-right: 6px;
+		padding-left: 0;
+		line-height: 14px;
+	}
+
+	ul details > summary::before {
+		margin-left: -28px;
+	}
+}
+
+pre {
+	padding: 15px 10px;
+}
+
+menu[role='tablist'] {
+	padding-left: 4px;
+
+	> li {
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+
+		&[aria-selected='true'] {
+			margin-left: -4px;
+		}
+
+		> a {
+			margin: 8px;
+		}
+	}
+}
+
+.progress-indicator {
+	height: 40px;
+	padding: 5px;
+}
+
+html[data-theme] {
+	.progress-indicator.segmented > .progress-indicator-bar {
+		background-image: linear-gradient(90deg, var(--color-accent) 0 20px, transparent 0 2px);
+		background-size: 22px 100%;
+	}
+}
+
+.field-border,
+.field-border-disabled {
+	padding: 3px;
+}

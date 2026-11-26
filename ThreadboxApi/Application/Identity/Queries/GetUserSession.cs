@@ -1,6 +1,5 @@
 using MediatR;
 using ThreadboxApi.Application.Identity.Models;
-using ThreadboxApi.Application.Services;
 
 namespace ThreadboxApi.Application.Identity.Queries
 {

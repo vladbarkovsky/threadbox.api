@@ -1,14 +1,15 @@
 using IdentityModel.Client;
 using Microsoft.Extensions.Options;
+using ThreadboxApi.Application.Bff;
 using ThreadboxApi.Application.Bff.Models;
-using ThreadboxApi.Application.Common;
-using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.ServiceLifetimes;
+using ThreadboxApi.Web.Constants;
+using ThreadboxApi.Time;
 
 namespace ThreadboxApi.Web.Bff
 {
-    public class AccessTokenRefreshMiddleware : IMiddleware, ITransientService
+    public class AccessTokenRefreshMiddleware : IMiddleware, IScoped
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly BffService _bffService;
@@ -40,7 +41,7 @@ namespace ThreadboxApi.Web.Bff
                 return;
             }
 
-            if (_dateTimeService.UtcNow.AddMinutes(2) < tokens.ExpiresAt)
+            if (tokens.ExpiresAt > _dateTimeService.UtcNow)
             {
                 await next(context);
                 return;
@@ -51,7 +52,7 @@ namespace ThreadboxApi.Web.Bff
                 TokenResponse tokenResponse = await httpClient.RequestRefreshTokenAsync(
                     new RefreshTokenRequest
                     {
-                        Address = _appSettings.Value.BaseUrl + "/connect/token",
+                        Address = _appSettings.Value.BaseUrl + UrlConstants.ConnectTokenPath,
                         ClientId = "bff",
                         ClientSecret = _appSettings.Value.OidcBffClientSecret,
                         RefreshToken = tokens.RefreshToken

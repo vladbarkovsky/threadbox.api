@@ -1,10 +1,10 @@
 ﻿using Serilog.Context;
 using System.Diagnostics;
-using ThreadboxApi.Application.Common;
+using ThreadboxApi.ServiceLifetimes;
 
 namespace ThreadboxApi.Web
 {
-    public class TraceIdLoggingMidleware : IMiddleware, ITransientService
+    public class TraceIdLoggingMidleware : IMiddleware, IScoped
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

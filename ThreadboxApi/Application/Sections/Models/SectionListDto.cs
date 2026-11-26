@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Boards.Models;
-using ThreadboxApi.Application.Common.Mapping;
+using ThreadboxApi.Mapping;
 using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.Sections.Models
@@ -10,8 +10,10 @@ namespace ThreadboxApi.Application.Sections.Models
     {
         [Required]
         public Guid Id { get; init; }
+
         [Required]
         public string Title { get; init; }
+
         [Required]
         public List<SectionBoardDto> Boards { get; init; }
 

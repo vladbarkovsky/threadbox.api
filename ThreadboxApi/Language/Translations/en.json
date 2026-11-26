@@ -1,0 +1,14 @@
+﻿{
+  "Layout_AuthorizedAs": "Authorized as",
+  "Layout_SignIn": "Sign in",
+  "Layout_SignOut": "Sign out",
+  "Layout_Menu": "Menu",
+  "Layout_Language": "Language",
+  "Layout_Logo": "Application logo",
+  "Layout_DarkTheme": "Dark theme",
+  "Login_Username": "Username",
+  "Login_Password": "Password",
+  "Login_RememberMe": "Remember me",
+  "Login_FieldRequired": "The \"{0}\" field is required.",
+  "Login_InvalidCredentials": "Invalid user name or password."
+}

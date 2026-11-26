@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common.Mapping;
 using ThreadboxApi.Application.PostImages.Models;
+using ThreadboxApi.Mapping;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
 

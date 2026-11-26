@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
-using ThreadboxApi.Application.Common;
+using ThreadboxApi.ServiceLifetimes;
 
 namespace ThreadboxApi.Web.ErrorHandling
 {
-    public class ErrorHandlingMiddleware : IMiddleware, ITransientService
+    public class ErrorHandlingMiddleware : IMiddleware, IScoped
     {
         private readonly ProblemDetailsService _problemDetailsService;
 

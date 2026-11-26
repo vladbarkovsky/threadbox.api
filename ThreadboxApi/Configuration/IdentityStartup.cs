@@ -4,15 +4,16 @@ using IdentityServer4.EntityFramework.Options;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography.X509Certificates;
-using ThreadboxApi.Application.Common.Constants;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.Bff;
+using ThreadboxApi.Web.Constants;
 using ThreadboxApi.Web.PermissionHandling;
 
 namespace ThreadboxApi.Configuration
@@ -22,18 +23,30 @@ namespace ThreadboxApi.Configuration
         public static void ConfigureServices(IServiceCollection services, AppSettings appSettings, IWebHostEnvironment webHostEnvironment)
         {
             services
-                .AddDefaultIdentity<ApplicationUser>(void (IdentityOptions options) =>
-                {
-                    options.SignIn.RequireConfirmedAccount = false;
-                })
+                .AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.ConfigureApplicationCookie(void (CookieAuthenticationOptions options) =>
+            {
+                options.SlidingExpiration = false;
+
+                options.Events.OnValidatePrincipal = async (CookieValidatePrincipalContext context) =>
+                {
+                    await SecurityStampValidator.ValidatePrincipalAsync(context);
+
+                    if (context.Principal != null)
+                    {
+                        context.ShouldRenew = false;
+                    }
+                };
+            });
 
             IIdentityServerBuilder identityServerBuilder = services
                 .AddIdentityServer(void (IdentityServerOptions options) =>
                 {
                     options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
-                    options.UserInteraction.LoginUrl = "/Identity/Account/Login";
+                    options.UserInteraction.LoginUrl = UrlConstants.SignInPath;
                     options.UserInteraction.LoginReturnUrlParameter = "returnUrl";
                     options.Endpoints.EnableCheckSessionEndpoint = false;
                     options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
@@ -82,7 +95,7 @@ namespace ThreadboxApi.Configuration
                         },
                         RedirectUris =
                         {
-                            appSettings.BaseUrl + "/bff/post-login-redirect-callback"
+                            appSettings.BaseUrl + UrlConstants.PostLoginRedirectCallbackPath
                         },
                         RequirePkce = false,
                         ClientSecrets =

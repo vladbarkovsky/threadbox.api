@@ -21,22 +21,29 @@ namespace ThreadboxApi.Configuration
                     Exception exception = context.Features.Get<IExceptionHandlerFeature>().Error;
                     ProblemDetails problemDetails;
 
-                    if (exception is HttpResponseException httpResponseException)
+                    switch (exception)
                     {
-                        context.Response.StatusCode = httpResponseException.StatusCode;
-                        problemDetails = problemDetailsService.GetProblemDetails(httpResponseException.StatusCode);
-                        problemDetails.Detail = httpResponseException.Message;
+                        case HttpResponseException httpResponseException:
+                            context.Response.StatusCode = httpResponseException.StatusCode;
+                            problemDetails = problemDetailsService.GetProblemDetails(httpResponseException.StatusCode);
+                            problemDetails.Detail = httpResponseException.Message;
+                            break;
+                        case DbUpdateConcurrencyException:
+                            context.Response.StatusCode = StatusCodes.Status409Conflict;
+                            problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status409Conflict);
+                            problemDetails.Detail = "The record was modified or no longer exists.";
+                            break;
+                        default:
+                            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                            problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status500InternalServerError); ;
+                            break;
                     }
-                    else if (exception is DbUpdateConcurrencyException)
+
+                    IWebHostEnvironment environment = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+
+                    if (environment.IsDevelopment())
                     {
-                        context.Response.StatusCode = StatusCodes.Status409Conflict;
-                        problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status409Conflict);
-                        problemDetails.Detail = "The record was changed by another request.";
-                    }
-                    else
-                    {
-                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        problemDetails = problemDetailsService.GetProblemDetails(StatusCodes.Status500InternalServerError);
+                        problemDetails.Extensions["stackTrace"] = exception.ToString();
                     }
 
                     context.Response.ContentType = "application/problem+json; charset=utf-8";

@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ThreadboxApi.Application.Sections.Models;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.ORM;
 
 namespace ThreadboxApi.Application.Sections.Queries
 {

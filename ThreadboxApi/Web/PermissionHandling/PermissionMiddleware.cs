@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using System.Security.Claims;
-using ThreadboxApi.Application.Services;
+using ThreadboxApi.Application.Identity;
 
 namespace ThreadboxApi.Web.PermissionHandling
 {

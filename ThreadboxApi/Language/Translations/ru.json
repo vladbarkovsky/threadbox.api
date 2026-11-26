@@ -1,0 +1,14 @@
+﻿{
+  "Layout_AuthorizedAs": "Авторизован как",
+  "Layout_SignIn": "Войти",
+  "Layout_SignOut": "Выйти",
+  "Layout_Menu": "Меню",
+  "Layout_Language": "Язык",
+  "Layout_Logo": "Логотип приложения",
+  "Layout_DarkTheme": "Тёмная тема",
+  "Login_Username": "Имя пользователя",
+  "Login_Password": "Пароль",
+  "Login_RememberMe": "Запомнить меня",
+  "Login_FieldRequired": "Поле \"{0}\" обязательно.",
+  "Login_InvalidCredentials": "Неверное имя пользователя или пароль."
+}

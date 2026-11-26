@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Application.Bff.Commands
 {
@@ -42,7 +42,7 @@ namespace ThreadboxApi.Application.Bff.Commands
             {
                 _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_state");
                 _logger.LogError("Authorization callback returned an error: {Error}.", request.Error);
-                return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/authorization-error");
+                return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
             }
 
             string expectedState = _httpContextAccessor.HttpContext.Request.Cookies["bff_state"];
@@ -55,7 +55,7 @@ namespace ThreadboxApi.Application.Bff.Commands
                     !string.IsNullOrWhiteSpace(expectedState),
                     !string.IsNullOrWhiteSpace(request.State));
 
-                return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/authorization-error");
+                return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
             }
 
             using (HttpClient httpClient = _httpClientFactory.CreateClient())
@@ -63,11 +63,11 @@ namespace ThreadboxApi.Application.Bff.Commands
                 TokenResponse tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(
                     new AuthorizationCodeTokenRequest
                     {
-                        Address = _appSettings.Value.BaseUrl + "/connect/token",
+                        Address = _appSettings.Value.BaseUrl + UrlConstants.ConnectTokenPath,
                         ClientId = "bff",
                         ClientSecret = _appSettings.Value.OidcBffClientSecret,
                         Code = request.Code,
-                        RedirectUri = _appSettings.Value.BaseUrl + "/bff/post-login-redirect-callback"
+                        RedirectUri = _appSettings.Value.BaseUrl + UrlConstants.PostLoginRedirectCallbackPath
                     },
                     cancellationToken);
 
@@ -80,7 +80,7 @@ namespace ThreadboxApi.Application.Bff.Commands
                         tokenResponse.ErrorDescription,
                         (int)tokenResponse.HttpStatusCode);
 
-                    return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/authorization-error");
+                    return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
                 }
 
                 await _bffService.SetTokensAsync(tokenResponse, cancellationToken);

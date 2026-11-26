@@ -1,0 +1,294 @@
+html[data-theme] {
+	--border-raised:
+		inset -1px -1px var(--color-frame), inset 1px 1px var(--color-highlight), inset -2px -2px var(--color-shadow),
+		inset 2px 2px var(--color-face);
+	--border-sunken:
+		inset -1px -1px var(--color-highlight), inset 1px 1px var(--color-frame), inset -2px -2px var(--color-face),
+		inset 2px 2px var(--color-shadow);
+	--border-window:
+		inset -1px -1px var(--color-frame), inset 1px 1px var(--color-face), inset -2px -2px var(--color-shadow),
+		inset 2px 2px var(--color-highlight);
+	--border-field:
+		inset -1px -1px var(--color-highlight), inset 1px 1px var(--color-shadow), inset -2px -2px var(--color-face),
+		inset 2px 2px var(--color-frame);
+	--border-default-raised:
+		inset -2px -2px var(--color-frame), inset 1px 1px var(--color-frame), inset 2px 2px var(--color-highlight),
+		inset -3px -3px var(--color-shadow), inset 3px 3px var(--color-face);
+	--border-default-sunken:
+		inset 2px 2px var(--color-frame), inset -1px -1px var(--color-frame), inset -2px -2px var(--color-highlight),
+		inset 3px 3px var(--color-shadow), inset -3px -3px var(--color-face);
+	--border-status: inset -1px -1px var(--color-face), inset 1px 1px var(--color-shadow);
+	--border-tab:
+		inset -1px 0 var(--color-frame), inset 1px 1px var(--color-face), inset -2px 0 var(--color-shadow),
+		inset 2px 2px var(--color-highlight);
+	background-color: var(--color-background);
+	color: var(--color-foreground);
+
+	body {
+		background-color: var(--color-background);
+		color: var(--color-foreground);
+	}
+
+	& ::selection {
+		background-color: var(--color-accent);
+		color: var(--color-accent-foreground);
+	}
+
+	u {
+		border-bottom-color: var(--color-foreground);
+	}
+
+	a {
+		color: var(--color-link);
+
+		&:focus {
+			outline-color: var(--color-link);
+		}
+	}
+
+	.window {
+		background-color: var(--color-surface);
+		box-shadow: var(--border-window);
+	}
+
+	.title-bar {
+		background-image: linear-gradient(90deg, var(--color-title), var(--color-title-end));
+
+		&.inactive {
+			background-image: linear-gradient(90deg, var(--color-title-inactive), var(--color-title-inactive-end));
+		}
+	}
+
+	.title-bar-text {
+		color: var(--color-title-foreground);
+	}
+
+	legend,
+	.status-field-border,
+	.vertical-bar {
+		background-color: var(--color-surface);
+	}
+
+	.status-bar-field,
+	.status-field-border {
+		box-shadow: var(--border-status);
+	}
+
+	.vertical-bar,
+	& :not(.title-bar-controls) > button,
+	input[type='reset'],
+	input[type='submit'] {
+		background-color: var(--color-surface);
+		box-shadow: var(--border-raised);
+	}
+
+	& :not(.title-bar-controls) > button,
+	input[type='reset'],
+	input[type='submit'] {
+		text-shadow: 0 0 var(--color-foreground);
+	}
+
+	& :not(.title-bar-controls) > button.default,
+	input[type='reset'].default,
+	input[type='submit'].default {
+		box-shadow: var(--border-default-raised);
+	}
+
+	& :disabled,
+	& :disabled + label {
+		color: var(--color-disabled);
+	}
+
+	& :disabled + label,
+	& :not(.title-bar-controls) > button:disabled,
+	input[type='reset']:disabled,
+	input[type='submit']:disabled {
+		text-shadow: 1px 1px 0 var(--color-highlight);
+	}
+
+	input[readonly],
+	input[readonly] + label {
+		color: var(--color-disabled);
+	}
+
+	& :not(.title-bar-controls) > button:focus,
+	input[type='reset']:focus,
+	input[type='submit']:focus,
+	input[type='checkbox']:focus + label,
+	input[type='radio']:focus + label,
+	summary:focus {
+		outline-color: var(--color-focus);
+	}
+
+	& :not(.title-bar-controls) > button:not(:disabled):active,
+	input[type='reset']:not(:disabled):active,
+	input[type='submit']:not(:disabled):active {
+		box-shadow: var(--border-sunken);
+		text-shadow: 1px 1px var(--color-foreground);
+	}
+
+	& :not(.title-bar-controls) > button.default:not(:disabled):active,
+	input[type='reset'].default:not(:disabled):active,
+	input[type='submit'].default:not(:disabled):active {
+		box-shadow: var(--border-default-sunken);
+	}
+
+	input[type='email'],
+	input[type='number'],
+	input[type='password'],
+	input[type='search'],
+	input[type='tel'],
+	input[type='text'],
+	input[type='url'],
+	select,
+	textarea,
+	input[type='checkbox'] + label::before,
+	ul.tree-view,
+	pre,
+	.field-border,
+	.field-border-disabled {
+		background-color: var(--color-field);
+		box-shadow: var(--border-field);
+	}
+
+	.sunken-panel,
+	table {
+		background-color: var(--color-field);
+	}
+
+	input[type='radio'] + label::before {
+		background-color: transparent;
+		background-repeat: no-repeat;
+		box-shadow: none;
+	}
+}
+
+html[data-theme='light'] {
+	input[type='radio'] + label::before {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23808080' d='M8 0H4V1H2V2H1V4H0V8H1V10H2V8H1V4H2V2H4V1H8V2H10V1H8V0Z'/%3E%3Cpath fill='%23000' d='M8 1H4V2H2V4H1V8H2V9H3V8H2V4H3V3H4V2H8V3H10V2H8V1Z'/%3E%3Cpath fill='%23dfdfdf' d='M9 3H10V4H9V3ZM10 8V4H11V8H10ZM8 10V9H9V8H10V10H8ZM4 10V11H8V10H4ZM4 9H2V10H4Z'/%3E%3Cpath fill='%23fff' d='M11 2H10V4H11V8H10V10H8V11H4V10H2V11H4V12H8V11H10V10H11V8H12V4H11V2Z'/%3E%3Cpath fill='%23fff' d='M4 2H8V3H9V4H10V8H9V9H8V10H4V9H3V8H2V4H3V3H4V2Z'/%3E%3C/svg%3E");
+	}
+}
+
+html[data-theme='dark'] {
+	input[type='radio'] + label::before {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23222' d='M8 0H4V1H2V2H1V4H0V8H1V10H2V8H1V4H2V2H4V1H8V2H10V1H8V0Z'/%3E%3Cpath fill='%230a0a0a' d='M8 1H4V2H2V4H1V8H2V9H3V8H2V4H3V3H4V2H8V3H10V2H8V1Z'/%3E%3Cpath fill='%23555' d='M9 3H10V4H9V3ZM10 8V4H11V8H10ZM8 10V9H9V8H10V10H8ZM4 10V11H8V10H4ZM4 9H2V10H4Z'/%3E%3Cpath fill='%23767676' d='M11 2H10V4H11V8H10V10H8V11H4V10H2V11H4V12H8V11H10V10H11V8H12V4H11V2Z'/%3E%3Cpath fill='%23141414' d='M4 2H8V3H9V4H10V8H9V9H8V10H4V9H3V8H2V4H3V3H4V2Z'/%3E%3C/svg%3E");
+	}
+}
+
+html[data-theme='light'] input[type='radio']:is(:active, [disabled]) + label::before {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23808080' d='M8 0H4V1H2V2H1V4H0V8H1V10H2V8H1V4H2V2H4V1H8V2H10V1H8V0Z'/%3E%3Cpath fill='%23000' d='M8 1H4V2H2V4H1V8H2V9H3V8H2V4H3V3H4V2H8V3H10V2H8V1Z'/%3E%3Cpath fill='%23dfdfdf' d='M9 3H10V4H9V3ZM10 8V4H11V8H10ZM8 10V9H9V8H10V10H8ZM4 10V11H8V10H4ZM4 9H2V10H4Z'/%3E%3Cpath fill='%23fff' d='M11 2H10V4H11V8H10V10H8V11H4V10H2V11H4V12H8V11H10V10H11V8H12V4H11V2Z'/%3E%3Cpath fill='%23c0c0c0' d='M4 2H8V3H9V4H10V8H9V9H8V10H4V9H3V8H2V4H3V3H4V2Z'/%3E%3C/svg%3E");
+}
+
+html[data-theme='dark'] input[type='radio']:is(:active, [disabled]) + label::before {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23222' d='M8 0H4V1H2V2H1V4H0V8H1V10H2V8H1V4H2V2H4V1H8V2H10V1H8V0Z'/%3E%3Cpath fill='%230a0a0a' d='M8 1H4V2H2V4H1V8H2V9H3V8H2V4H3V3H4V2H8V3H10V2H8V1Z'/%3E%3Cpath fill='%23555' d='M9 3H10V4H9V3ZM10 8V4H11V8H10ZM8 10V9H9V8H10V10H8ZM4 10V11H8V10H4ZM4 9H2V10H4Z'/%3E%3Cpath fill='%23767676' d='M11 2H10V4H11V8H10V10H8V11H4V10H2V11H4V12H8V11H10V10H11V8H12V4H11V2Z'/%3E%3Cpath fill='%233c3c3c' d='M4 2H8V3H9V4H10V8H9V9H8V10H4V9H3V8H2V4H3V3H4V2Z'/%3E%3C/svg%3E");
+}
+
+html[data-theme] input[type='email']:disabled,
+html[data-theme] input[type='email']:read-only,
+html[data-theme] input[type='number']:disabled,
+html[data-theme] input[type='number']:read-only,
+html[data-theme] input[type='password']:disabled,
+html[data-theme] input[type='password']:read-only,
+html[data-theme] input[type='search']:disabled,
+html[data-theme] input[type='search']:read-only,
+html[data-theme] input[type='tel']:disabled,
+html[data-theme] input[type='tel']:read-only,
+html[data-theme] input[type='text']:disabled,
+html[data-theme] input[type='text']:read-only,
+html[data-theme] input[type='url']:disabled,
+html[data-theme] input[type='url']:read-only,
+html[data-theme] textarea:disabled,
+html[data-theme] input[type='checkbox']:active + label::before,
+html[data-theme] input[type='checkbox'][disabled] + label::before,
+html[data-theme] .field-border-disabled {
+	background-color: var(--color-surface);
+}
+
+html[data-theme] select {
+	&:focus {
+		background-color: var(--color-accent);
+		color: var(--color-accent-foreground);
+	}
+
+	&:focus option {
+		background-color: var(--color-field);
+		color: var(--color-foreground);
+	}
+}
+
+html[data-theme='dark'] input:is([type='checkbox'], [type='radio']):checked + label::after {
+	filter: invert(1);
+}
+
+html[data-theme] ul.tree-view a {
+	color: var(--color-foreground);
+}
+
+html[data-theme] menu[role='tablist'] > li > a {
+	color: var(--color-foreground);
+}
+
+html[data-theme] ul.tree-view {
+	a:focus {
+		background-color: var(--color-accent);
+		color: var(--color-accent-foreground);
+	}
+
+	ul {
+		border-left-color: var(--color-shadow);
+	}
+
+	ul > li::before {
+		border-bottom-color: var(--color-shadow);
+	}
+
+	ul > li:last-child::after {
+		background-color: var(--color-field);
+	}
+
+	details > summary::before {
+		background-color: var(--color-field);
+		border-color: var(--color-shadow);
+	}
+}
+
+html[data-theme] table {
+	> thead > tr > * {
+		background-color: var(--color-surface);
+		box-shadow: var(--border-raised);
+	}
+
+	> tbody > tr.highlighted {
+		background-color: var(--color-accent);
+		color: var(--color-accent-foreground);
+	}
+}
+
+html[data-theme] menu[role='tablist'] {
+	> li {
+		box-shadow: var(--border-tab);
+	}
+
+	> li[aria-selected='true'] {
+		background-color: var(--color-surface);
+	}
+
+	> li > a:focus {
+		outline-color: var(--color-foreground);
+	}
+}
+
+html[data-theme] .progress-indicator {
+	box-shadow:
+		inset -2px -2px var(--color-face),
+		inset 2px 2px var(--color-shadow);
+
+	> .progress-indicator-bar {
+		background-color: var(--color-accent);
+	}
+
+	&.segmented > .progress-indicator-bar {
+		background-color: transparent;
+		background-image: linear-gradient(90deg, var(--color-accent) 0 16px, transparent 0 2px);
+	}
+}

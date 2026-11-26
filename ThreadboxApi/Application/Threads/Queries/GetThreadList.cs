@@ -2,20 +2,20 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Application.Common.Pagination;
 using ThreadboxApi.Application.Threads.Models;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.ORM;
+using ThreadboxApi.Pagination;
 
 namespace ThreadboxApi.Application.Threads.Queries
 {
-    public class GetThreadList : IRequestHandler<GetThreadList.Query, PaginatedResult<ThreadDto>>
+    public sealed class GetThreadList : IRequestHandler<GetThreadList.Query, PaginatedResult<ThreadDto>>
     {
-        public class Query : PaginatedQuery, IRequest<PaginatedResult<ThreadDto>>
+        public sealed class Query : PaginatedQuery, IRequest<PaginatedResult<ThreadDto>>
         {
             public Guid BoardId { get; init; }
             public string SearchText { get; init; }
 
-            public class Validator : PaginatedQueryValidatorTemplate<Query>
+            public sealed class Validator : PaginatedQueryValidatorTemplate<Query>
             {
                 protected override void Configure()
                 {

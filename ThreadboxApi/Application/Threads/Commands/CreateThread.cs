@@ -2,12 +2,12 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ThreadboxApi.Application.Common;
-using ThreadboxApi.Application.Services;
-using ThreadboxApi.Application.Services.Interfaces;
+using ThreadboxApi.Application.Files;
 using ThreadboxApi.Application.Threads.Models;
+using ThreadboxApi.Application.Tripcode;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Validation;
 using ThreadboxApi.Web.Controllers;
 
 namespace ThreadboxApi.Application.Threads.Commands
@@ -29,9 +29,11 @@ namespace ThreadboxApi.Application.Threads.Commands
                     RuleFor(x => x.Title).NotEmpty().MaximumLength(128);
                     RuleFor(x => x.Text).NotEmpty().MaximumLength(131072);
                     RuleFor(x => x.BoardId).NotEmpty();
+
                     RuleFor(x => x.TripcodeString)
                         .ValidateTripcodeString()
                         .When(x => !string.IsNullOrEmpty(x.TripcodeString));
+
                     RuleFor(x => x.Images)
                         .Must(x => x.Count <= 5)
                         .WithMessage("Maximum allowed number of files is 5.")

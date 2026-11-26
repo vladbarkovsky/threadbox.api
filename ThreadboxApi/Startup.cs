@@ -2,16 +2,18 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Scrutor;
 using System.Reflection;
-using ThreadboxApi.Application.Common;
-using ThreadboxApi.Application.Common.Constants;
 using ThreadboxApi.Configuration;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.ServiceLifetimes;
 using ThreadboxApi.Web;
+using ThreadboxApi.Web.Constants;
+using ThreadboxApi.Web.Language;
+using ThreadboxApi.ORM;
 
 namespace ThreadboxApi
 {
@@ -52,13 +54,13 @@ namespace ThreadboxApi
             {
                 selector
                     .FromAssemblyOf<Program>()
-                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<ISingletonService>())
+                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<ISingleton>())
                     .AsSelfWithInterfaces()
                     .WithSingletonLifetime()
-                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<IScopedService>())
+                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<IScoped>())
                     .AsSelfWithInterfaces()
                     .WithScopedLifetime()
-                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<ITransientService>())
+                    .AddClasses(void (IImplementationTypeFilter filter) => filter.AssignableTo<ITransient>())
                     .AsSelfWithInterfaces()
                     .WithTransientLifetime();
             });
@@ -80,7 +82,17 @@ namespace ThreadboxApi
                 jsonInputFormatter.SupportedMediaTypes.Add("application/csp-report");
             });
 
-            services.AddRazorPages();
+            services.AddRouting(void (RouteOptions options) =>
+            {
+                options.ConstraintMap["culture"] = typeof(CultureRouteConstraint);
+            });
+
+            services
+                .AddRazorPages(void (RazorPagesOptions options) =>
+                {
+                    options.Conventions.Add(new CulturePageRouteModelConvention());
+                })
+                .AddDataAnnotationsLocalization();
 
             NSwagStartup.ConfigureServices(services, _webHostEnvironment);
             IdentityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);
@@ -122,12 +134,13 @@ namespace ThreadboxApi
             }
 
             app.UseMiddleware<TraceIdLoggingMidleware>();
-            LocalizationStartup.Configure(app);
             ErrorHandlingStartup.Configure(app);
             app.UseHealthChecks("/health");
             SecurityStartup.Configure(app, _webHostEnvironment);
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseMiddleware<IdentityPageCultureMiddleware>();
+            LocalizationStartup.Configure(app);
             SecurityStartup.ConfigureCors(app);
             ErrorHandlingStartup.Configure(app);
             IdentityStartup.Configure(app);
@@ -135,7 +148,7 @@ namespace ThreadboxApi
 
             app.UseEndpoints(void (IEndpointRouteBuilder routeBuilder) =>
             {
-                routeBuilder.MapGet("/", () => Results.Redirect("/api")).ExcludeFromDescription();
+                routeBuilder.MapGet("/", () => Results.Redirect(UrlConstants.ApiPath)).ExcludeFromDescription();
                 routeBuilder.MapControllers();
                 routeBuilder.MapRazorPages();
             });

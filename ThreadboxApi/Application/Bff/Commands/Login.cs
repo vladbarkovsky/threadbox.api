@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Application.Bff.Commands
 {
@@ -23,13 +24,13 @@ namespace ThreadboxApi.Application.Bff.Commands
 
             if (authenticateResult.Succeeded)
             {
-                return new RedirectResult("/bff/continue-login");
+                return new RedirectResult(UrlConstants.ContinueLoginPath);
             }
 
             string loginUrl = QueryHelpers.AddQueryString(
-                uri: "/Identity/Account/Login",
+                uri: UrlConstants.SignInPath,
                 name: "returnUrl",
-                value: "/bff/continue-login");
+                value: UrlConstants.ContinueLoginPath);
 
             return new RedirectResult(loginUrl);
         }

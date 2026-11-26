@@ -2,10 +2,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ThreadboxApi.Application.Common;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Validation;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Boards.Commands

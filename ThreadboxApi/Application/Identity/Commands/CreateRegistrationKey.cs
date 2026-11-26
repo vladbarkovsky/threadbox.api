@@ -1,6 +1,6 @@
 ﻿using MediatR;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
 
 namespace ThreadboxApi.Application.Identity.Commands
 {

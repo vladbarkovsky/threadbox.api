@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using ThreadboxApi.Application.Common.Constants;
-using ThreadboxApi.Application.Services;
+using ThreadboxApi.Configuration;
+using ThreadboxApi.Web.Constants;
 using ThreadboxApi.ORM.Entities;
 
 namespace ThreadboxApi.Application.Bff.Commands
@@ -31,7 +31,7 @@ namespace ThreadboxApi.Application.Bff.Commands
             await _bffService.ClearTokensAsync(cancellationToken);
             await _signInManager.SignOutAsync();
 
-            return new RedirectResult(_appSettings.Value.FrontendBaseUrl + "/logged-out");
+            return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.LoggedOutPath);
         }
     }
 }

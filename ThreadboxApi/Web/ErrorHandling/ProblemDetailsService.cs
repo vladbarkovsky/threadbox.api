@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
-using ThreadboxApi.Application.Common;
+using ThreadboxApi.ServiceLifetimes;
 
 namespace ThreadboxApi.Web.ErrorHandling
 {
-    public class ProblemDetailsService : ISingletonService
+    public class ProblemDetailsService : ISingleton
     {
         private readonly ApiBehaviorOptions _options;
         private readonly IHttpContextAccessor _httpContextAccessor;

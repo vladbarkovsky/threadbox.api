@@ -3,8 +3,8 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ThreadboxApi.Application.Sections.Models;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
-using ThreadboxApi.ORM.Services;
 using ThreadboxApi.Web.Controllers;
 
 namespace ThreadboxApi.Application.Sections.Commands

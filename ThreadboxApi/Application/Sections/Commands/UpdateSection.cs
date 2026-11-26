@@ -2,12 +2,11 @@ using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using ThreadboxApi.Application.Common;
 using ThreadboxApi.Application.Sections.Models;
+using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.ORM.Entities.Interfaces;
-using ThreadboxApi.ORM.Services;
+using ThreadboxApi.Validation;
 using ThreadboxApi.Web.ErrorHandling;
 
 namespace ThreadboxApi.Application.Sections.Commands
