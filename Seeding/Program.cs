@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using ThreadboxApi;
 using ThreadboxApi.Application.Files;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Configuration.Identity;
 using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Time;
@@ -53,6 +54,8 @@ namespace Seeding
                     services
                         .AddIdentity<ApplicationUser, IdentityRole>()
                         .AddEntityFrameworkStores<ApplicationDbContext>();
+
+                    IdentityPasswordConfiguration.Configure(services);
 
                     services
                         .AddScoped<IDateTimeService, DateTimeService>()

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using ThreadboxApi.Application.Bff.Commands;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Language;
 using ThreadboxApi.ORM.Entities;
 using ThreadboxApi.Web.ErrorHandling;
 
@@ -17,13 +18,13 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
         private readonly IOptionsMonitor<AppSettings> _appSettings;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IStringLocalizer<LoginModel> _localizer;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
         public LoginModel(
             IOptionsMonitor<AppSettings> appSettings,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            IStringLocalizer<LoginModel> localizer)
+            IStringLocalizer<SharedResource> localizer)
         {
             _appSettings = appSettings;
             _signInManager = signInManager;
@@ -77,6 +78,25 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
                 return LocalRedirect(returnUrl);
             }
 
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            foreach (IPasswordValidator<ApplicationUser> passwordValidator in _userManager.PasswordValidators)
+            {
+                IdentityResult passwordValidationResult = await passwordValidator.ValidateAsync(
+                    _userManager,
+                    null,
+                    Input.Password);
+
+                if (!passwordValidationResult.Succeeded)
+                {
+                    ModelState.AddModelError(key: string.Empty, errorMessage: _localizer["Login_InvalidCredentials"]);
+                    return Page();
+                }
+            }
+
             var result = await _signInManager.PasswordSignInAsync(
                 userName: Input.UserName,
                 password: Input.Password,
@@ -85,7 +105,7 @@ namespace ThreadboxApi.Areas.Identity.Pages.Account
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, _localizer["Login_InvalidCredentials"]);
+                ModelState.AddModelError(key: string.Empty, errorMessage: _localizer["Login_InvalidCredentials"]);
                 return Page();
             }
 

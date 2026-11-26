@@ -9,8 +9,6 @@
 
         <div class="window-body">
             <form method="post">
-                <div asp-validation-summary="ModelOnly"></div>
-
                 <div class="field-row-stacked">
                     <label asp-for="Input.UserName"></label>
                     <input asp-for="Input.UserName" autocomplete="username" aria-required="true" />
@@ -27,6 +25,8 @@
                     <input asp-for="Input.OfflineAccess" />
                     <label asp-for="Input.OfflineAccess"></label>
                 </div>
+
+                <div asp-validation-summary="ModelOnly"></div>
 
                 <div class="field-row actions">
                     <button id="login-submit" type="submit" class="default">@Localizer["Layout_SignIn"]</button>

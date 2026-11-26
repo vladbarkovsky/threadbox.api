@@ -16,7 +16,7 @@ using ThreadboxApi.Web.Bff;
 using ThreadboxApi.Web.Constants;
 using ThreadboxApi.Web.PermissionHandling;
 
-namespace ThreadboxApi.Configuration
+namespace ThreadboxApi.Configuration.Identity
 {
     public class IdentityStartup
     {
@@ -26,6 +26,8 @@ namespace ThreadboxApi.Configuration
                 .AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            IdentityPasswordConfiguration.Configure(services);
 
             services.ConfigureApplicationCookie(void (CookieAuthenticationOptions options) =>
             {

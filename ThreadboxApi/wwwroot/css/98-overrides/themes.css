@@ -17,6 +17,7 @@ html[data-theme='light'] {
 	--color-focus: #000;
 	--color-disabled: #808080;
 	--color-link: #00f;
+	--color-error: #800000;
 	color-scheme: light;
 }
 
@@ -39,5 +40,6 @@ html[data-theme='dark'] {
 	--color-focus: #fff;
 	--color-disabled: #8a8a8a;
 	--color-link: #8eb6ff;
+	--color-error: #e07070;
 	color-scheme: dark;
 }

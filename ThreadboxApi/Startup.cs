@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +10,14 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Scrutor;
 using System.Reflection;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Language;
 using ThreadboxApi.ServiceLifetimes;
 using ThreadboxApi.Web;
 using ThreadboxApi.Web.Constants;
 using ThreadboxApi.Web.Language;
 using ThreadboxApi.ORM;
+using Microsoft.Extensions.Localization;
+using ThreadboxApi.Configuration.Identity;
 
 namespace ThreadboxApi
 {
@@ -92,7 +96,11 @@ namespace ThreadboxApi
                 {
                     options.Conventions.Add(new CulturePageRouteModelConvention());
                 })
-                .AddDataAnnotationsLocalization();
+                .AddDataAnnotationsLocalization(void (MvcDataAnnotationsLocalizationOptions options) =>
+                {
+                    options.DataAnnotationLocalizerProvider = (Type modelType, IStringLocalizerFactory stringLocalizerFactory) =>
+                        stringLocalizerFactory.Create(typeof(SharedResource));
+                });
 
             NSwagStartup.ConfigureServices(services, _webHostEnvironment);
             IdentityStartup.ConfigureServices(services, appSettings, _webHostEnvironment);

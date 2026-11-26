@@ -26,5 +26,6 @@ body:has(.login-page) {
 
 	.actions {
 		justify-content: center;
+		margin-top: 8px;
 	}
 }

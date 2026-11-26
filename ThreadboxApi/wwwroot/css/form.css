@@ -1,5 +1,6 @@
 .field-validation-error {
 	display: block;
+	color: var(--color-error);
 }
 
 .validation-summary-valid {
@@ -7,7 +8,8 @@
 }
 
 .validation-summary-errors {
-	margin-bottom: 8px;
+	margin-top: 8px;
+	color: var(--color-error);
 
 	ul {
 		margin: 0;
