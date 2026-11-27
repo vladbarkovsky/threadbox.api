@@ -9,6 +9,7 @@ jobs:
       ConnectionStrings__Postgres: ${{ secrets.CONNECTION_STRINGS__POSTGRES }}
       DefaultAdminCredentials__Username: ${{ secrets.DEFAULT_ADMIN_CREDENTIALS__USERNAME }}
       DefaultAdminCredentials__Password: ${{ secrets.DEFAULT_ADMIN_CREDENTIALS__PASSWORD }}
+      OidcBffClientSecret: ${{ secrets.OIDC_BFF_CLIENT_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using ThreadboxApi.Application.Bff;
 using ThreadboxApi.Application.Bff.Models;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Configuration.Identity;
 using ThreadboxApi.ServiceLifetimes;
 using ThreadboxApi.Web.Constants;
 using ThreadboxApi.Time;
@@ -53,7 +54,7 @@ namespace ThreadboxApi.Web.Bff
                     new RefreshTokenRequest
                     {
                         Address = _appSettings.Value.BaseUrl + UrlConstants.ConnectTokenPath,
-                        ClientId = "bff",
+                        ClientId = ApplicationOidcConstants.ClientId,
                         ClientSecret = _appSettings.Value.OidcBffClientSecret,
                         RefreshToken = tokens.RefreshToken
                     },

@@ -1,11 +1,10 @@
-﻿using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using Seeding.Seeders;
 using ThreadboxApi;
 using ThreadboxApi.Application.Files;
 using ThreadboxApi.Configuration;
@@ -23,7 +22,7 @@ namespace Seeding
             using IHost host = Host
                 .CreateDefaultBuilder(args)
                 .UseContentRoot(AppContext.BaseDirectory)
-                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) =>
+                .ConfigureAppConfiguration(void (HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder) =>
                 {
                     configurationBuilder.Sources.Clear();
                     configurationBuilder.SetBasePath(AppContext.BaseDirectory);
@@ -32,14 +31,12 @@ namespace Seeding
                     configurationBuilder.AddEnvironmentVariables();
                     configurationBuilder.AddCommandLine(args);
                 })
-                .ConfigureServices((hostBuilderContext, services) =>
+                .ConfigureServices(void (HostBuilderContext hostBuilderContext, IServiceCollection services) =>
                 {
                     services.Configure<AppSettings>(hostBuilderContext.Configuration);
 
                     var appSettings = new AppSettings();
                     hostBuilderContext.Configuration.Bind(appSettings);
-
-                    services.AddSingleton<IOptions<OperationalStoreOptions>>(Options.Create(new OperationalStoreOptions()));
 
                     services.AddDbContext<ApplicationDbContext>(void (DbContextOptionsBuilder optionsBuilder) =>
                     {
@@ -55,6 +52,12 @@ namespace Seeding
                         .AddIdentity<ApplicationUser, IdentityRole>()
                         .AddEntityFrameworkStores<ApplicationDbContext>();
 
+                    services.AddOpenIddict()
+                        .AddCore(void (OpenIddictCoreBuilder builder) =>
+                        {
+                            builder.UseEntityFrameworkCore().UseDbContext<ApplicationDbContext>();
+                        });
+
                     IdentityPasswordConfiguration.Configure(services);
 
                     services
@@ -62,6 +65,15 @@ namespace Seeding
                         .AddHttpContextAccessor()
                         .AddScoped<ApplicationContext>()
                         .AddScoped<IFileStorage, DbFileStorage>()
+                        .AddScoped<OpenIddictApplicationSeeder>()
+                        .AddScoped<RoleSeeder>()
+                        .AddScoped<UserSeeder>()
+                        .AddScoped<SectionSeeder>()
+                        .AddScoped<BoardSeeder>()
+                        .AddScoped<ThreadSeeder>()
+                        .AddScoped<ThreadImageSeeder>()
+                        .AddScoped<PostSeeder>()
+                        .AddScoped<PostImageSeeder>()
                         .AddScoped<SeedingService>();
                 })
                 .Build();

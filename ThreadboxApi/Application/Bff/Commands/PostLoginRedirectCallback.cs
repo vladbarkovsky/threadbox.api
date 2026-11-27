@@ -2,7 +2,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Abstractions;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Configuration.Identity;
 using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Application.Bff.Commands
@@ -41,12 +45,20 @@ namespace ThreadboxApi.Application.Bff.Commands
             if (!string.IsNullOrWhiteSpace(request.Error))
             {
                 _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_state");
+                _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_nonce");
+                _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_code_verifier");
+
                 _logger.LogError("Authorization callback returned an error: {Error}.", request.Error);
                 return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
             }
 
             string expectedState = _httpContextAccessor.HttpContext.Request.Cookies["bff_state"];
+            string expectedNonce = _httpContextAccessor.HttpContext.Request.Cookies["bff_nonce"];
+            string codeVerifier = _httpContextAccessor.HttpContext.Request.Cookies["bff_code_verifier"];
+
             _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_state");
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_nonce");
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("bff_code_verifier");
 
             if (string.IsNullOrWhiteSpace(expectedState) || request.State != expectedState)
             {
@@ -58,15 +70,22 @@ namespace ThreadboxApi.Application.Bff.Commands
                 return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
             }
 
+            if (string.IsNullOrWhiteSpace(codeVerifier))
+            {
+                _logger.LogError("Authorization callback code verifier is missing.");
+                return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
+            }
+
             using (HttpClient httpClient = _httpClientFactory.CreateClient())
             {
                 TokenResponse tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(
                     new AuthorizationCodeTokenRequest
                     {
                         Address = _appSettings.Value.BaseUrl + UrlConstants.ConnectTokenPath,
-                        ClientId = "bff",
+                        ClientId = ApplicationOidcConstants.ClientId,
                         ClientSecret = _appSettings.Value.OidcBffClientSecret,
                         Code = request.Code,
+                        CodeVerifier = codeVerifier,
                         RedirectUri = _appSettings.Value.BaseUrl + UrlConstants.PostLoginRedirectCallbackPath
                     },
                     cancellationToken);
@@ -83,10 +102,50 @@ namespace ThreadboxApi.Application.Bff.Commands
                     return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
                 }
 
+                string identityTokenNonce = ReadIdentityTokenNonce(tokenResponse.IdentityToken);
+
+                if (string.IsNullOrWhiteSpace(expectedNonce) || identityTokenNonce != expectedNonce)
+                {
+                    _logger.LogError(
+                        "Identity token nonce validation failed. Expected nonce present: {ExpectedNoncePresent}. Received nonce present: {ReceivedNoncePresent}.",
+                        !string.IsNullOrWhiteSpace(expectedNonce),
+                        !string.IsNullOrWhiteSpace(identityTokenNonce));
+
+                    return new RedirectResult(_appSettings.Value.FrontendBaseUrl + UrlConstants.AuthorizationErrorPath);
+                }
+
                 await _bffService.SetTokensAsync(tokenResponse, cancellationToken);
             }
 
             return new RedirectResult(_appSettings.Value.FrontendBaseUrl);
+        }
+
+        private static string ReadIdentityTokenNonce(string identityToken)
+        {
+            if (string.IsNullOrWhiteSpace(identityToken))
+            {
+                return null;
+            }
+
+            try
+            {
+                var jwt = new JsonWebToken(identityToken);
+
+                if (jwt.TryGetPayloadValue(OpenIddictConstants.Claims.Nonce, out string nonce))
+                {
+                    return nonce;
+                }
+
+                return null;
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+            catch (SecurityTokenException)
+            {
+                return null;
+            }
         }
     }
 }

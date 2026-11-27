@@ -1,14 +1,10 @@
-﻿using IdentityServer4;
-using IdentityServer4.Configuration;
-using IdentityServer4.EntityFramework.Options;
-using IdentityServer4.Models;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.JsonWebTokens;
+using OpenIddict.Abstractions;
+using OpenIddict.Validation;
 using System.Security.Cryptography.X509Certificates;
 using ThreadboxApi.ORM;
 using ThreadboxApi.ORM.Entities;
@@ -31,6 +27,8 @@ namespace ThreadboxApi.Configuration.Identity
 
             services.ConfigureApplicationCookie(void (CookieAuthenticationOptions options) =>
             {
+                options.LoginPath = UrlConstants.SignInPath;
+                options.ReturnUrlParameter = "returnUrl";
                 options.SlidingExpiration = false;
 
                 options.Events.OnValidatePrincipal = async (CookieValidatePrincipalContext context) =>
@@ -44,101 +42,82 @@ namespace ThreadboxApi.Configuration.Identity
                 };
             });
 
-            IIdentityServerBuilder identityServerBuilder = services
-                .AddIdentityServer(void (IdentityServerOptions options) =>
+            JsonWebTokenHandler.DefaultMapInboundClaims = false;
+
+            services.AddOpenIddict()
+                .AddCore(void (OpenIddictCoreBuilder builder) =>
                 {
-                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
-                    options.UserInteraction.LoginUrl = UrlConstants.SignInPath;
-                    options.UserInteraction.LoginReturnUrlParameter = "returnUrl";
-                    options.Endpoints.EnableCheckSessionEndpoint = false;
-                    options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
-                    options.Endpoints.EnableDiscoveryEndpoint = false;
-                    options.Endpoints.EnableEndSessionEndpoint = false;
-                    options.Endpoints.EnableIntrospectionEndpoint = false;
-                    options.Endpoints.EnableJwtRequestUri = false;
-                    options.Endpoints.EnableTokenRevocationEndpoint = false;
-                    options.Endpoints.EnableUserInfoEndpoint = false;
+                    builder.UseEntityFrameworkCore()
+                        .UseDbContext<ApplicationDbContext>();
                 })
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddInMemoryIdentityResources(new IdentityResource[]
+                .AddServer(void (OpenIddictServerBuilder builder) =>
                 {
-                    new IdentityResources.OpenId(),
-                    new IdentityResources.Profile()
-                })
-                .AddInMemoryApiScopes(new ApiScope[]
-                {
-                    new ApiScope("threadbox_api.access")
-                })
-                .AddInMemoryApiResources(new ApiResource[]
-                {
-                    new ApiResource("threadbox_api", "Threadbox API")
+                    builder.SetIssuer(appSettings.BaseUrl);
+                    builder.SetAuthorizationEndpointUris(UrlConstants.ConnectAuthorizePath);
+                    builder.SetTokenEndpointUris(UrlConstants.ConnectTokenPath);
+                    builder.AllowAuthorizationCodeFlow();
+                    builder.RequireProofKeyForCodeExchange();
+                    builder.AllowRefreshTokenFlow();
+                    builder.RegisterScopes(
+                        OpenIddictConstants.Scopes.OpenId,
+                        OpenIddictConstants.Scopes.Profile,
+                        OpenIddictConstants.Scopes.OfflineAccess,
+                        ApplicationOidcConstants.ApiScope);
+                    builder.SetAccessTokenLifetime(TimeSpan.FromSeconds(appSettings.AccessTokenLifetimeSeconds));
+                    builder.SetRefreshTokenLifetime(TimeSpan.FromSeconds(appSettings.AbsoluteRefreshTokenLifetimeSeconds));
+                    builder.DisableRollingRefreshTokens();
+                    builder.DisableSlidingRefreshTokenExpiration();
+
+                    if (webHostEnvironment.IsDevelopment())
                     {
-                        Scopes = { "threadbox_api.access" }
+                        builder.AddDevelopmentEncryptionCertificate();
+                        builder.AddDevelopmentSigningCertificate();
                     }
-                })
-                .AddInMemoryClients(new Client[]
-                {
-                    new Client
+                    else
                     {
-                        ClientId = "bff",
-                        ClientName = "BFF",
-                        AllowedGrantTypes = GrantTypes.Code,
-                        AllowOfflineAccess = true,
-                        AllowedScopes =
-                        {
-                            IdentityServerConstants.StandardScopes.OpenId,
-                            IdentityServerConstants.StandardScopes.Profile,
-                            IdentityServerConstants.StandardScopes.OfflineAccess,
-                            "threadbox_api.access"
-                        },
-                        PostLogoutRedirectUris =
-                        {
-                            appSettings.BaseUrl + "/bff/post-logout-redirect-callback"
-                        },
-                        RedirectUris =
-                        {
-                            appSettings.BaseUrl + UrlConstants.PostLoginRedirectCallbackPath
-                        },
-                        RequirePkce = false,
-                        ClientSecrets =
-                        {
-                            new Secret(appSettings.OidcBffClientSecret.Sha256())
-                        },
-                        AccessTokenLifetime = appSettings.AccessTokenLifetimeSeconds,
-                        AbsoluteRefreshTokenLifetime = appSettings.AbsoluteRefreshTokenLifetimeSeconds
+                        X509Certificate2 certificate = new X509Certificate2(
+                            fileName: "/certs/signing.pfx",
+                            password: appSettings.SigningPfxPassword,
+                            keyStorageFlags: X509KeyStorageFlags.EphemeralKeySet);
+
+                        builder.AddEncryptionCertificate(certificate);
+                        builder.AddSigningCertificate(certificate);
                     }
+
+                    builder.UseAspNetCore()
+                        .EnableAuthorizationEndpointPassthrough();
                 })
-                .AddOperationalStore<ApplicationDbContext>(void (OperationalStoreOptions options) =>
+                .AddValidation(void (OpenIddictValidationBuilder builder) =>
                 {
-                    options.EnableTokenCleanup = true;
+                    builder.UseLocalServer();
+                    builder.UseAspNetCore();
+                    builder.AddAudiences(ApplicationOidcConstants.ApiAudience);
+                    builder.Configure(void (OpenIddictValidationOptions validationOptions) =>
+                    {
+                        validationOptions.TokenValidationParameters.AuthenticationType = AuthenticationSchemeConstants.AccessToken;
+                    });
                 });
 
-            if (webHostEnvironment.IsDevelopment())
-            {
-                identityServerBuilder.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                identityServerBuilder.AddSigningCredential(new X509Certificate2(
-                    fileName: "/certs/signing.pfx",
-                    password: appSettings.SigningPfxPassword,
-                    keyStorageFlags: X509KeyStorageFlags.EphemeralKeySet));
-
-            }
-
-            // Disabling JWT token claims mapping by ASP.NET Identity.
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-            services.AddAuthentication().AddIdentityServerJwt();
-
-            services.PostConfigure<JwtBearerOptions>(
-                name: IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
-                configureOptions: void (JwtBearerOptions options) =>
+            services
+                .AddAuthentication(void (AuthenticationOptions options) =>
                 {
-                    options.Audience = "threadbox_api";
-                    options.TokenValidationParameters.ValidAudience = "threadbox_api";
-                    options.TokenValidationParameters.AuthenticationType = IdentityServerJwtConstants.IdentityServerJwtBearerScheme;
-                });
+                    options.DefaultScheme = AuthenticationSchemeConstants.Forwarding;
+                })
+                .AddPolicyScheme(
+                    authenticationScheme: AuthenticationSchemeConstants.Forwarding,
+                    displayName: null,
+                    configureOptions: void (PolicySchemeOptions options) =>
+                    {
+                        options.ForwardDefaultSelector = string (HttpContext context) =>
+                        {
+                            if (context.Request.Path.StartsWithSegments("/Identity", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return IdentityConstants.ApplicationScheme;
+                            }
+
+                            return AuthenticationSchemeConstants.AccessToken;
+                        };
+                    });
 
             services
                 .AddAuthorization()
@@ -151,7 +130,7 @@ namespace ThreadboxApi.Configuration.Identity
             app
                 .UseMiddleware<AccessTokenRefreshMiddleware>()
                 .UseMiddleware<AccessTokenMiddleware>()
-                .UseIdentityServer()
+                .UseAuthentication()
                 .UseMiddleware<PermissionMiddleware>()
                 .UseAuthorization();
         }

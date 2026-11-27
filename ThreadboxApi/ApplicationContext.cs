@@ -16,7 +16,7 @@ namespace ThreadboxApi
         /// <summary>
         /// <see cref="IdentityUser{TKey}.Id"/> contained in the JWT access token.
         /// </summary>
-        // IdentityServer stores user ID in subject claim
+        // User ID is the subject claim.
         // JWT specification: https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
         public string CurrentUserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("sub");
     }

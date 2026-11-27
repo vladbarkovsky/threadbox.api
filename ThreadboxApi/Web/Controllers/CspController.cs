@@ -5,6 +5,7 @@ using ThreadboxApi.Application.Csp.Commands;
 namespace ThreadboxApi.Web.Controllers
 {
     [Route("csp")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public sealed class CspController : ApplicationController
     {
         public CspController(ISender sender) : base(sender) { }

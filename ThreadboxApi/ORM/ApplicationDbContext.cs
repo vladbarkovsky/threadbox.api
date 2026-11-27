@@ -1,10 +1,8 @@
 using AutoMapper.Internal;
-using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Text.Json;
 using ThreadboxApi.ORM.Entities;
@@ -13,7 +11,7 @@ using ThreadboxApi.Time;
 
 namespace ThreadboxApi.ORM
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         private readonly IDateTimeService _dateTimeService;
         private readonly ApplicationContext _appContext;
@@ -34,9 +32,8 @@ namespace ThreadboxApi.ORM
 
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions,
             IDateTimeService dateTimeService,
-            ApplicationContext appContext) : base(options, operationalStoreOptions)
+            ApplicationContext appContext) : base(options)
         {
             _dateTimeService = dateTimeService;
             _appContext = appContext;
@@ -86,6 +83,7 @@ namespace ThreadboxApi.ORM
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.UseOpenIddict();
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             ConfigureDeleteFilters(modelBuilder);
         }

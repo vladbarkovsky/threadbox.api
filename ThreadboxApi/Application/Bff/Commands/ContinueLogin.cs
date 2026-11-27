@@ -1,10 +1,14 @@
-using IdentityServer4;
+using IdentityModel;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using OpenIddict.Abstractions;
+using System.Security.Cryptography;
+using System.Text;
 using ThreadboxApi.Configuration;
+using ThreadboxApi.Configuration.Identity;
 using ThreadboxApi.Web.Constants;
 
 namespace ThreadboxApi.Application.Bff.Commands
@@ -40,41 +44,59 @@ namespace ThreadboxApi.Application.Bff.Commands
 
             bool offlineAccess = GetOfflineAccess(_httpContextAccessor.HttpContext, authenticateResult);
             string bffState = Guid.NewGuid().ToString();
+            string bffNonce = Guid.NewGuid().ToString();
+            string codeVerifier = CryptoRandom.CreateUniqueId();
+            string codeChallenge = CreateCodeChallenge(codeVerifier);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+            };
 
             _httpContextAccessor.HttpContext.Response.Cookies.Append(
                 key: "bff_state",
                 value: bffState,
-                options: new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(5)
-                });
+                options: cookieOptions);
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                key: "bff_nonce",
+                value: bffNonce,
+                options: cookieOptions);
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                key: "bff_code_verifier",
+                value: codeVerifier,
+                options: cookieOptions);
 
             var scopes = new List<string>
             {
-                IdentityServerConstants.StandardScopes.OpenId,
-                IdentityServerConstants.StandardScopes.Profile
+                "openid",
+                "profile"
             };
 
             if (offlineAccess)
             {
-                scopes.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
+                scopes.Add("offline_access");
             }
 
-            scopes.Add("threadbox_api.access");
+            scopes.Add(ApplicationOidcConstants.ApiScope);
 
             var query = new Dictionary<string, string>
             {
-                { "client_id", "bff" },
+                { "client_id", ApplicationOidcConstants.ClientId },
                 { "redirect_uri", _appSettings.Value.BaseUrl + UrlConstants.PostLoginRedirectCallbackPath },
                 { "response_type", "code" },
                 { "scope", string.Join(" ", scopes) },
-                { "state", bffState }
+                { "state", bffState },
+                { "nonce", bffNonce },
+                { "code_challenge", codeChallenge },
+                { "code_challenge_method", OpenIddictConstants.CodeChallengeMethods.Sha256 }
             };
 
-            string redirectUrl = QueryHelpers.AddQueryString(_appSettings.Value.BaseUrl + "/connect/authorize", query);
+            string redirectUrl = QueryHelpers.AddQueryString(_appSettings.Value.BaseUrl + UrlConstants.ConnectAuthorizePath, query);
             return new RedirectResult(redirectUrl);
         }
 
@@ -97,6 +119,12 @@ namespace ThreadboxApi.Application.Bff.Commands
             }
 
             return authenticateResult.Properties?.IsPersistent == true;
+        }
+
+        private static string CreateCodeChallenge(string codeVerifier)
+        {
+            byte[] hash = SHA256.HashData(Encoding.ASCII.GetBytes(codeVerifier));
+            return IdentityModel.Base64Url.Encode(hash);
         }
     }
 }

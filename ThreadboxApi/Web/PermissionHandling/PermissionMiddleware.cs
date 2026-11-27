@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using ThreadboxApi.Application.Identity;
+using ThreadboxApi.Configuration.Identity;
 
 namespace ThreadboxApi.Web.PermissionHandling
 {
@@ -15,7 +15,7 @@ namespace ThreadboxApi.Web.PermissionHandling
 
         public async Task InvokeAsync(HttpContext context, IdentityService identityService)
         {
-            if (context.User.Identity.AuthenticationType != IdentityServerJwtConstants.IdentityServerJwtBearerScheme)
+            if (context.User.Identity.AuthenticationType != AuthenticationSchemeConstants.AccessToken)
             {
                 await _next(context);
                 return;

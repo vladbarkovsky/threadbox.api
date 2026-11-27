@@ -5,6 +5,7 @@ using ThreadboxApi.Application.Bff.Commands;
 namespace ThreadboxApi.Web.Controllers
 {
     [Route("bff")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public sealed class BffController : ApplicationController
     {
         public BffController(ISender sender) : base(sender) { }
