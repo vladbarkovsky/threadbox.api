@@ -11,7 +11,7 @@ jobs:
         working-directory: ThreadboxApi
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Add dotnet to PATH
       run: echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
     - name: Restore
@@ -26,6 +26,6 @@ jobs:
         working-directory: ThreadboxApi
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
     - name: Build Docker image
       run: docker build -t threadbox-api:${GITHUB_SHA} .

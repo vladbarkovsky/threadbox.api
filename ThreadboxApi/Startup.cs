@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -108,9 +109,22 @@ namespace ThreadboxApi
             services
                 .AddMediatR(void (MediatRServiceConfiguration configuration) =>
                 {
+                    if (!string.IsNullOrWhiteSpace(appSettings.LuckyPennyLicenseKey))
+                    {
+                        configuration.LicenseKey = appSettings.LuckyPennyLicenseKey;
+                    }
+
                     configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 })
-                .AddAutoMapper(Assembly.GetExecutingAssembly())
+                .AddAutoMapper(void (IMapperConfigurationExpression configuration) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(appSettings.LuckyPennyLicenseKey))
+                    {
+                        configuration.LicenseKey = appSettings.LuckyPennyLicenseKey;
+                    }
+
+                    configuration.AddMaps(Assembly.GetExecutingAssembly());
+                })
                 .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
                 .AddFluentValidationAutoValidation();
 

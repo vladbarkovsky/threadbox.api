@@ -17,9 +17,10 @@ jobs:
       OIDC_BFF_CLIENT_SECRET: ${{ secrets.OIDC_BFF_CLIENT_SECRET }}
       SIGNING_PFX_PASSWORD: ${{ secrets.SIGNING_PFX_PASSWORD }}
       API_SPECIFICATION_CREDENTIALS__PASSWORD: ${{ secrets.API_SPECIFICATION_CREDENTIALS__PASSWORD }}
+      LUCKY_PENNY_LICENSE_KEY: ${{ secrets.LUCKY_PENNY_LICENSE_KEY }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Add dotnet to PATH
         run: echo "$HOME/.dotnet:$PATH" >> $GITHUB_PATH
       - name: Apply EF migrations

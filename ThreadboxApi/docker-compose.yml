@@ -9,6 +9,7 @@ services:
         OidcBffClientSecret: ${OIDC_BFF_CLIENT_SECRET}
         SigningPfxPassword: ${SIGNING_PFX_PASSWORD}
         ApiSpecificationCredentials__Password: ${API_SPECIFICATION_CREDENTIALS__PASSWORD}
+        LuckyPennyLicenseKey: ${LUCKY_PENNY_LICENSE_KEY}
       expose:
         - "5000"
       volumes:

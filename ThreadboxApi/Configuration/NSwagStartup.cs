@@ -26,11 +26,11 @@ namespace ThreadboxApi.Configuration
                     .ServiceProvider
                     .GetRequiredService<FluentValidationSchemaProcessor>();
 
-                settings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+                settings.SchemaSettings.SchemaProcessors.Add(fluentValidationSchemaProcessor);
                 settings.Title = "Threadbox API specification";
 
                 // Overriding default name generation patterns.
-                settings.SchemaNameGenerator = new SchemaNameGenerator();
+                settings.SchemaSettings.SchemaNameGenerator = new SchemaNameGenerator();
 
                 // JWT authorization (used for Swagger UI).
                 // Source: https://github.com/jasontaylordev/CleanArchitecture/blob/net6.0/src/WebUI/Startup.cs.
@@ -62,10 +62,10 @@ namespace ThreadboxApi.Configuration
                 settings.Path = UrlConstants.ApiSpecificationPath;
             });
 
-            app.UseSwaggerUi3(void (SwaggerUi3Settings settings) =>
+            app.UseSwaggerUi(void (SwaggerUiSettings settings) =>
             {
                 settings.Path = UrlConstants.ApiPath;
-                settings.DocumentPath = UrlConstants.ApiSpecificationPath;
+                settings.SwaggerRoutes.Add(new SwaggerUiRoute(UrlConstants.ApiSpecificationPath, "Threadbox API specification"));
             });
         }
     }

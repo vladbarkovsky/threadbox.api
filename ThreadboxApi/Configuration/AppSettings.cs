@@ -11,6 +11,7 @@
         public int AbsoluteRefreshTokenLifetimeSeconds { get; set; }
         public string OidcBffClientSecret { get; set; }
         public string SigningPfxPassword { get; set; }
+        public string LuckyPennyLicenseKey { get; set; }
         public ApiSpecificationCredentials ApiSpecificationCredentials { get; set; }
 
     }
